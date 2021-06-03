@@ -4,6 +4,7 @@
   },
   "devDependencies": {
     "@snowpack/plugin-typescript": "^1.2.1",
+    "@types/dom-mediacapture-record": "^1.0.7",
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "@typescript-eslint/parser": "^4.26.0",
     "eslint": "^7.27.0",

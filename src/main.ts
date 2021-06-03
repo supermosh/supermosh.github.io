@@ -1,7 +1,7 @@
 (async () => {
   const video = document.createElement('video');
-  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-  video.srcObject = stream;
+  const inputStream = await navigator.mediaDevices.getUserMedia({ video: true });
+  video.srcObject = inputStream;
   await new Promise<void>((resolve) => {
     const listener = () => {
       video.removeEventListener('canplay', listener);
@@ -28,4 +28,31 @@
     requestAnimationFrame(loop);
   };
   loop();
+
+  // @ts-ignore
+  const outputStream = canvas.captureStream() as MediaStream;
+  const recorder = new MediaRecorder(outputStream, { mimeType: 'video/webm' });
+  let recording = false;
+
+  const startRecording = () => {
+    recording = true;
+    recorder.start();
+  };
+
+  const stopRecording = () => {
+    recording = false;
+    recorder.addEventListener('dataavailable', (evt) => {
+      const url = URL.createObjectURL(evt.data);
+      const outputVideo = document.querySelector('video');
+      outputVideo.src = url;
+    });
+    recorder.stop();
+  };
+
+  document.addEventListener('keypress', (evt) => {
+    switch (evt.key) {
+      case 'r':
+        if (recording) { stopRecording(); } else { startRecording(); }
+    }
+  });
 })();
