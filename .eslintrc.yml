@@ -11,5 +11,9 @@ plugins:
   - '@typescript-eslint'
 rules:
   default-case: off
+  import/extensions: off
+  import/no-unresolved: off
+  no-plusplus: off
+  no-restricted-syntax: off
   no-unused-vars: off
-  @typescript-eslint/no-unused-vars: error
+  '@typescript-eslint/no-unused-vars': error
