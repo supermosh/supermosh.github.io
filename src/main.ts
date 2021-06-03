@@ -19,12 +19,18 @@
   const ctx = canvas.getContext('2d');
 
   const loop = () => {
+    const previous = ctx.getImageData(0, 0, width, height);
     ctx.drawImage(video, 0, 0);
-    const imageData = ctx.getImageData(0, 0, width, height);
-    for (let i = 0; i < imageData.data.length; i += 4) {
-      imageData.data[i] = 0;
+    const input = ctx.getImageData(0, 0, width, height);
+    const output = new ImageData(width, height);
+    const t = 0.95;
+    for (let i = 0; i < width * height * 4; i += 4) {
+      output.data[i] = t * previous.data[i] + (1 - t) * input.data[i];
+      output.data[i + 1] = t * previous.data[i + 1] + (1 - t) * input.data[i + 1];
+      output.data[i + 2] = t * previous.data[i + 2] + (1 - t) * input.data[i + 2];
+      output.data[i + 3] = 255;
     }
-    ctx.putImageData(imageData, 0, 0);
+    ctx.putImageData(output, 0, 0);
     requestAnimationFrame(loop);
   };
   loop();
