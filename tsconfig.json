@@ -1,4 +1,6 @@
 {
-  "compilerOptions": {},
-  "include": ["src"]
+  "compilerOptions": {
+    "lib": ["DOM", "ES2015"]
+  },
+  "include": ["src"],
 }
