@@ -1,6 +1,6 @@
-import { MinShifts } from "./types";
+import { MinShifts } from './types';
 
-export default (previous: ImageData, current: ImageData, size: number, shifts: number[]) => {
+export default (previous: ImageData, real: ImageData, size: number, shifts: number[]) => {
   const { width, height } = previous;
   const minShifts: MinShifts = {};
 
@@ -23,9 +23,9 @@ export default (previous: ImageData, current: ImageData, size: number, shifts: n
               const ysrc = (y + yShift + height) % height;
               const isrc = 4 * (width * ysrc + xsrc);
               const idst = 4 * (width * y + x);
-              diff += Math.abs(previous.data[isrc + 0] - current.data[idst + 0]);
-              diff += Math.abs(previous.data[isrc + 1] - current.data[idst + 1]);
-              diff += Math.abs(previous.data[isrc + 2] - current.data[idst + 2]);
+              diff += Math.abs(previous.data[isrc + 0] - real.data[idst + 0]);
+              diff += Math.abs(previous.data[isrc + 1] - real.data[idst + 1]);
+              diff += Math.abs(previous.data[isrc + 2] - real.data[idst + 2]);
             }
           }
 

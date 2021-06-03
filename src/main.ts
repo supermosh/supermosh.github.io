@@ -1,17 +1,17 @@
+import approximate from './approximate';
+import getMinShifts from './getMinShifts';
+
+const size = 8;
+const shifts = [0, 1, -1, 2, -2, 4, -4, 8, -8];
+
 type State = {
   recording: boolean;
-  transformation: 'identity' | 'approximation' | 'glide';
+  transformation: (previous: ImageData, real: ImageData) => ImageData
 }
 
 const state: State = {
   recording: false,
-  transformation: 'identity',
-};
-
-const transformations: Record<State['transformation'], (previous: ImageData, real: ImageData) => ImageData> = {
-  identity(previous, real) { return real; },
-  approximation(previous, real) { return real; },
-  glide(previous, real) { return real; },
+  transformation: (previous, real) => real,
 };
 
 (async () => {
@@ -38,7 +38,7 @@ const transformations: Record<State['transformation'], (previous: ImageData, rea
     const previous = ctx.getImageData(0, 0, width, height);
     ctx.drawImage(video, 0, 0);
     const real = ctx.getImageData(0, 0, width, height);
-    const out = transformations[state.transformation](previous, real);
+    const out = state.transformation(previous, real);
     ctx.putImageData(out, 0, 0);
     requestAnimationFrame(loop);
   };
@@ -65,10 +65,31 @@ const transformations: Record<State['transformation'], (previous: ImageData, rea
 
   document.addEventListener('keypress', (evt) => {
     switch (evt.key) {
-      case 'r': if (state.recording) { stopRecording(); } else { startRecording(); } break;
-      case 'i': state.transformation = 'identity'; break;
-      case 'g': state.transformation = 'glide'; break;
-      case 'a': state.transformation = 'approximation'; break;
+      case 'r':
+        if (state.recording) {
+          stopRecording();
+        } else {
+          startRecording();
+        }
+        break;
+      case 'i':
+        state.transformation = (previous, real) => real;
+        break;
+      case 'a':
+        state.transformation = (previous, real) => {
+          const minShifts = getMinShifts(previous, real, size, shifts);
+          const out = approximate(previous, minShifts, size);
+          return out;
+        };
+        break;
+      case 'g':
+        state.transformation = (previous, real) => {
+          const minShifts = getMinShifts(previous, real, size, shifts);
+          const out = approximate(previous, minShifts, size);
+          state.transformation = (previous2) => approximate(previous2, minShifts, size);
+          return out;
+        };
+        break;
     }
   });
 })();
