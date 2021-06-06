@@ -1,15 +1,12 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface HTMLVideoElement {
-  seekToNextFrame(): Promise<void>;
-}
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface HTMLCanvasElement {
-  captureStream(frameRate?: number): MediaStream;
-}
+import approximate from './approximate';
+import getMinShifts from './getMinShifts';
+
+const size = 8;
+const shifts = [0, 1, -1, 2, -2, 4, -4];
 
 (async () => {
   const video = document.querySelectorAll('video')[0];
-  video.src = '/static/small/hug-colors.mp4';
+  video.src = '/static/medium/hug-colors.mp4';
 
   await new Promise<void>((resolve) => {
     const listener = () => {
@@ -20,20 +17,36 @@ interface HTMLCanvasElement {
   });
 
   const canvas = document.querySelector('canvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  const width = video.videoWidth;
+  const height = video.videoHeight;
+  canvas.width = width;
+  canvas.height = height;
   const ctx = canvas.getContext('2d');
 
-  const stream = canvas.captureStream();
+  // @ts-ignore
+  const stream = canvas.captureStream() as MediaStream;
   const recorder = new MediaRecorder(stream);
   recorder.start();
 
+  let minShifts;
   const loop = async () => {
     if (video.ended) {
       recorder.stop();
       return;
     }
-    ctx.drawImage(video, 0, 0);
+
+    if (video.currentTime < 1) {
+      ctx.drawImage(video, 0, 0);
+    } else {
+      const previous = ctx.getImageData(0, 0, width, height);
+      ctx.drawImage(video, 0, 0);
+      const real = ctx.getImageData(0, 0, width, height);
+      minShifts = minShifts || getMinShifts(previous, real, size, shifts);
+      const out = approximate(previous, minShifts, size);
+      ctx.putImageData(out, 0, 0);
+    }
+
+    // @ts-ignore
     await video.seekToNextFrame();
     setTimeout(loop, 1000 / 24);
   };
