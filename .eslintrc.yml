@@ -13,6 +13,7 @@ rules:
   default-case: off
   import/extensions: off
   import/no-unresolved: off
+  no-await-in-loop: off
   no-plusplus: off
   no-restricted-syntax: off
   no-unused-vars: off
