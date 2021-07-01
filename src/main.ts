@@ -5,12 +5,14 @@ const size = 8;
 const shifts = [0, 1, -1, 2, -2, 4, -4];
 
 (async () => {
-  const video = document.querySelectorAll('video')[0];
-  video.src = '/static/medium/motocross.mp4';
-  await new Promise((r) => video.addEventListener('canplaythrough', r, { once: true }));
+  const video0 = document.querySelectorAll('video')[0];
+  video0.src = '/static/small/face-colors.mp4';
+  const video1 = document.querySelectorAll('video')[1];
+  video1.src = '/static/small/motocross.mp4';
+  await Promise.all([video0, video1].map((video) => new Promise((r) => video.addEventListener('canplaythrough', r, { once: true }))));
 
-  const width = video.videoWidth;
-  const height = video.videoHeight;
+  const width = video0.videoWidth;
+  const height = video0.videoHeight;
   const copyCanvas = document.querySelectorAll('canvas')[0];
   copyCanvas.width = width;
   copyCanvas.height = height;
@@ -25,32 +27,35 @@ const shifts = [0, 1, -1, 2, -2, 4, -4];
   const recorder = new MediaRecorder(stream);
   recorder.start();
 
-  let minShifts;
   const loop = async () => {
-    if (video.ended) {
+    if (video0.currentTime < 3) {
+      outCtx.drawImage(video0, 0, 0);
+      // @ts-ignore
+      await video0.seekToNextFrame();
+    } else if (video1.currentTime < 5) {
+      copyCtx.drawImage(video1, 0, 0);
+      const previous1 = copyCtx.getImageData(0, 0, width, height);
+      // @ts-ignore
+      await video1.seekToNextFrame();
+      copyCtx.drawImage(video1, 0, 0);
+      const real1 = copyCtx.getImageData(0, 0, width, height);
+      const minShifts1 = getMinShifts(previous1, real1, size, shifts);
+
+      const previous0 = outCtx.getImageData(0, 0, width, height);
+
+      const outData = approximate(previous0, minShifts1, size);
+      outCtx.putImageData(outData, 0, 0);
+    } else {
       recorder.stop();
       return;
     }
-
-    copyCtx.drawImage(video, 0, 0);
-    const previous = copyCtx.getImageData(0, 0, width, height);
-    // @ts-ignore
-    await video.seekToNextFrame();
-    const real = copyCtx.getImageData(0, 0, width, height);
-
-    minShifts = getMinShifts(previous, real, size, shifts);
-    const outData = approximate(previous, minShifts, size);
-    outCtx.putImageData(outData, 0, 0);
-
-    // @ts-ignore
-    await video.seekToNextFrame();
     requestAnimationFrame(loop);
   };
   loop();
 
   recorder.addEventListener('dataavailable', (evt) => {
     const url = URL.createObjectURL(evt.data);
-    const outputVideo = document.querySelectorAll('video')[1];
+    const outputVideo = document.querySelectorAll('video')[2];
     outputVideo.src = url;
   });
 })();
