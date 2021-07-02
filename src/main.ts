@@ -77,17 +77,19 @@ const prepareGlideSegment = async (segment: GlideSegment): Promise<PreparedGlide
   await elementEvent(video, 'seeked');
   ctx.drawImage(video, 0, 0);
   const previous = ctx.getImageData(0, 0, width, height);
+
   const real = await (async () => {
     while (!video.ended) {
-      // @ts-ignore
-      await video.seekToNextFrame();
+      video.currentTime += 1 / fps;
+      await elementEvent(video, 'seeked');
+      await new Promise((resolve) => requestAnimationFrame(resolve));
       ctx.drawImage(video, 0, 0);
       const ret = ctx.getImageData(0, 0, width, height);
-      if ((new Set(Array(ret.data.length).fill(null).map((_, i) => ret.data[i] - previous.data[i]))).size > 1) {
+      if (ret.data.filter((r, i) => r !== previous.data[i]).length > 100) {
         return ret;
       }
     }
-    throw new Error('All frames are identical');
+    throw new Error('All frames are almost identical');
   })();
 
   const minShifts = getMinShifts(previous, real, size, shifts);
@@ -97,8 +99,41 @@ const prepareGlideSegment = async (segment: GlideSegment): Promise<PreparedGlide
   return { ...segment, minShifts };
 };
 
-// TODO
-const prepareMovementSegment = async (segment: MovementSegment): Promise<PreparedMovementSegment> => ({ ...segment, minShiftss: [[]] });
+const prepareMovementSegment = async (segment: MovementSegment): Promise<PreparedMovementSegment> => {
+  const video = document.createElement('video');
+  document.body.append(video);
+  video.src = segment.src;
+  await elementEvent(video, 'canplaythrough');
+
+  const width = video.videoWidth;
+  const height = video.videoHeight;
+
+  const canvas = document.createElement('canvas');
+  document.body.append(canvas);
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+
+  video.currentTime = segment.start;
+  await elementEvent(video, 'seeked');
+
+  const minShiftss: MinShifts[] = [];
+
+  while (video.currentTime < segment.end) {
+    ctx.drawImage(video, 0, 0);
+    const previous = ctx.getImageData(0, 0, width, height);
+    video.currentTime += 1 / fps;
+    await elementEvent(video, 'seeked');
+    ctx.drawImage(video, 0, 0);
+    const real = ctx.getImageData(0, 0, width, height);
+    minShiftss.push(getMinShifts(previous, real, size, shifts));
+  }
+
+  video.remove();
+  canvas.remove();
+
+  return { ...segment, minShiftss };
+};
 
 const runCopySegment = async (segment: PreparedCopySegment, ctx: CanvasRenderingContext2D): Promise<void> => {
   const video = document.createElement('video');
@@ -125,18 +160,29 @@ const runGlideSegment = async (segment: PreparedGlideSegment, ctx: CanvasRenderi
   }
 };
 
+const runMovementSegment = async (segment: PreparedMovementSegment, ctx: CanvasRenderingContext2D): Promise<void> => {
+  for (const minShifts of segment.minShiftss) {
+    const previous = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+    const next = approximate(previous, minShifts, size);
+    ctx.putImageData(next, 0, 0);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  }
+};
+
 const main = async (segments: Segment[]) => {
   const { width, height } = await getDimensions(segments);
 
-  const preparedSegments: PreparedSegment[] = await Promise.all(segments.map(async (segment) => {
+  const preparedSegments: PreparedSegment[] = [];
+  for (const segment of segments) {
     switch (segment.transform) {
-      case 'copy': return segment;
-      case 'glide': return prepareGlideSegment(segment);
-      case 'movement': return prepareMovementSegment(segment);
+      case 'copy': preparedSegments.push(segment); break;
+      case 'glide': preparedSegments.push(await prepareGlideSegment(segment)); break;
+      case 'movement': preparedSegments.push(await prepareMovementSegment(segment)); break;
     }
-  }));
+  }
 
   const canvas = document.createElement('canvas');
+  canvas.style.outline = '1px solid red';
   canvas.width = width;
   canvas.height = height;
   document.body.append(canvas);
@@ -146,24 +192,38 @@ const main = async (segments: Segment[]) => {
     switch (segment.transform) {
       case 'copy': await runCopySegment(segment, ctx); break;
       case 'glide': await runGlideSegment(segment, ctx); break;
-      default: throw new Error('not implemented yet');
+      case 'movement': await runMovementSegment(segment, ctx); break;
     }
   }
+
+  console.log('done');
 };
 
 {
   const segments: Segment[] = [
     {
-      src: '/static/small/motocross.mp4',
+      src: '/static/medium/motocross.mp4',
       transform: 'copy',
       start: 0,
       end: 2,
     },
     {
-      src: '/static/small/motocross.mp4',
+      src: '/static/medium/motocross.mp4',
       transform: 'glide',
       time: 2,
-      length: 4,
+      length: 1,
+    },
+    {
+      src: '/static/medium/motocross.mp4',
+      transform: 'movement',
+      start: 2,
+      end: 4,
+    },
+    {
+      src: '/static/medium/motocross.mp4',
+      transform: 'glide',
+      time: 2,
+      length: 1,
     },
   ];
 
