@@ -188,6 +188,11 @@ const main = async (segments: Segment[]) => {
   document.body.append(canvas);
   const ctx = canvas.getContext('2d');
 
+  // @ts-ignore
+  const stream = canvas.captureStream();
+  const recorder = new MediaRecorder(stream);
+  recorder.start();
+
   for (const segment of preparedSegments) {
     switch (segment.transform) {
       case 'copy': await runCopySegment(segment, ctx); break;
@@ -196,36 +201,15 @@ const main = async (segments: Segment[]) => {
     }
   }
 
-  console.log('done');
+  recorder.addEventListener('dataavailable', (evt) => {
+    const url = URL.createObjectURL(evt.data);
+    const video = document.createElement('video');
+    video.src = url;
+    video.controls = true;
+    video.autoplay = true;
+    document.body.append(video);
+  }, { once: true });
+  recorder.stop();
 };
 
-{
-  const segments: Segment[] = [
-    {
-      src: '/static/medium/motocross.mp4',
-      transform: 'copy',
-      start: 0,
-      end: 2,
-    },
-    {
-      src: '/static/medium/motocross.mp4',
-      transform: 'glide',
-      time: 2,
-      length: 1,
-    },
-    {
-      src: '/static/medium/motocross.mp4',
-      transform: 'movement',
-      start: 2,
-      end: 4,
-    },
-    {
-      src: '/static/medium/motocross.mp4',
-      transform: 'glide',
-      time: 2,
-      length: 1,
-    },
-  ];
-
-  main(segments);
-}
+main([]);
