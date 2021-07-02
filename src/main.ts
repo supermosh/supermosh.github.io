@@ -32,8 +32,8 @@ const fps = 30;
 const size = 16;
 const shifts = [0, 1, -1, 2, -2, 4, -4, 8, -8];
 
-const videoCanPlayThrough = (video: HTMLVideoElement) => new Promise((resolve) => {
-  video.addEventListener('canplaythrough', resolve, { once: true });
+const elementEvent = (element: HTMLElement, eventName: string) => new Promise((resolve) => {
+  element.addEventListener(eventName, resolve, { once: true });
 });
 
 const getDimensions = async (segments: Segment[]): Promise<{width: number; height: number}> => {
@@ -41,7 +41,7 @@ const getDimensions = async (segments: Segment[]): Promise<{width: number; heigh
     const video = document.createElement('video');
     video.src = segment.src;
     document.body.append(video);
-    await videoCanPlayThrough(video);
+    await elementEvent(video, 'canplaythrough');
     const width = video.videoWidth;
     const height = video.videoHeight;
     video.remove();
@@ -62,7 +62,7 @@ const prepareGlideSegment = async (segment: GlideSegment): Promise<PreparedGlide
   const video = document.createElement('video');
   document.body.append(video);
   video.src = segment.src;
-  await new Promise((resolve) => video.addEventListener('canplaythrough', resolve, { once: true }));
+  await elementEvent(video, 'canplaythrough');
 
   const width = video.videoWidth;
   const height = video.videoHeight;
@@ -74,11 +74,11 @@ const prepareGlideSegment = async (segment: GlideSegment): Promise<PreparedGlide
   const ctx = canvas.getContext('2d');
 
   video.currentTime = segment.time;
-  await new Promise((resolve) => video.addEventListener('seeked', resolve, { once: true }));
+  await elementEvent(video, 'seeked');
   ctx.drawImage(video, 0, 0);
   const previous = ctx.getImageData(0, 0, width, height);
   video.currentTime = segment.time + 1 / fps;
-  await new Promise((resolve) => video.addEventListener('seeked', resolve, { once: true }));
+  await elementEvent(video, 'seeked');
   ctx.drawImage(video, 0, 0);
   const real = ctx.getImageData(0, 0, width, height);
 
@@ -92,6 +92,21 @@ const prepareGlideSegment = async (segment: GlideSegment): Promise<PreparedGlide
 // TODO
 const prepareMovementSegment = async (segment: MovementSegment): Promise<PreparedMovementSegment> => ({ ...segment, minShiftss: [[]] });
 
+const runCopySegment = async (segment: PreparedCopySegment, ctx: CanvasRenderingContext2D): Promise<void> => {
+  const video = document.createElement('video');
+  video.src = segment.src;
+  document.body.append(video);
+  await elementEvent(video, 'canplaythrough');
+  video.currentTime = segment.start;
+  await elementEvent(video, 'seeked');
+  while (video.currentTime < segment.end) {
+    ctx.drawImage(video, 0, 0);
+    video.currentTime += 1 / fps;
+    await elementEvent(video, 'seeked');
+  }
+  video.remove();
+};
+
 const main = async (segments: Segment[]) => {
   const { width, height } = await getDimensions(segments);
 
@@ -103,7 +118,18 @@ const main = async (segments: Segment[]) => {
     }
   }));
 
-  console.log({ width, height, preparedSegments });
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  document.body.append(canvas);
+  const ctx = canvas.getContext('2d');
+
+  for (const segment of preparedSegments) {
+    switch (segment.transform) {
+      case 'copy': runCopySegment(segment, ctx); break;
+      default: throw new Error('not implemented yet');
+    }
+  }
 };
 
 {
@@ -112,12 +138,12 @@ const main = async (segments: Segment[]) => {
       src: '/static/small/face-colors.mp4',
       transform: 'copy',
       start: 0,
-      end: 2,
+      end: 4,
     },
     {
       src: '/static/small/face-colors.mp4',
       transform: 'glide',
-      time: 2,
+      time: 4,
       length: 4,
     },
   ];
