@@ -2,10 +2,6 @@
 import getMinShifts from './getMinShifts';
 import { MinShifts } from './types';
 
-const fps = 30;
-const size = 16;
-const shifts = [0, 1, -1, 2, -2, 4, -4, 8, -8];
-
 type BaseSegment = {src: string}
 type CopySegment = BaseSegment & {
   transform: 'copy';
@@ -31,6 +27,36 @@ type PreparedMovementSegment = MovementSegment & {
 }
 type Segment = CopySegment | GlideSegment | MovementSegment;
 type PreparedSegment = PreparedCopySegment | PreparedGlideSegment | PreparedMovementSegment;
+
+const fps = 30;
+const size = 16;
+const shifts = [0, 1, -1, 2, -2, 4, -4, 8, -8];
+
+const videoCanPlayThrough = (video: HTMLVideoElement) => new Promise((resolve) => {
+  video.addEventListener('canplaythrough', resolve, { once: true });
+});
+
+const getDimensions = async (segments: Segment[]): Promise<{width: number; height: number}> => {
+  const allDimensions = await Promise.all(segments.map(async (segment) => {
+    const video = document.createElement('video');
+    video.src = segment.src;
+    document.body.append(video);
+    await videoCanPlayThrough(video);
+    const width = video.videoWidth;
+    const height = video.videoHeight;
+    video.remove();
+    return { width, height };
+  }));
+  const widths = new Set(allDimensions.map((d) => d.width));
+  const heights = new Set(allDimensions.map((d) => d.height));
+  if (widths.size > 1 || heights.size > 1) {
+    throw new Error('Videos do not all have the same dimensions');
+  }
+  return {
+    width: [...widths][0],
+    height: [...heights][0],
+  };
+};
 
 const prepareGlideSegment = async (segment: GlideSegment): Promise<PreparedGlideSegment> => {
   const video = document.createElement('video');
@@ -66,7 +92,21 @@ const prepareGlideSegment = async (segment: GlideSegment): Promise<PreparedGlide
 // TODO
 const prepareMovementSegment = async (segment: MovementSegment): Promise<PreparedMovementSegment> => ({ ...segment, minShiftss: [[]] });
 
-(async () => {
+const main = async (segments: Segment[]) => {
+  const { width, height } = await getDimensions(segments);
+
+  const preparedSegments: PreparedSegment[] = await Promise.all(segments.map(async (segment) => {
+    switch (segment.transform) {
+      case 'copy': return segment;
+      case 'glide': return prepareGlideSegment(segment);
+      case 'movement': return prepareMovementSegment(segment);
+    }
+  }));
+
+  console.log({ width, height, preparedSegments });
+};
+
+{
   const segments: Segment[] = [
     {
       src: '/static/small/face-colors.mp4',
@@ -82,11 +122,5 @@ const prepareMovementSegment = async (segment: MovementSegment): Promise<Prepare
     },
   ];
 
-  const preparedSegments: PreparedSegment[] = await Promise.all(segments.map(async (segment) => {
-    switch (segment.transform) {
-      case 'copy': return segment;
-      case 'glide': return prepareGlideSegment(segment);
-      case 'movement': return prepareMovementSegment(segment);
-    }
-  }));
-})();
+  main(segments);
+}
