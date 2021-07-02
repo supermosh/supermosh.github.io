@@ -1,4 +1,4 @@
-// import approximate from './approximate';
+import approximate from './approximate';
 import getMinShifts from './getMinShifts';
 import { MinShifts } from './types';
 
@@ -77,10 +77,18 @@ const prepareGlideSegment = async (segment: GlideSegment): Promise<PreparedGlide
   await elementEvent(video, 'seeked');
   ctx.drawImage(video, 0, 0);
   const previous = ctx.getImageData(0, 0, width, height);
-  video.currentTime = segment.time + 1 / fps;
-  await elementEvent(video, 'seeked');
-  ctx.drawImage(video, 0, 0);
-  const real = ctx.getImageData(0, 0, width, height);
+  const real = await (async () => {
+    while (!video.ended) {
+      // @ts-ignore
+      await video.seekToNextFrame();
+      ctx.drawImage(video, 0, 0);
+      const ret = ctx.getImageData(0, 0, width, height);
+      if ((new Set(Array(ret.data.length).fill(null).map((_, i) => ret.data[i] - previous.data[i]))).size > 1) {
+        return ret;
+      }
+    }
+    throw new Error('All frames are identical');
+  })();
 
   const minShifts = getMinShifts(previous, real, size, shifts);
 
@@ -103,8 +111,18 @@ const runCopySegment = async (segment: PreparedCopySegment, ctx: CanvasRendering
     ctx.drawImage(video, 0, 0);
     video.currentTime += 1 / fps;
     await elementEvent(video, 'seeked');
+    await new Promise((resolve) => requestAnimationFrame(resolve));
   }
   video.remove();
+};
+
+const runGlideSegment = async (segment: PreparedGlideSegment, ctx: CanvasRenderingContext2D): Promise<void> => {
+  for (let i = 0; i < segment.length * fps; i++) {
+    const previous = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+    const next = approximate(previous, segment.minShifts, size);
+    ctx.putImageData(next, 0, 0);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  }
 };
 
 const main = async (segments: Segment[]) => {
@@ -126,7 +144,8 @@ const main = async (segments: Segment[]) => {
 
   for (const segment of preparedSegments) {
     switch (segment.transform) {
-      case 'copy': runCopySegment(segment, ctx); break;
+      case 'copy': await runCopySegment(segment, ctx); break;
+      case 'glide': await runGlideSegment(segment, ctx); break;
       default: throw new Error('not implemented yet');
     }
   }
@@ -135,15 +154,15 @@ const main = async (segments: Segment[]) => {
 {
   const segments: Segment[] = [
     {
-      src: '/static/small/face-colors.mp4',
+      src: '/static/small/motocross.mp4',
       transform: 'copy',
       start: 0,
-      end: 4,
+      end: 2,
     },
     {
-      src: '/static/small/face-colors.mp4',
+      src: '/static/small/motocross.mp4',
       transform: 'glide',
-      time: 4,
+      time: 2,
       length: 4,
     },
   ];
