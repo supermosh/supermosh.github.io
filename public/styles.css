@@ -11,6 +11,7 @@ body {
 	margin: 0;
 	display: flex;
 	height: 100vh;
+  overflow: hidden;
 }
 h1 {
   margin: 0 0 48px 0;
@@ -62,7 +63,9 @@ nav a:hover {
   background-color: white;
   align-items: center;
   text-decoration: none;
-  margin-right: 12px;
+}
+.cta + .cta {
+  margin-left: 12px;
 }
 .cta:hover {
   color: black;
@@ -70,4 +73,34 @@ nav a:hover {
 }
 .cta img {
   margin-right: 12px;
+}
+
+@media screen and (max-width: 1000px) {
+  body {
+    flex-direction: column;
+  }
+  nav {
+    width: 100%;
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid black;
+  }
+  .content {
+    width: 100%;
+    height: calc(100vh - 49px);
+    overflow-y: auto;
+  }
+  .article {
+    width: 100%;
+  }
+  .media {
+    display: none;
+  }
+  .ctas {
+    flex-direction: column;
+  }
+  .cta + .cta {
+    margin-left: 0;
+    margin-top: 12px;
+  }
 }
