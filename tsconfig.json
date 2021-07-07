@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "downlevelIteration": true,
+    "jsx": "react",
     "lib": ["DOM", "ESNext"]
   },
   "include": ["src"],
