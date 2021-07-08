@@ -12,4 +12,11 @@ module.exports = {
   plugins: [
     '@snowpack/plugin-typescript',
   ],
+  routes: [
+    {
+      match: 'routes',
+      src: '.*',
+      dest: '/index.html',
+    },
+  ],
 };
