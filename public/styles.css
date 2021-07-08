@@ -245,6 +245,7 @@ nav a:hover {
 /* Segments */
 .Segments {
   padding: 12px;
+  overflow-y: auto;
 }
 .Segments .row {
   display: flex;

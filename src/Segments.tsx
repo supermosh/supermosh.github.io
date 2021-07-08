@@ -59,6 +59,7 @@ export default ({
 
     for (let i = 0; i < editedSegments.length; i++) {
       try {
+        if (i === 0 && editedSegments[i].transform !== 'copy') throw new Error('First segment should have "copy" as its effect');
         const segment = editedToReal(editedSegments[i]);
         editedSegments[i].error = '';
         newSegments[i] = segment;
@@ -184,7 +185,7 @@ export default ({
           Add a segment
         </button>
       )}
-      {editedSegments.some((edited) => edited.error) && (
+      {segments.length > 0 && editedSegments.some((edited) => edited.error) && (
         <button
           className="u-normal-button"
           type="button"
