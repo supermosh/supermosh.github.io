@@ -16,6 +16,12 @@ hr {
   border-bottom: 1px solid black;
   margin: 24px 0;
 }
+button {
+  font: inherit;
+}
+input {
+  font: inherit;
+}
 
 /* app */
 .App {
@@ -114,6 +120,49 @@ nav a:hover {
 }
 
 /* studio */
+.Studio {
+  width: calc(100vw - 49px);
+  display: grid;
+  background-color: black;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+}
+.Studio > * {
+  background-color: white;
+}
+.Studio .files {
+  padding: 12px;
+  overflow-y: auto;
+}
+.Studio .media {
+  height: 48px;
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+}
+.Studio .media video {
+  width: 96px;
+  object-fit: cover;
+}
+.Studio .media video:hover {
+  cursor: pointer;
+}
+.Studio .media .name {
+  width: calc(100% - 152px);
+  padding: 0 12px;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.Studio .media button {
+  border: none;
+  background: transparent;
+}
+.Studio .media button:hover {
+  opacity: 0.5;
+  cursor: pointer;
+}
 @media screen and (max-width: 1000px) {
 }
 
