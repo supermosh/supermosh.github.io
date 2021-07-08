@@ -9,7 +9,33 @@ type EditedSegment = {
   error: string;
 }
 
-const debug = true;
+const debug = false;
+
+const editedToReal = (editedSegment: EditedSegment): Segment => {
+  if (!editedSegment.src) throw new Error('Missing video');
+  if (!(editedSegment.transform === 'copy' || editedSegment.transform === 'glide' || editedSegment.transform === 'movement')) throw new Error('Effect should be one of "copy", "glide", "movement"');
+  const first = parseFloat(editedSegment.first);
+  if (Number.isNaN(first)) throw new Error('Third column is empty or not a number');
+  if (first < 0) throw new Error('Third column should be greater or equal to 0');
+  const second = parseFloat(editedSegment.second);
+  if (Number.isNaN(second)) throw new Error('Fourth column is empty or not a number');
+  if (editedSegment.transform === 'glide') {
+    if (second <= 0) throw new Error('Third column should be greater than 0');
+    return {
+      src: editedSegment.src,
+      transform: 'glide',
+      time: first,
+      length: second,
+    };
+  }
+  if (first >= second) throw new Error('Third column should be less than fourth column');
+  return {
+    src: editedSegment.src,
+    transform: editedSegment.transform,
+    start: first,
+    end: second,
+  };
+};
 
 export default ({ videos }: {videos: Video[]}) => {
   const [segments, setSegments] = useState<Segment[]>([]);
@@ -22,6 +48,20 @@ export default ({ videos }: {videos: Video[]}) => {
     ]);
   }
 
+  const onEdit = (evt, i: number, key: 'src' | 'transform' | 'first' | 'second') => {
+    const value = evt.target.value as string;
+    editedSegments[i][key] = value;
+    try {
+      const segment = editedToReal(editedSegments[i]);
+      editedSegments[i].error = '';
+      segments.splice(i, 1, segment);
+      setSegments([...segments]);
+    } catch (e) {
+      editedSegments[i].error = e.message;
+    }
+    setEditedSegments([...editedSegments]);
+  };
+
   return (
     <div className="Segments">
       {editedSegments.length === 0 ? (
@@ -29,20 +69,20 @@ export default ({ videos }: {videos: Video[]}) => {
       ) : (
         editedSegments.map(({ src, transform, first, second, error }, i) => (
           <div className="row" key={`${i}-${src}`}>
-            <select className="video">
+            <select className="video" value={src} onInput={(evt) => onEdit(evt, i, 'src')}>
               <option value="">Video...</option>
               {videos.map((video) => (
                 <option value={video.url} key={video.url}>{video.file.name}</option>
               ))}
             </select>
-            <select className="transform" value={transform}>
+            <select className="transform" value={transform} onInput={(evt) => onEdit(evt, i, 'transform')}>
               <option value="">Effect...</option>
               <option value="copy">copy</option>
               <option value="glide">glide</option>
               <option value="movement">movement</option>
             </select>
-            <input className="first" type="number" value={first} />
-            <input className="second" type="number" value={second} />
+            <input className="first" type="number" value={first} onInput={(evt) => onEdit(evt, i, 'first')} />
+            <input className="second" type="number" value={second} onInput={(evt) => onEdit(evt, i, 'second')} />
             <button className="u-icon-button" type="button"><img src="/icons/up.svg" alt="" /></button>
             <button className="u-icon-button" type="button"><img src="/icons/down.svg" alt="" /></button>
             <button className="u-icon-button" type="button"><img src="/icons/delete.svg" alt="" /></button>
