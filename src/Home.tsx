@@ -31,7 +31,12 @@ export default () => (
           Learn more
         </Link>
       </div>
-      <p>Supermosh is currently in active development. If you spot a bug or have a feedback, please message me!</p>
+      <p>
+        Supermosh is currently in active development. If you spot a bug or have a feedback, please message me or
+        {' '}
+        <a href="https://github.com/supermosh/supermosh.github.io/issues" target="_blank" rel="noreferrer noopener">open an issue</a>
+        !
+      </p>
       <p>
         A project by
         {' '}
