@@ -164,36 +164,6 @@ nav a:hover {
 .Studio > * {
   background-color: white;
 }
-.Studio .files {
-  padding: 12px;
-  overflow-y: auto;
-}
-.Studio .media {
-  height: 48px;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-}
-.Studio .thumb {
-  width: 96px;
-  height: 100%;
-  object-fit: cover;
-}
-.Studio .thumb:hover {
-  cursor: pointer;
-}
-.Studio .name {
-  width: calc(100% - 152px);
-  padding: 0 12px;
-  overflow-x: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.Studio .preview {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
 @media screen and (max-width: 1000px) {
 }
 
@@ -238,6 +208,38 @@ nav a:hover {
   border: 1px solid black;
   background-color: white;
   padding: 48px;
+}
+
+/* Videos */
+.Videos {
+  padding: 12px;
+  overflow-y: auto;
+}
+.Videos .media {
+  height: 48px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+.Videos .thumb {
+  width: 96px;
+  height: 100%;
+  object-fit: cover;
+}
+.Videos .thumb:hover {
+  cursor: pointer;
+}
+.Videos .name {
+  width: calc(100% - 152px);
+  padding: 0 12px;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.Videos .preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 /* Segments */

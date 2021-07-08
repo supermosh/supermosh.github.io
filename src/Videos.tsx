@@ -27,7 +27,7 @@ export default ({
   };
 
   return (
-    <div className="files">
+    <div className="Videos">
       {videos.length === 0 ? (
         <p>No video uploaded yet</p>
       ) : (
