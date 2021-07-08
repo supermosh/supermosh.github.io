@@ -49,6 +49,7 @@ export default ({
               {video.file.name}
             </span>
             <button
+              className="u-icon-button"
               type="button"
               title="delete"
               onClick={() => { removeVideo(i); }}
