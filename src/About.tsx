@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export default () => {
   const [expanded, setExpanded] = useState<number>(-1);
@@ -16,7 +17,7 @@ export default () => {
             &nbsp;What is datamoshing?
           </h2>
           <div className="section-content">
-            <p>Datamoshing is a category of special effects based on the deletion, repetition, and reordering or compressed video frames.</p>
+            <p>Datamoshing is a category of special effects based on the deletion, repetition, and reordering or compressed video frames. There is no simpler way to put this, but if you are looking for technical details, here it goes:</p>
             <p>The naïve way to encode a video would be to store on disk one image for every single frame of the video, but that would take a lot of disk space. Most videos are not random: often the current frame does not update a lot of pixels from the previous frame, we can just encode the movement and the color shift from the previous frame. Moreover we can often get away with describing only a fraction of the frames, and just say that whatever happens in between is a mix of what happens before and after.</p>
             <p>So most compression algorithms take advantage of these possible simplifications by encoding a video into a series of compressed frames that can be of three types:</p>
             <ul>
@@ -49,7 +50,14 @@ export default () => {
             &nbsp;What are typical datamosh effects?
           </h2>
           <div className="section-content">
-            <p />
+            <p>
+              <strong>Glide</strong>
+              : one P-frame is copied several times instead of appearing just once, thus repeating a movement over and over
+            </p>
+            <p>
+              <strong>Movement</strong>
+              : an I-frame is deleted, making the P-frames afterward apply to the first part of the video, thus applying the movement of the second part to the image of the first part
+            </p>
           </div>
         </section>
 
@@ -60,7 +68,24 @@ export default () => {
             &nbsp;How is datamosh typically done?
           </h2>
           <div className="section-content">
-            <p />
+            <p>You can use existing software taylored for datamoshing but they are expensive. After Effects starts at $21/mo and the only datamoshing plugin available there costs $40.</p>
+            <p>
+              But you can do it manually, which is more interesting but also much more complex. First you have to convert your video to a codec where datamoshing is possible, typically using a command line tool like
+              {' '}
+              <a href="https://ffmpeg.org/" target="_blank" rel="noreferrer noopener">ffmpeg</a>
+              , because web-based conversions are rate-limited, malware-prone, and not tweakable enough.
+            </p>
+            <p>
+              Then you would use
+              {' '}
+              <a href="http://avidemux.sourceforge.net/" target="_blank" rel="noreferrer noopener">Avidemux</a>
+              , a software from the early 2000s. You
+              {' '}
+              <em>want</em>
+              {' '}
+              a software this old and broken, this modern software fixes your glitches... which is not what you want! Avidemux allows you to do frame-by-frame manipulation, but as soon as you start doing weird stuff, the preview window breaks. You have to export your video everytime in order to preview them.
+            </p>
+            <p>That is pretty much it but this journey is painful, expecially the part when you have to specify codec configurations to ffmpeg, because, besides the fact that ffmpeg is a pain in the ass to configure, that is when you really have to have precise technical knowledge on how compression algorithms work.</p>
           </div>
         </section>
 
@@ -71,29 +96,61 @@ export default () => {
             &nbsp;Is Supermosh free?
           </h2>
           <div className="section-content">
-            <p />
+            <p>Yes.</p>
+            <p>
+              Supermosh is completely free. Just go to the
+              {' '}
+              <Link to="/studio">the studio</Link>
+              {' '}
+              and start glitching.
+              {' '}
+            </p>
+            <p>There is no hidden cost. You will not have to create an account. Your personal data will not be harvested. Supermosh will not use your computer to mine bitcoins in the background. Nothing.</p>
+            <p>By coding Supermosh, I want to experiment, do something that has never been done before, and enable artists to get creative. I do not care about the money.</p>
           </div>
         </section>
 
-        <section className={expanded === 3 ? '--expanded' : ''}>
+        <section className={expanded === 4 ? '--expanded' : ''}>
           <h2 onClick={() => setExpanded(expanded === 4 ? -1 : 4)} role="button">
             <span className="plus">[+]</span>
             <span className="minus">[-]</span>
             &nbsp;I have found a bug, what should I do?
           </h2>
           <div className="section-content">
-            <p />
+            <p>Supermosh is under active development in an experimental area of web technologies. There will be bugs. If you found one, please report it!</p>
+            <p>
+              Whichever way you&apos;re more confortable with: you can reach me
+              {' '}
+              <a href="https://www.instagram.com/ssttaacckkyy/" target="_blank" rel="noreferrer noopener">on instagram</a>
+              ,
+              {' '}
+              <a href="https://twitter.com/ninofiliu" target="_blank" rel="noreferrer noopener">on twitter</a>
+              ,
+              {' '}
+              <a href="mailto:nino.filiu@gmail.com" target="_blank" rel="noreferrer noopener">by mail</a>
+              , or
+              {' '}
+              <a href="https://github.com/supermosh/supermosh.github.io/issues/new" target="_blank" rel="noreferrer noopener">open an issue on Github</a>
+              .
+            </p>
           </div>
         </section>
 
-        <section className={expanded === 3 ? '--expanded' : ''}>
-          <h2 onClick={() => setExpanded(expanded === 4 ? -1 : 4)} role="button">
+        <section className={expanded === 5 ? '--expanded' : ''}>
+          <h2 onClick={() => setExpanded(expanded === 5 ? -1 : 5)} role="button">
             <span className="plus">[+]</span>
             <span className="minus">[-]</span>
             &nbsp;Who is behind Supermosh?
           </h2>
           <div className="section-content">
-            <p />
+            <p>A team of one!</p>
+            <p>I am Nino Filiu, a software developer and artist from Paris.</p>
+            <p>
+              All my links and everything you would wanna know about me are on
+              {' '}
+              <a href="https://ninofiliu.com" target="_blank" rel="noreferrer noopener">my website</a>
+              .
+            </p>
           </div>
         </section>
 
