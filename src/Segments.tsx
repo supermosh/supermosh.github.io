@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { Video, Segment } from './lib';
 
 type EditedSegment = {
@@ -8,8 +8,6 @@ type EditedSegment = {
   second: string;
   error: string;
 }
-
-const debug = false;
 
 const realToEdited = (real: Segment): EditedSegment => ({
   src: real.src,
@@ -45,16 +43,16 @@ const editedToReal = (editedSegment: EditedSegment): Segment => {
   };
 };
 
-export default ({ videos }: {videos: Video[]}) => {
-  const [segments, setSegments] = useState<Segment[]>([]);
+export default ({
+  videos,
+  segments,
+  setSegments,
+}: {
+  videos: Video[],
+  segments: Segment[],
+  setSegments: Dispatch<SetStateAction<Segment[]>>
+}) => {
   const [editedSegments, setEditedSegments] = useState<EditedSegment[]>([]);
-
-  if (debug && editedSegments.length === 0) {
-    setEditedSegments([
-      { src: 'blob://123456789', transform: '', first: '10', second: '20', error: '' },
-      { src: 'blob://789456123', transform: '', first: '10', second: '20', error: 'yooo' },
-    ]);
-  }
 
   const updateSegments = () => {
     const newSegments = [];
