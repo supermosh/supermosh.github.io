@@ -1,3 +1,4 @@
+/* globals */
 :root {
   font-family: 'Courier New', Courier, monospace;
 }
@@ -7,12 +8,6 @@ a {
 a:hover {
   opacity: 0.5;
 }
-.App {
-  position: fixed;
-  inset: 0 0 0 0;
-	display: flex;
-  overflow: hidden;
-}
 h1 {
   margin: 0 0 48px 0;
 }
@@ -20,6 +15,14 @@ hr {
   border: none;
   border-bottom: 1px solid black;
   margin: 24px 0;
+}
+
+/* app */
+.App {
+  position: fixed;
+  inset: 0 0 0 0;
+	display: flex;
+  overflow: hidden;
 }
 nav {
   display: flex;
@@ -36,45 +39,6 @@ nav a {
 nav a:hover {
   opacity: 0.5;
 }
-.content {
-  width: calc(100vw - 49px);
-  display: flex;
-}
-.article {
-  width: 50%;
-  margin: 24px;
-}
-.media {
-  width: 50%;
-}
-.media video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.ctas {
-  padding: 48px 0;
-}
-.cta {
-  display: inline-flex;
-  padding: 12px;
-  color: black;
-  border: 1px solid black;
-  background-color: white;
-  align-items: center;
-  text-decoration: none;
-}
-.cta + .cta {
-  margin-left: 12px;
-}
-.cta:hover {
-  color: black;
-  opacity: 0.5;
-}
-.cta img {
-  margin-right: 12px;
-}
-
 @media screen and (max-width: 1000px) {
   .App {
     flex-direction: column;
@@ -85,28 +49,75 @@ nav a:hover {
     border-right: none;
     border-bottom: 1px solid black;
   }
-  .content {
+}
+
+/* home */
+.Home {
+  width: calc(100vw - 49px);
+  display: flex;
+}
+.Home .article {
+  width: 50%;
+  margin: 24px;
+}
+.Home .ctas {
+  padding: 48px 0;
+}
+.Home .cta {
+  display: inline-flex;
+  padding: 12px;
+  color: black;
+  border: 1px solid black;
+  background-color: white;
+  align-items: center;
+  text-decoration: none;
+}
+.Home .cta + .cta {
+  margin-left: 12px;
+}
+.Home .cta:hover {
+  color: black;
+  opacity: 0.5;
+}
+.Home .cta img {
+  margin-right: 12px;
+}
+.Home .media {
+  width: 50%;
+}
+.Home .media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@media screen and (max-width: 1000px) {
+  .Home {
     width: 100%;
     height: calc(100vh - 49px);
     overflow-y: auto;
   }
-  .article {
+  .Home .article {
     width: 100%;
   }
-  .media {
+  .Home .media {
     display: none;
   }
-  .ctas {
+  .Home .ctas {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
-  .cta + .cta {
+  .Home .cta + .cta {
     margin-left: 0;
     margin-top: 12px;
   }
 }
 
+/* studio */
+@media screen and (max-width: 1000px) {
+}
+
+/* about */
 .About {
   width: 100%;
   height: 100vh;
@@ -131,4 +142,6 @@ nav a:hover {
 }
 .About section.--expanded .plus {
   display: none;
+}
+@media screen and (max-width: 1000px) {
 }
