@@ -1,3 +1,10 @@
 import React from 'react';
 
-export default () => (<div>Studio</div>);
+export default () => (
+  <div className="Studio">
+    <div className="" />
+    <div className="" />
+    <div className="" />
+    <div className="" />
+  </div>
+);
