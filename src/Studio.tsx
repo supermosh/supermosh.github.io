@@ -10,11 +10,16 @@ type Video = {
 export default () => {
   const [videos, setVideos] = useState<Video[]>([]);
 
-  const addFile = (evt) => {
+  const addVideo = (evt) => {
     const file = evt.target.files[0] as File;
     const url = URL.createObjectURL(file);
     setVideos([...videos, { file, url, previewing: false }]);
     evt.target.value = '';
+  };
+
+  const removeVideo = (i: number) => {
+    videos.splice(i, 1);
+    setVideos([...videos]);
   };
 
   const previewVideo = (i: number, previewing: boolean) => {
@@ -24,8 +29,6 @@ export default () => {
 
   return (
     <div className="Studio">
-      <div className="" />
-      <div className="" />
       <div className="files">
         {videos.length === 0 ? (
           <p>No video uploaded yet</p>
@@ -50,6 +53,7 @@ export default () => {
               <button
                 type="button"
                 title="delete"
+                onClick={() => { removeVideo(i); }}
               >
                 <img src="/icons/delete.svg" alt="delete video" />
               </button>
@@ -63,9 +67,11 @@ export default () => {
         )}
         <div>
           Add video:&nbsp;
-          <input type="file" accept="video/*" onInput={addFile} />
+          <input type="file" accept="video/*" onInput={addVideo} />
         </div>
       </div>
+      <div className="" />
+      <div className="" />
       <div className="" />
     </div>
   );
