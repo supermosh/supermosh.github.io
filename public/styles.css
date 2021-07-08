@@ -8,6 +8,9 @@ a {
 a:hover {
   opacity: 0.5;
 }
+button {
+  font: inherit;
+}
 h1 {
   margin: 0 0 48px 0;
 }
@@ -16,11 +19,41 @@ hr {
   border-bottom: 1px solid black;
   margin: 24px 0;
 }
-button {
-  font: inherit;
-}
 input {
   font: inherit;
+}
+input[type=number],
+input[type=text] {
+  border: 1px solid black;
+}
+select {
+  font: inherit;
+  border: 1px solid black;
+  background-color: white;
+}
+select:hover {
+  cursor: pointer;
+}
+
+/* utilities */
+.u-icon-button {
+  border: none;
+  background: transparent;
+  width: 32px;
+  height: 32px;
+}
+.u-icon-button:hover {
+  opacity: 0.5;
+  cursor: pointer;
+}
+.u-normal-button {
+  border: 1px solid black;
+  background-color: white;
+  padding: 12px;
+}
+.u-normal-button:hover {
+  opacity: 0.5;
+  cursor: pointer;
 }
 
 /* app */
@@ -137,7 +170,7 @@ nav a:hover {
 }
 .Studio .media {
   height: 48px;
-  margin: 12px 0;
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
 }
@@ -155,14 +188,6 @@ nav a:hover {
   overflow-x: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-.Studio .media button {
-  border: none;
-  background: transparent;
-}
-.Studio .media button:hover {
-  opacity: 0.5;
-  cursor: pointer;
 }
 .Studio .preview {
   width: 100%;
@@ -213,4 +238,31 @@ nav a:hover {
   border: 1px solid black;
   background-color: white;
   padding: 48px;
+}
+
+/* Segments */
+.Segments {
+  padding: 12px;
+}
+.Segments .row {
+  display: flex;
+  margin-bottom: 12px;
+  justify-content: flex-start;
+  align-items: center;
+}
+.Segments .video {
+  width: calc(100% - 432px);
+  margin-right: 12px;
+}
+.Segments .transform {
+  width: 128px;
+  margin-right: 12px;
+}
+.Segments .first {
+  width: 64px;
+  margin-right: 12px;
+}
+.Segments .second {
+  width: 64px;
+  margin-right: 12px;
 }
