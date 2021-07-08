@@ -31,7 +31,7 @@ type MovementSegment = BaseSegment & {
 type PreparedMovementSegment = MovementSegment & {
   minShiftss: MinShifts[];
 };
-type Segment = CopySegment | GlideSegment | MovementSegment;
+export type Segment = CopySegment | GlideSegment | MovementSegment;
 type PreparedSegment = PreparedCopySegment | PreparedGlideSegment | PreparedMovementSegment;
 
 export type Video = {
