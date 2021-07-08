@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 export default () => (
-  <div className="content">
+  <div className="Home">
     <div className="article">
       <h1>Supermosh: Datamoshing in the browser</h1>
       <p>Datamosh is the coolest video effect but it&apos;s currently a pain in the ass to achieve: you have to use software from 20 years ago, use the command line, and struggle with the complex technicalities of video codecs. Either this or pay for expensive datamosh plugins to even more expensive video editing tools.</p>
