@@ -141,14 +141,15 @@ nav a:hover {
   display: flex;
   align-items: center;
 }
-.Studio .media video {
+.Studio .thumb {
   width: 96px;
+  height: 100%;
   object-fit: cover;
 }
-.Studio .media video:hover {
+.Studio .thumb:hover {
   cursor: pointer;
 }
-.Studio .media .name {
+.Studio .name {
   width: calc(100% - 152px);
   padding: 0 12px;
   overflow-x: hidden;
@@ -162,6 +163,11 @@ nav a:hover {
 .Studio .media button:hover {
   opacity: 0.5;
   cursor: pointer;
+}
+.Studio .preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 @media screen and (max-width: 1000px) {
 }
@@ -193,4 +199,18 @@ nav a:hover {
   display: none;
 }
 @media screen and (max-width: 1000px) {
+}
+
+/* Modal */
+.Modal {
+  position: fixed;
+  inset: 0 0 0 0;
+  background-color: rgba(0,0,0,0.5);
+}
+.Modal .box {
+  position: absolute;
+  inset: 96px;
+  border: 1px solid black;
+  background-color: white;
+  padding: 48px;
 }
