@@ -130,7 +130,7 @@ export default () => {
               <a href="mailto:nino.filiu@gmail.com" target="_blank" rel="noreferrer noopener">by mail</a>
               , or
               {' '}
-              <a href="https://github.com/supermosh/supermosh.github.io/issues/new" target="_blank" rel="noreferrer noopener">open an issue on Github</a>
+              <a href="https://github.com/supermosh/supermosh.github.io/issues" target="_blank" rel="noreferrer noopener">open an issue on Github</a>
               .
             </p>
           </div>
