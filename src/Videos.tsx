@@ -1,4 +1,4 @@
-import React, { Dispatch } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { Video } from './lib';
 import Modal from './Modal';
 
@@ -7,7 +7,7 @@ export default ({
   setVideos,
 }: {
   videos: Video[];
-  setVideos: Dispatch<React.SetStateAction<Video[]>>;
+  setVideos: Dispatch<SetStateAction<Video[]>>;
 }) => {
   const addVideo = (evt) => {
     const file = evt.target.files[0] as File;

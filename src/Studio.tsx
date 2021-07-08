@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Video } from './lib';
+import { Video, Segment } from './lib';
 import Videos from './Videos';
 import Segments from './Segments';
 
-const debug = true;
+const debug = false;
 
 export default () => {
   const [videos, setVideos] = useState<Video[]>([]);
+  const [segments, setSegments] = useState<Segment[]>([]);
 
   if (debug && videos.length === 0) {
     (async () => {
@@ -31,9 +32,9 @@ export default () => {
   return (
     <div className="Studio">
       <Videos {...{ videos, setVideos }} />
-      <Segments {...{ videos }} />
+      <Segments {...{ videos, segments, setSegments }} />
       <div className="" />
-      <div className="" />
+      <div className=""><pre>{JSON.stringify(segments, null, 2)}</pre></div>
     </div>
   );
 };
