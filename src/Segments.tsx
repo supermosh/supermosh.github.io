@@ -11,6 +11,14 @@ type EditedSegment = {
 
 const debug = false;
 
+const realToEdited = (real: Segment): EditedSegment => ({
+  src: real.src,
+  transform: real.transform,
+  error: '',
+  first: (real.transform === 'glide' ? real.time : real.start).toString(),
+  second: (real.transform === 'glide' ? real.length : real.end).toString(),
+});
+
 const editedToReal = (editedSegment: EditedSegment): Segment => {
   if (!editedSegment.src) throw new Error('Missing video');
   if (!(editedSegment.transform === 'copy' || editedSegment.transform === 'glide' || editedSegment.transform === 'movement')) throw new Error('Effect should be one of "copy", "glide", "movement"');
@@ -48,18 +56,60 @@ export default ({ videos }: {videos: Video[]}) => {
     ]);
   }
 
+  const updateSegments = () => {
+    const newSegments = [];
+
+    for (let i = 0; i < editedSegments.length; i++) {
+      try {
+        const segment = editedToReal(editedSegments[i]);
+        editedSegments[i].error = '';
+        newSegments[i] = segment;
+      } catch (e) {
+        editedSegments[i].error = e.message;
+      }
+    }
+
+    setEditedSegments([...editedSegments]);
+
+    if (!(editedSegments.some((edited) => edited.error))) {
+      setSegments(newSegments);
+    }
+  };
+
   const onEdit = (evt, i: number, key: 'src' | 'transform' | 'first' | 'second') => {
     const value = evt.target.value as string;
     editedSegments[i][key] = value;
-    try {
-      const segment = editedToReal(editedSegments[i]);
-      editedSegments[i].error = '';
-      segments.splice(i, 1, segment);
-      setSegments([...segments]);
-    } catch (e) {
-      editedSegments[i].error = e.message;
-    }
-    setEditedSegments([...editedSegments]);
+    updateSegments();
+  };
+
+  const revert = () => {
+    setEditedSegments(segments.map((real) => realToEdited(real)));
+  };
+
+  const add = () => setEditedSegments([
+    ...editedSegments,
+    {
+      src: '',
+      transform: '',
+      first: '',
+      second: '',
+      error: 'Missing video',
+    },
+  ]);
+
+  const moveUp = (i: number) => {
+    editedSegments.splice(i - 1, 2, editedSegments[i], editedSegments[i - 1]);
+    updateSegments();
+  };
+
+  const moveDown = (i: number) => {
+    editedSegments.splice(i, 2, editedSegments[i + 1], editedSegments[i]);
+    updateSegments();
+  };
+
+  const remove = (i: number) => {
+    editedSegments.splice(i, 1);
+    updateSegments();
   };
 
   return (
@@ -81,22 +131,66 @@ export default ({ videos }: {videos: Video[]}) => {
               <option value="glide">glide</option>
               <option value="movement">movement</option>
             </select>
-            <input className="first" type="number" value={first} onInput={(evt) => onEdit(evt, i, 'first')} />
-            <input className="second" type="number" value={second} onInput={(evt) => onEdit(evt, i, 'second')} />
-            <button className="u-icon-button" type="button"><img src="/icons/up.svg" alt="" /></button>
-            <button className="u-icon-button" type="button"><img src="/icons/down.svg" alt="" /></button>
-            <button className="u-icon-button" type="button"><img src="/icons/delete.svg" alt="" /></button>
-            <img src="/icons/warning.svg" alt="" title={error} style={{ visibility: error ? 'visible' : 'hidden' }} />
+            <input
+              className="first"
+              type="number"
+              value={first}
+              onInput={(evt) => onEdit(evt, i, 'first')}
+            />
+            <input
+              className="second"
+              type="number"
+              value={second}
+              onInput={(evt) => onEdit(evt, i, 'second')}
+            />
+            <button
+              className="u-icon-button"
+              type="button"
+              style={{ visibility: i > 0 ? 'visible' : 'hidden' }}
+              onClick={() => moveUp(i)}
+            >
+              <img src="/icons/up.svg" alt="" />
+            </button>
+            <button
+              className="u-icon-button"
+              type="button"
+              style={{ visibility: i < editedSegments.length - 1 ? 'visible' : 'hidden' }}
+              onClick={() => moveDown(i)}
+            >
+              <img src="/icons/down.svg" alt="" />
+            </button>
+            <button
+              className="u-icon-button"
+              type="button"
+              onClick={() => remove(i)}
+            >
+              <img src="/icons/delete.svg" alt="" />
+            </button>
+            <img
+              src="/icons/warning.svg"
+              alt=""
+              title={error}
+              style={{ visibility: error ? 'visible' : 'hidden' }}
+            />
           </div>
         ))
       )}
       <button
         className="u-normal-button"
         type="button"
-        onClick={() => setEditedSegments([...editedSegments, { src: '', transform: '', first: '', second: '', error: '' }])}
+        onClick={add}
       >
-        add a segment
+        Add a segment
       </button>
+      {editedSegments.some((edited) => edited.error) && (
+        <button
+          className="u-normal-button"
+          type="button"
+          onClick={revert}
+        >
+          Revert to last valid config
+        </button>
+      )}
     </div>
   );
 };

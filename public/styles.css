@@ -266,3 +266,6 @@ nav a:hover {
   width: 64px;
   margin-right: 12px;
 }
+.Segments .u-normal-button + .u-normal-button {
+  margin-left: 12px;
+}
