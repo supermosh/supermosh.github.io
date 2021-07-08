@@ -173,13 +173,17 @@ export default ({
           </div>
         ))
       )}
-      <button
-        className="u-normal-button"
-        type="button"
-        onClick={add}
-      >
-        Add a segment
-      </button>
+      {videos.length === 0 ? (
+        <p>Add videos to be able to define segments</p>
+      ) : (
+        <button
+          className="u-normal-button"
+          type="button"
+          onClick={add}
+        >
+          Add a segment
+        </button>
+      )}
       {editedSegments.some((edited) => edited.error) && (
         <button
           className="u-normal-button"
