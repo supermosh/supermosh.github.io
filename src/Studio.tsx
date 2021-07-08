@@ -34,7 +34,7 @@ export default () => {
       <Videos {...{ videos, setVideos }} />
       <Segments {...{ videos, segments, setSegments }} />
       <div className="" />
-      <div className=""><pre>{JSON.stringify(segments, null, 2)}</pre></div>
+      <div className="" />
     </div>
   );
 };
