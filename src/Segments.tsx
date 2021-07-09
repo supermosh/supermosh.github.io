@@ -1,6 +1,8 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { Video, Segment } from './lib';
 
+const debug = true;
+
 type EditedSegment = {
   src: string;
   transform: string;
@@ -110,6 +112,16 @@ export default ({
     editedSegments.splice(i, 1);
     updateSegments();
   };
+
+  if (debug && editedSegments.length === 0) {
+    if (videos.length > 0) {
+      requestAnimationFrame(() => {
+        editedSegments.push({ src: videos[0].url, transform: 'copy', first: '0', second: '2', error: '' });
+        editedSegments.push({ src: videos[0].url, transform: 'glide', first: '1', second: '2', error: '' });
+        updateSegments();
+      });
+    }
+  }
 
   return (
     <div className="Segments">
