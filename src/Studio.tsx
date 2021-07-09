@@ -3,7 +3,7 @@ import { Video, Segment } from './lib';
 import Videos from './Videos';
 import Segments from './Segments';
 
-const debug = false;
+const debug = true;
 
 export default () => {
   const [videos, setVideos] = useState<Video[]>([]);
