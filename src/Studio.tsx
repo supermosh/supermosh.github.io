@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Video, Segment } from './lib';
+import { Segment } from './lib';
 import Videos from './Videos';
 import Segments from './Segments';
+import { Video } from './types';
 
 const debug = true;
 
