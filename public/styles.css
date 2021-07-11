@@ -250,25 +250,15 @@ nav a:hover {
 .Segments .row {
   display: flex;
   margin-bottom: 12px;
-  justify-content: flex-start;
-  align-items: center;
-}
-.Segments .video {
-  width: calc(100% - 432px);
-  margin-right: 12px;
 }
 .Segments .transform {
-  width: 128px;
-  margin-right: 12px;
+  width: 120px;
 }
-.Segments .first {
-  width: 64px;
-  margin-right: 12px;
+.Segments .src {
+  width: calc(100% - 348px);
+  margin-left: 12px;
 }
-.Segments .second {
-  width: 64px;
-  margin-right: 12px;
-}
-.Segments .u-normal-button + .u-normal-button {
+.Segments input[type=number] {
+  width: 96px;
   margin-left: 12px;
 }
