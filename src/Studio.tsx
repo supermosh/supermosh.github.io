@@ -26,6 +26,11 @@ export default () => {
           previewing: false,
         },
       ]);
+      setSegments([
+        { transform: 'copy', src: 'bg.webm', start: 0, end: 1 },
+        { transform: 'glide', src: 'bg.webm', time: 1, length: 1 },
+        { transform: 'movement', src: 'bg.webm', start: 1, end: 2 },
+      ]);
     })();
   }
 
