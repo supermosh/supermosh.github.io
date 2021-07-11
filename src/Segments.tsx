@@ -37,7 +37,7 @@ export default ({
     ]);
   };
 
-  const setTransform = (i, transform: Segment['transform']) => {
+  const setTransform = (i: number, transform: Segment['transform']) => {
     switch (transform) {
       case 'copy':
         segments[i] = {
@@ -64,6 +64,11 @@ export default ({
         };
         break;
     }
+    setSegments([...segments]);
+  };
+
+  const setSrc = (i: number, src: string) => {
+    segments[i].src = src;
     setSegments([...segments]);
   };
 
@@ -110,7 +115,11 @@ export default ({
                   <option value="glide">glide</option>
                   <option value="movement">movement</option>
                 </select>
-                <select className="src" value={segment.src}>
+                <select
+                  className="src"
+                  value={segment.src}
+                  onInput={(evt) => setSrc(i, (evt.target as HTMLSelectElement).value)}
+                >
                   {videos.map((video) => (
                     <option key={video.url} value={video.url}>{video.file.name}</option>
                   ))}
