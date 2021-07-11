@@ -72,6 +72,12 @@ export default ({
     setSegments([...segments]);
   };
 
+  const setNumberField = (i: number, field: string, value: string) => {
+    const nbValue = +value;
+    segments[i][field] = nbValue;
+    setSegments([...segments]);
+  };
+
   return (
     <div className="Segments">
       {videos.length === 0 ? (
@@ -126,20 +132,50 @@ export default ({
                 </select>
                 {segment.transform === 'copy' && (
                   <>
-                    <input type="number" placeholder="start" value={segment.start.toString()} />
-                    <input type="number" placeholder="end" value={segment.end.toString()} />
+                    <input
+                      type="number"
+                      placeholder="start"
+                      value={segment.start.toString()}
+                      onInput={(evt) => setNumberField(i, 'start', (evt.target as HTMLInputElement).value)}
+                    />
+                    <input
+                      type="number"
+                      placeholder="end"
+                      value={segment.end.toString()}
+                      onInput={(evt) => setNumberField(i, 'end', (evt.target as HTMLInputElement).value)}
+                    />
                   </>
                 )}
                 {segment.transform === 'glide' && (
                   <>
-                    <input type="number" placeholder="time" value={segment.time.toString()} />
-                    <input type="number" placeholder="length" value={segment.length.toString()} />
+                    <input
+                      type="number"
+                      placeholder="time"
+                      value={segment.time.toString()}
+                      onInput={(evt) => setNumberField(i, 'time', (evt.target as HTMLInputElement).value)}
+                    />
+                    <input
+                      type="number"
+                      placeholder="length"
+                      value={segment.length.toString()}
+                      onInput={(evt) => setNumberField(i, 'length', (evt.target as HTMLInputElement).value)}
+                    />
                   </>
                 )}
                 {segment.transform === 'movement' && (
                   <>
-                    <input type="number" placeholder="start" value={segment.start.toString()} />
-                    <input type="number" placeholder="end" value={segment.end.toString()} />
+                    <input
+                      type="number"
+                      placeholder="start"
+                      value={segment.start.toString()}
+                      onInput={(evt) => setNumberField(i, 'start', (evt.target as HTMLInputElement).value)}
+                    />
+                    <input
+                      type="number"
+                      placeholder="end"
+                      value={segment.end.toString()}
+                      onInput={(evt) => setNumberField(i, 'end', (evt.target as HTMLInputElement).value)}
+                    />
                   </>
                 )}
               </div>
