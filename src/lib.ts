@@ -34,12 +34,6 @@ type PreparedMovementSegment = MovementSegment & {
 export type Segment = CopySegment | GlideSegment | MovementSegment;
 type PreparedSegment = PreparedCopySegment | PreparedGlideSegment | PreparedMovementSegment;
 
-export type Video = {
-  file: File;
-  url: string;
-  previewing: boolean;
-}
-
 const fps = 30;
 const size = 16;
 const shifts = [0, 1, -1, 2, -2, 4, -4, 8, -8];

@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { Video } from './lib';
+import { Video } from './types';
 import Modal from './Modal';
 
 export default ({
