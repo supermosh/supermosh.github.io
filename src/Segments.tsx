@@ -25,6 +25,18 @@ export default ({
     setSegments([...segments]);
   };
 
+  const add = () => {
+    setSegments([
+      ...segments,
+      {
+        transform: 'copy',
+        src: videos[0].url,
+        start: 0,
+        end: 0,
+      },
+    ]);
+  };
+
   return (
     <div className="Segments">
       {videos.length === 0 ? (
@@ -35,7 +47,7 @@ export default ({
             <p>No segments defined</p>
           ) : (
             segments.map((segment, i) => (
-              <div className="row">
+              <div className="row" key={i}>
                 <button
                   className="u-icon-button"
                   type="button"
@@ -91,7 +103,13 @@ export default ({
             ))
           )}
           <div>
-            <button type="button" className="u-normal-button">Add a segment</button>
+            <button
+              type="button"
+              className="u-normal-button"
+              onClick={add}
+            >
+              Add a segment
+            </button>
           </div>
         </>
       )}
