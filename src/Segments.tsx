@@ -1,5 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { Video, Segment } from './lib';
+import { Segment } from './lib';
+import { Video } from './types';
 
 export default ({
   videos,
