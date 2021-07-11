@@ -37,6 +37,36 @@ export default ({
     ]);
   };
 
+  const setTransform = (i, transform: Segment['transform']) => {
+    switch (transform) {
+      case 'copy':
+        segments[i] = {
+          transform: 'copy',
+          src: segments[i].src,
+          start: 0,
+          end: 0,
+        };
+        break;
+      case 'glide':
+        segments[i] = {
+          transform: 'glide',
+          src: segments[i].src,
+          time: 0,
+          length: 0,
+        };
+        break;
+      case 'movement':
+        segments[i] = {
+          transform: 'movement',
+          src: segments[i].src,
+          start: 0,
+          end: 0,
+        };
+        break;
+    }
+    setSegments([...segments]);
+  };
+
   return (
     <div className="Segments">
       {videos.length === 0 ? (
@@ -71,7 +101,11 @@ export default ({
                 >
                   <img src="/icons/delete.svg" alt="" />
                 </button>
-                <select className="transform" value={segment.transform}>
+                <select
+                  className="transform"
+                  value={segment.transform}
+                  onInput={(evt) => setTransform(i, (evt.target as HTMLSelectElement).value as Segment['transform'])}
+                >
                   <option value="copy">copy</option>
                   <option value="glide">glide</option>
                   <option value="movement">movement</option>
