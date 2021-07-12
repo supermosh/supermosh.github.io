@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { Segment } from './lib';
 import Videos from './Videos';
 import Segments from './Segments';
-import { Video } from './types';
+import { Output, Video } from './types';
+import Render from './Render';
+import Result from './Result';
 
 const debug = true;
 
 export default () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [segments, setSegments] = useState<Segment[]>([]);
+  const [output, setOutput] = useState<Output>(null);
 
   if (debug && videos.length === 0) {
     (async () => {
@@ -33,7 +36,6 @@ export default () => {
       setSegments([
         { transform: 'copy', src: url0, start: 0, end: 1 },
         { transform: 'glide', src: url0, time: 1, length: 1 },
-        { transform: 'movement', src: url1, start: 1, end: 2 },
       ]);
     })();
   }
@@ -42,8 +44,8 @@ export default () => {
     <div className="Studio">
       <Videos {...{ videos, setVideos }} />
       <Segments {...{ videos, segments, setSegments }} />
-      <div className="" />
-      <div className="" />
+      <Render {...{ segments, setOutput }} />
+      <Result {...{ output }} />
     </div>
   );
 };
