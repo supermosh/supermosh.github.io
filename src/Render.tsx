@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useRef } from 'react';
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
 import {
   getDimensions,
   PreparedSegment,
@@ -19,8 +19,11 @@ export default ({
   setOutput: Dispatch<SetStateAction<Output>>
 }) => {
   const renderRootRef = useRef(null);
+  const [rendering, setRendering] = useState<boolean>(false);
 
   const render = async () => {
+    setRendering(true);
+
     const { width, height } = await getDimensions(segments, renderRootRef.current);
 
     const preparedSegments: PreparedSegment[] = [];
@@ -67,15 +70,22 @@ export default ({
         imageSize,
       });
       canvas.remove();
+
+      setRendering(false);
     }, { once: true });
     recorder.stop();
   };
 
   return (
     <div className="Render">
-      <div>
+      {rendering ? (
+        <>
+          <p>Rendering in progress...</p>
+          <p>Don&apos;t mind the weird stuff happening below</p>
+        </>
+      ) : (
         <button type="button" className="u-normal-button" onClick={render}>render</button>
-      </div>
+      )}
       <div ref={renderRootRef} />
     </div>
   );

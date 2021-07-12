@@ -6,7 +6,7 @@ import { Output, Video } from './types';
 import Render from './Render';
 import Result from './Result';
 
-const debug = true;
+const debug = false;
 
 export default () => {
   const [videos, setVideos] = useState<Video[]>([]);
