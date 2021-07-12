@@ -42,7 +42,7 @@ export default () => {
 
   return (
     <div className="Studio">
-      <Videos {...{ videos, setVideos }} />
+      <Videos {...{ videos, setVideos, segments, setSegments }} />
       <Segments {...{ videos, segments, setSegments }} />
       <Render {...{ segments, setOutput }} />
       <Result {...{ output }} />
