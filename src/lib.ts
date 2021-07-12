@@ -32,7 +32,7 @@ type PreparedMovementSegment = MovementSegment & {
   minShiftss: MinShifts[];
 };
 export type Segment = CopySegment | GlideSegment | MovementSegment;
-type PreparedSegment = PreparedCopySegment | PreparedGlideSegment | PreparedMovementSegment;
+export type PreparedSegment = PreparedCopySegment | PreparedGlideSegment | PreparedMovementSegment;
 
 const fps = 30;
 const size = 16;
@@ -114,11 +114,11 @@ const elementEvent = (element: HTMLElement, eventName: string) => new Promise((r
   element.addEventListener(eventName, resolve, { once: true });
 });
 
-const getDimensions = async (segments: Segment[]): Promise<{width: number; height: number}> => {
+export const getDimensions = async (segments: Segment[], renderRoot: HTMLElement): Promise<{width: number; height: number}> => {
   const allDimensions = await Promise.all(segments.map(async (segment) => {
     const video = document.createElement('video');
     video.src = segment.src;
-    document.body.append(video);
+    renderRoot.append(video);
     await elementEvent(video, 'canplaythrough');
     const width = video.videoWidth;
     const height = video.videoHeight;
@@ -136,9 +136,9 @@ const getDimensions = async (segments: Segment[]): Promise<{width: number; heigh
   };
 };
 
-const prepareGlideSegment = async (segment: GlideSegment): Promise<PreparedGlideSegment> => {
+export const prepareGlideSegment = async (segment: GlideSegment, renderRoot: HTMLElement): Promise<PreparedGlideSegment> => {
   const video = document.createElement('video');
-  document.body.append(video);
+  renderRoot.append(video);
   video.src = segment.src;
   await elementEvent(video, 'canplaythrough');
 
@@ -146,7 +146,7 @@ const prepareGlideSegment = async (segment: GlideSegment): Promise<PreparedGlide
   const height = video.videoHeight;
 
   const canvas = document.createElement('canvas');
-  document.body.append(canvas);
+  renderRoot.append(canvas);
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext('2d');
@@ -177,9 +177,9 @@ const prepareGlideSegment = async (segment: GlideSegment): Promise<PreparedGlide
   return { ...segment, minShifts };
 };
 
-const prepareMovementSegment = async (segment: MovementSegment): Promise<PreparedMovementSegment> => {
+export const prepareMovementSegment = async (segment: MovementSegment, renderRoot: HTMLElement): Promise<PreparedMovementSegment> => {
   const video = document.createElement('video');
-  document.body.append(video);
+  renderRoot.append(video);
   video.src = segment.src;
   await elementEvent(video, 'canplaythrough');
 
@@ -187,7 +187,7 @@ const prepareMovementSegment = async (segment: MovementSegment): Promise<Prepare
   const height = video.videoHeight;
 
   const canvas = document.createElement('canvas');
-  document.body.append(canvas);
+  renderRoot.append(canvas);
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext('2d');
@@ -213,10 +213,10 @@ const prepareMovementSegment = async (segment: MovementSegment): Promise<Prepare
   return { ...segment, minShiftss };
 };
 
-const runCopySegment = async (segment: PreparedCopySegment, ctx: CanvasRenderingContext2D): Promise<void> => {
+export const runCopySegment = async (segment: PreparedCopySegment, ctx: CanvasRenderingContext2D, renderRoot: HTMLElement): Promise<void> => {
   const video = document.createElement('video');
   video.src = segment.src;
-  document.body.append(video);
+  renderRoot.append(video);
   await elementEvent(video, 'canplaythrough');
   video.currentTime = segment.start;
   await elementEvent(video, 'seeked');
@@ -229,7 +229,7 @@ const runCopySegment = async (segment: PreparedCopySegment, ctx: CanvasRendering
   video.remove();
 };
 
-const runGlideSegment = async (segment: PreparedGlideSegment, ctx: CanvasRenderingContext2D): Promise<void> => {
+export const runGlideSegment = async (segment: PreparedGlideSegment, ctx: CanvasRenderingContext2D): Promise<void> => {
   for (let i = 0; i < segment.length * fps; i++) {
     const previous = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
     const next = approximate(previous, segment.minShifts);
@@ -238,7 +238,7 @@ const runGlideSegment = async (segment: PreparedGlideSegment, ctx: CanvasRenderi
   }
 };
 
-const runMovementSegment = async (segment: PreparedMovementSegment, ctx: CanvasRenderingContext2D): Promise<void> => {
+export const runMovementSegment = async (segment: PreparedMovementSegment, ctx: CanvasRenderingContext2D): Promise<void> => {
   for (const minShifts of segment.minShiftss) {
     const previous = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
     const next = approximate(previous, minShifts);
@@ -246,48 +246,3 @@ const runMovementSegment = async (segment: PreparedMovementSegment, ctx: CanvasR
     await new Promise((resolve) => requestAnimationFrame(resolve));
   }
 };
-
-const main = async (segments: Segment[]) => {
-  const { width, height } = await getDimensions(segments);
-
-  const preparedSegments: PreparedSegment[] = [];
-  for (const segment of segments) {
-    switch (segment.transform) {
-      case 'copy': preparedSegments.push(segment); break;
-      case 'glide': preparedSegments.push(await prepareGlideSegment(segment)); break;
-      case 'movement': preparedSegments.push(await prepareMovementSegment(segment)); break;
-    }
-  }
-
-  const canvas = document.createElement('canvas');
-  canvas.style.outline = '1px solid red';
-  canvas.width = width;
-  canvas.height = height;
-  document.body.append(canvas);
-  const ctx = canvas.getContext('2d');
-
-  // @ts-ignore
-  const stream = canvas.captureStream();
-  const recorder = new MediaRecorder(stream);
-  recorder.start();
-
-  for (const segment of preparedSegments) {
-    switch (segment.transform) {
-      case 'copy': await runCopySegment(segment, ctx); break;
-      case 'glide': await runGlideSegment(segment, ctx); break;
-      case 'movement': await runMovementSegment(segment, ctx); break;
-    }
-  }
-
-  recorder.addEventListener('dataavailable', (evt) => {
-    const url = URL.createObjectURL(evt.data);
-    const video = document.createElement('video');
-    video.src = url;
-    video.controls = true;
-    video.autoplay = true;
-    document.body.append(video);
-  }, { once: true });
-  recorder.stop();
-};
-
-export default main;

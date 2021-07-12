@@ -157,12 +157,9 @@ nav a:hover {
   width: calc(100vw - 49px);
   display: grid;
   background-color: black;
-  grid-template-rows: 1fr 1fr;
-  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1px;
-}
-.Studio > * {
-  background-color: white;
 }
 @media screen and (max-width: 1000px) {
 }
@@ -205,15 +202,13 @@ nav a:hover {
 .Modal .box {
   position: absolute;
   inset: 96px;
-  border: 1px solid black;
-  background-color: white;
-  padding: 48px;
 }
 
 /* Videos */
 .Videos {
   padding: 12px;
   overflow-y: auto;
+  background-color: white;
 }
 .Videos .media {
   height: 48px;
@@ -246,6 +241,7 @@ nav a:hover {
 .Segments {
   padding: 12px;
   overflow-y: auto;
+  background-color: white;
 }
 .Segments .row {
   display: flex;
@@ -261,4 +257,42 @@ nav a:hover {
 .Segments input[type=number] {
   width: 96px;
   margin-left: 12px;
+}
+
+/* Render */
+.Render {
+  padding: 12px;
+  overflow-y: auto;
+  background-color: white;
+}
+
+/* Result */
+.Result-empty {
+  padding: 12px;
+  overflow-y: auto;
+  background-color: white;
+}
+.Result-done {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+}
+.Result-done .desc {
+  background-color: white;
+  padding: 12px;
+  overflow-y: auto;
+}
+.Result-done .thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.Result-done .thumb:hover {
+  cursor: pointer;
+}
+.Result-done .preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
