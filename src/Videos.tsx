@@ -1,13 +1,18 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Video } from './types';
 import Modal from './Modal';
+import { Segment } from './lib';
 
 export default ({
   videos,
   setVideos,
+  segments,
+  setSegments,
 }: {
   videos: Video[];
   setVideos: Dispatch<SetStateAction<Video[]>>;
+  segments: Segment[];
+  setSegments: Dispatch<SetStateAction<Segment[]>>;
 }) => {
   const addVideo = (evt) => {
     const file = evt.target.files[0] as File;
@@ -17,6 +22,13 @@ export default ({
   };
 
   const removeVideo = (i: number) => {
+    const newSegments = segments.filter((segment) => segment.src === videos[i].url);
+    if (newSegments.length < segments.length) {
+      setSegments(newSegments);
+    }
+
+    URL.revokeObjectURL(videos[i].url);
+
     videos.splice(i, 1);
     setVideos([...videos]);
   };

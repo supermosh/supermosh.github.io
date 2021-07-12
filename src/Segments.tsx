@@ -7,9 +7,9 @@ export default ({
   segments,
   setSegments,
 }: {
-  videos: Video[],
-  segments: Segment[],
-  setSegments: Dispatch<SetStateAction<Segment[]>>
+  videos: Video[];
+  segments: Segment[];
+  setSegments: Dispatch<SetStateAction<Segment[]>>;
 }) => {
   const moveUp = (i: number) => {
     segments.splice(i - 1, 2, segments[i], segments[i - 1]);
