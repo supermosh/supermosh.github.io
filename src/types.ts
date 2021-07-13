@@ -2,6 +2,8 @@ export type Video = {
   file: File;
   url: string;
   previewing: boolean;
+  width: number;
+  height: number;
 }
 export type Output = null | {
   width: number;

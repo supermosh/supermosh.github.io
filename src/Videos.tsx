@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Video } from './types';
 import Modal from './Modal';
-import { Segment } from './lib';
+import { Segment, elementEvent } from './lib';
 
 export default ({
   videos,
@@ -14,10 +14,19 @@ export default ({
   segments: Segment[];
   setSegments: Dispatch<SetStateAction<Segment[]>>;
 }) => {
-  const addVideo = (evt) => {
+  const addVideo = async (evt) => {
     const file = evt.target.files[0] as File;
     const url = URL.createObjectURL(file);
-    setVideos([...videos, { file, url, previewing: false }]);
+    const elt = document.createElement('video');
+    elt.src = url;
+    await elementEvent(elt, 'canplay');
+    setVideos([...videos, {
+      file,
+      url,
+      previewing: false,
+      width: elt.videoWidth,
+      height: elt.videoHeight,
+    }]);
     evt.target.value = '';
   };
 
@@ -58,7 +67,7 @@ export default ({
               className="name"
               title={video.file.name}
             >
-              {video.file.name}
+              {`${video.width}x${video.height} ${video.file.name}`}
             </span>
             <button
               className="u-icon-button"
