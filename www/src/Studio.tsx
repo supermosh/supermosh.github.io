@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Segment } from './lib';
+import { Segment } from 'supermosh';
 import Videos from './Videos';
 import Segments from './Segments';
 import { Output, SavedSegment, Video } from './types';

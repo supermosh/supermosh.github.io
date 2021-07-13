@@ -8,7 +8,7 @@ import {
   runGlideSegment,
   runMovementSegment,
   Segment,
-} from './lib';
+} from 'supermosh';
 import { Output } from './types';
 
 export default ({

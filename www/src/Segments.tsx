@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { Segment } from './lib';
+import { Segment } from 'supermosh';
 import { Video } from './types';
 
 export default ({

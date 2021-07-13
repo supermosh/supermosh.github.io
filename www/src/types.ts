@@ -1,4 +1,4 @@
-import { Segment } from './lib';
+import { Segment } from 'supermosh';
 
 export type Video = {
   key: number;

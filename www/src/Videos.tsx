@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react';
+import { Segment } from 'supermosh';
 import { Video } from './types';
 import Modal from './Modal';
-import { Segment } from './lib';
 import savedFileToVideo from './savedFileToVideo';
 import { filesStore } from './db';
 
