@@ -27,12 +27,12 @@ export default ({
   const removeVideo = async (i: number) => {
     await stores.files.delete(videos[i].key);
 
-    const newSegments = segments.filter((segment) => segment.src === videos[i].url);
+    const newSegments = segments.filter((segment) => segment.src === videos[i].src);
     if (newSegments.length < segments.length) {
       setSegments(newSegments);
     }
 
-    URL.revokeObjectURL(videos[i].url);
+    URL.revokeObjectURL(videos[i].src);
 
     videos.splice(i, 1);
     setVideos([...videos]);
@@ -52,7 +52,7 @@ export default ({
           <div key={video.key} className="media">
             <video
               className="thumb"
-              src={video.url}
+              src={video.src}
               muted
               loop
               autoPlay
@@ -75,7 +75,7 @@ export default ({
             </button>
             {video.previewing && (
             <Modal onClose={() => { previewVideo(i, false); }}>
-              <video className="preview" src={video.url} autoPlay controls loop />
+              <video className="preview" src={video.src} autoPlay controls loop />
             </Modal>
             )}
           </div>
