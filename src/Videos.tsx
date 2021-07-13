@@ -3,7 +3,7 @@ import { Video } from './types';
 import Modal from './Modal';
 import { Segment } from './lib';
 import savedFileToVideo from './savedFileToVideo';
-import { stores } from './db';
+import { filesStore } from './db';
 
 export default ({
   videos,
@@ -18,14 +18,14 @@ export default ({
 }) => {
   const addVideo = async (evt) => {
     const file = evt.target.files[0] as File;
-    const key = await stores.files.add(file);
+    const key = await filesStore.add(file);
     const video = await savedFileToVideo({ key, file });
     setVideos([...videos, video]);
     evt.target.value = '';
   };
 
   const removeVideo = async (i: number) => {
-    await stores.files.delete(videos[i].key);
+    await filesStore.delete(videos[i].key);
 
     const newSegments = segments.filter((segment) => segment.src === videos[i].src);
     if (newSegments.length < segments.length) {

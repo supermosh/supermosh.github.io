@@ -5,7 +5,7 @@ import Segments from './Segments';
 import { Output, Video } from './types';
 import Render from './Render';
 import Result from './Result';
-import { stores } from './db';
+import { filesStore } from './db';
 import savedFileToVideo from './savedFileToVideo';
 
 export default () => {
@@ -15,12 +15,12 @@ export default () => {
 
   useEffect(() => {
     (async () => {
-      const savedFiles = await stores.files.getAll();
+      const savedFiles = await filesStore.getAll();
       if (savedFiles.length && window.confirm('Restore previously uploaded videos?')) {
         const savedVideos = await Promise.all(savedFiles.map(savedFileToVideo));
         setVideos(savedVideos);
       } else {
-        stores.files.clear();
+        filesStore.clear();
       }
     })();
   }, []);
