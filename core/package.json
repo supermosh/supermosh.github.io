@@ -1,0 +1,34 @@
+{
+  "name": "supermosh",
+  "version": "1.0.0",
+  "description": "Datamosh in the browser",
+  "keywords": [
+    "art",
+    "browser",
+    "video",
+    "glitch-art",
+    "generative-art",
+    "glitch",
+    "video-editing",
+    "algorithmic-art",
+    "datamoshing",
+    "glitch-effect",
+    "video-editing-software",
+    "datamosh"
+  ],
+  "homepage": "https://supermosh.github.io/",
+  "license": "GPL-3.0",
+  "author": "Nino Filiu <nino.filiu@gmail.com> (https://ninofiliu.com)",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
+    "eslint": "^7.31.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "typescript": "^4.3.5"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc"
+  }
+}
