@@ -1,7 +1,9 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Video } from './types';
 import Modal from './Modal';
-import { Segment, elementEvent } from './lib';
+import { Segment } from './lib';
+import savedFileToVideo from './savedFileToVideo';
+import { stores } from './db';
 
 export default ({
   videos,
@@ -16,21 +18,15 @@ export default ({
 }) => {
   const addVideo = async (evt) => {
     const file = evt.target.files[0] as File;
-    const url = URL.createObjectURL(file);
-    const elt = document.createElement('video');
-    elt.src = url;
-    await elementEvent(elt, 'canplay');
-    setVideos([...videos, {
-      file,
-      url,
-      previewing: false,
-      width: elt.videoWidth,
-      height: elt.videoHeight,
-    }]);
+    const key = await stores.files.add(file);
+    const video = await savedFileToVideo({ key, file });
+    setVideos([...videos, video]);
     evt.target.value = '';
   };
 
-  const removeVideo = (i: number) => {
+  const removeVideo = async (i: number) => {
+    await stores.files.delete(videos[i].key);
+
     const newSegments = segments.filter((segment) => segment.src === videos[i].url);
     if (newSegments.length < segments.length) {
       setSegments(newSegments);
@@ -53,7 +49,7 @@ export default ({
         <p>No video uploaded yet</p>
       ) : (
         videos.map((video, i) => (
-          <div key={video.url} className="media">
+          <div key={video.key} className="media">
             <video
               className="thumb"
               src={video.url}

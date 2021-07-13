@@ -1,4 +1,5 @@
 export type Video = {
+  key: number;
   file: File;
   url: string;
   previewing: boolean;
@@ -13,4 +14,8 @@ export type Output = null | {
   videoType: string;
   imageUrl: string;
   imageSize: number;
+}
+export type SavedFile = {
+  key: number;
+  file: File;
 }
