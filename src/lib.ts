@@ -114,15 +114,13 @@ export const elementEvent = (element: HTMLElement, eventName: string) => new Pro
   element.addEventListener(eventName, resolve, { once: true });
 });
 
-export const getDimensions = async (segments: Segment[], renderRoot: HTMLElement): Promise<{width: number; height: number}> => {
+export const getDimensions = async (segments: Segment[]): Promise<{width: number; height: number}> => {
   const allDimensions = await Promise.all(segments.map(async (segment) => {
     const video = document.createElement('video');
     video.src = segment.src;
-    renderRoot.append(video);
-    await elementEvent(video, 'canplaythrough');
+    await elementEvent(video, 'canplay');
     const width = video.videoWidth;
     const height = video.videoHeight;
-    video.remove();
     return { width, height };
   }));
   const widths = new Set(allDimensions.map((d) => d.width));
