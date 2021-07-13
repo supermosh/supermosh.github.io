@@ -1,5 +1,5 @@
+import { elementEvent } from 'supermosh';
 import { SavedFile, Video } from './types';
-import { elementEvent } from './lib';
 
 export default async (savedFile: SavedFile): Promise<Video> => {
   const src = URL.createObjectURL(savedFile.file);
