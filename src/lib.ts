@@ -110,7 +110,7 @@ const approximate = (previous: ImageData, minShifts: MinShifts): ImageData => {
   return out;
 };
 
-const elementEvent = (element: HTMLElement, eventName: string) => new Promise((resolve) => {
+export const elementEvent = (element: HTMLElement, eventName: string) => new Promise((resolve) => {
   element.addEventListener(eventName, resolve, { once: true });
 });
 
