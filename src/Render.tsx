@@ -24,7 +24,7 @@ export default ({
   const render = async () => {
     setRendering(true);
 
-    const { width, height } = await getDimensions(segments, renderRootRef.current);
+    const { width, height } = await getDimensions(segments);
 
     const preparedSegments: PreparedSegment[] = [];
     for (const segment of segments) {
