@@ -31,7 +31,7 @@ export default ({
       ...segments,
       {
         transform: 'copy',
-        src: videos[0].url,
+        src: videos[0].src,
         start: 0,
         end: 0,
       },
@@ -128,7 +128,7 @@ export default ({
                   onInput={(evt) => setSrc(i, (evt.target as HTMLSelectElement).value)}
                 >
                   {videos.map((video) => (
-                    <option key={video.key} value={video.url}>{video.file.name}</option>
+                    <option key={video.key} value={video.src}>{video.file.name}</option>
                   ))}
                 </select>
                 {segment.transform === 'copy' && (

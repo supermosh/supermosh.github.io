@@ -1,7 +1,7 @@
 export type Video = {
   key: number;
   file: File;
-  url: string;
+  src: string;
   previewing: boolean;
   width: number;
   height: number;
