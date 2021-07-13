@@ -1,3 +1,5 @@
+import { Segment } from './lib';
+
 export type Video = {
   key: number;
   file: File;
@@ -18,4 +20,7 @@ export type Output = null | {
 export type SavedFile = {
   key: number;
   file: File;
+}
+export type SavedSegment = Segment & {
+  savedFileKey: number;
 }

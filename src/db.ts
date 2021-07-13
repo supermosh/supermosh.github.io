@@ -1,4 +1,4 @@
-import { SavedFile } from './types';
+import { SavedFile, SavedSegment } from './types';
 
 let db: IDBDatabase;
 
@@ -9,6 +9,7 @@ export const setup = () => new Promise<void>((resolve, reject) => {
   or.onupgradeneeded = () => {
     db = or.result;
     db.createObjectStore('files', { keyPath: 'key', autoIncrement: true });
+    db.createObjectStore('segments', { autoIncrement: true });
   };
   or.onsuccess = () => {
     db = or.result;
@@ -36,5 +37,24 @@ export const filesStore = {
     const op = db.transaction('files', 'readwrite').objectStore('files').delete(key);
     op.onerror = reject;
     op.onsuccess = () => resolve();
+  }),
+};
+
+export const segmentsStore = {
+  save: (segments: SavedSegment[]) => new Promise((resolve, reject) => {
+    const tx = db.transaction('segments', 'readwrite');
+    tx.onabort = reject;
+    tx.onerror = reject;
+    tx.oncomplete = resolve;
+    const store = tx.objectStore('segments');
+    store.clear();
+    for (const segment of segments) {
+      store.add(segment);
+    }
+  }),
+  getAll: () => new Promise<SavedSegment[]>((resolve, reject) => {
+    const op = db.transaction('segments', 'readonly').objectStore('segments').getAll();
+    op.onerror = reject;
+    op.onsuccess = () => resolve(op.result);
   }),
 };
