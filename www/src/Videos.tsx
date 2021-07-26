@@ -27,7 +27,7 @@ export default ({
   const removeVideo = async (i: number) => {
     await filesStore.delete(videos[i].key);
 
-    const newSegments = segments.filter((segment) => segment.src === videos[i].src);
+    const newSegments = segments.filter((segment) => segment.src !== videos[i].src);
     if (newSegments.length < segments.length) {
       setSegments(newSegments);
     }
