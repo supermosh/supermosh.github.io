@@ -27,7 +27,10 @@ export default () => {
         }
         setSegments(savedSegments);
       } else {
-        filesStore.clear();
+        await Promise.all([
+          filesStore.clear(),
+          segmentsStore.clear(),
+        ]);
       }
     })();
   }, []);

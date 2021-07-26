@@ -57,4 +57,9 @@ export const segmentsStore = {
     op.onerror = reject;
     op.onsuccess = () => resolve(op.result);
   }),
+  clear: () => new Promise<void>((resolve, reject) => {
+    const op = db.transaction('segments', 'readwrite').objectStore('segments').clear();
+    op.onerror = reject;
+    op.onsuccess = () => resolve();
+  }),
 };
