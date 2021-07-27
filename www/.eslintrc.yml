@@ -37,3 +37,4 @@ rules:
   jsx-a11y/media-has-caption: off
   no-param-reassign: off
   jsx-a11y/control-has-associated-label: off
+  no-mixed-operators: off

@@ -246,17 +246,49 @@ nav a:hover {
 .Segments .row {
   display: flex;
   margin-bottom: 12px;
+  align-items: center;
 }
 .Segments .transform {
   width: 120px;
 }
 .Segments .src {
-  width: calc(100% - 348px);
+  width: calc(100% - 444px);
   margin-left: 12px;
 }
 .Segments input[type=number] {
-  width: 96px;
+  width: 192px;
   margin-left: 12px;
+}
+
+/* StartEndInput */
+.StartEndInput {
+  width: 192px;
+  margin-left: 12px;
+}
+.StartEndInput button {
+  padding-top: 0;
+  padding-bottom: 0;
+  width: 100%;
+}
+.StartEndInput .modal-content {
+  height: 100%;
+  background: white;
+  padding: 48px;
+  box-sizing: border-box;
+}
+.StartEndInput .videos {
+  display: flex;
+}
+.StartEndInput .videos video {
+  width: 33%;
+}
+.StartEndInput .row {
+  padding: 12px 0;
+  display: flex;
+  align-items: center;
+}
+.StartEndInput .row input {
+  margin-right: 24px;
 }
 
 /* Render */

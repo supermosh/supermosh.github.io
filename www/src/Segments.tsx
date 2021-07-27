@@ -1,5 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Segment } from 'supermosh';
+import StartEndInput from './StartEndInput';
 import { Video } from './types';
 
 export default ({
@@ -132,20 +133,10 @@ export default ({
                   ))}
                 </select>
                 {segment.transform === 'copy' && (
-                  <>
-                    <input
-                      type="number"
-                      placeholder="start"
-                      value={segment.start.toString()}
-                      onInput={(evt) => setNumberField(i, 'start', (evt.target as HTMLInputElement).value)}
-                    />
-                    <input
-                      type="number"
-                      placeholder="end"
-                      value={segment.end.toString()}
-                      onInput={(evt) => setNumberField(i, 'end', (evt.target as HTMLInputElement).value)}
-                    />
-                  </>
+                  <StartEndInput
+                    segment={segment}
+                    onChange={(newStart, newEnd) => { console.log(newStart, newEnd); }}
+                  />
                 )}
                 {segment.transform === 'glide' && (
                   <>
