@@ -1,20 +1,20 @@
 const fps = 30;
 const size = 16;
-const shifts = [0, 1, -1, 2, -2, 4, -4, 8, -8];
-const getMinShifts = (previous, real) => {
+const xyShifts = [0, 1, -1, 2, -2, 4, -4, 8, -8];
+const getShift = (previous, real) => {
     const { width, height } = previous;
-    const minShifts = {};
+    const shift = {};
     for (let xOffset = 0; xOffset < width; xOffset += size) {
-        if (!minShifts[xOffset])
-            minShifts[xOffset] = [];
+        if (!shift[xOffset])
+            shift[xOffset] = [];
         for (let yOffset = 0; yOffset < height; yOffset += size) {
-            if (!minShifts[xOffset][yOffset])
-                minShifts[xOffset][yOffset] = { x: NaN, y: NaN };
+            if (!shift[xOffset][yOffset])
+                shift[xOffset][yOffset] = { x: NaN, y: NaN };
             const xMax = Math.min(xOffset + size, width);
             const yMax = Math.min(yOffset + size, height);
             let minDiff = +Infinity;
-            for (const xShift of shifts) {
-                for (const yShift of shifts) {
+            for (const xShift of xyShifts) {
+                for (const yShift of xyShifts) {
                     let diff = 0;
                     for (let x = xOffset; x < xMax; x++) {
                         for (let y = yOffset; y < yMax; y++) {
@@ -29,16 +29,16 @@ const getMinShifts = (previous, real) => {
                     }
                     if (diff < minDiff) {
                         minDiff = diff;
-                        minShifts[xOffset][yOffset].x = xShift;
-                        minShifts[xOffset][yOffset].y = yShift;
+                        shift[xOffset][yOffset].x = xShift;
+                        shift[xOffset][yOffset].y = yShift;
                     }
                 }
             }
         }
     }
-    return minShifts;
+    return shift;
 };
-const approximate = (previous, minShifts) => {
+const approximate = (previous, shift) => {
     const { width, height } = previous;
     const out = new ImageData(width, height);
     for (let i = 3; i < out.data.length; i += 4) {
@@ -50,8 +50,8 @@ const approximate = (previous, minShifts) => {
             const yMax = Math.min(yOffset + size, height);
             for (let x = xOffset; x < xMax; x++) {
                 for (let y = yOffset; y < yMax; y++) {
-                    const xsrc = (x + minShifts[xOffset][yOffset].x + width) % width;
-                    const ysrc = (y + minShifts[xOffset][yOffset].y + height) % height;
+                    const xsrc = (x + shift[xOffset][yOffset].x + width) % width;
+                    const ysrc = (y + shift[xOffset][yOffset].y + height) % height;
                     const isrc = 4 * (width * ysrc + xsrc);
                     const idst = 4 * (width * y + x);
                     out.data[idst + 0] = previous.data[isrc + 0];
@@ -114,10 +114,10 @@ export const prepareGlideSegment = async (segment, renderRoot) => {
         }
         throw new Error('All frames are almost identical');
     })();
-    const minShifts = getMinShifts(previous, real);
+    const shift = getShift(previous, real);
     video.remove();
     canvas.remove();
-    return { ...segment, minShifts };
+    return { ...segment, shift };
 };
 export const prepareMovementSegment = async (segment, renderRoot) => {
     const video = document.createElement('video');
@@ -133,7 +133,7 @@ export const prepareMovementSegment = async (segment, renderRoot) => {
     const ctx = canvas.getContext('2d');
     video.currentTime = segment.start;
     await elementEvent(video, 'seeked');
-    const minShiftss = [];
+    const shifts = [];
     while (video.currentTime < segment.end) {
         ctx.drawImage(video, 0, 0);
         const previous = ctx.getImageData(0, 0, width, height);
@@ -141,11 +141,11 @@ export const prepareMovementSegment = async (segment, renderRoot) => {
         await elementEvent(video, 'seeked');
         ctx.drawImage(video, 0, 0);
         const real = ctx.getImageData(0, 0, width, height);
-        minShiftss.push(getMinShifts(previous, real));
+        shifts.push(getShift(previous, real));
     }
     video.remove();
     canvas.remove();
-    return { ...segment, minShiftss };
+    return { ...segment, shifts };
 };
 export const runCopySegment = async (segment, ctx, renderRoot) => {
     const video = document.createElement('video');
@@ -165,15 +165,15 @@ export const runCopySegment = async (segment, ctx, renderRoot) => {
 export const runGlideSegment = async (segment, ctx) => {
     for (let i = 0; i < segment.length * fps; i++) {
         const previous = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-        const next = approximate(previous, segment.minShifts);
+        const next = approximate(previous, segment.shift);
         ctx.putImageData(next, 0, 0);
         await new Promise((resolve) => requestAnimationFrame(resolve));
     }
 };
 export const runMovementSegment = async (segment, ctx) => {
-    for (const minShifts of segment.minShiftss) {
+    for (const shift of segment.shifts) {
         const previous = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-        const next = approximate(previous, minShifts);
+        const next = approximate(previous, shift);
         ctx.putImageData(next, 0, 0);
         await new Promise((resolve) => requestAnimationFrame(resolve));
     }
