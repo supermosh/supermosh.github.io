@@ -1,4 +1,4 @@
-declare type MinShifts = {
+declare type Shift = {
     [xOffset: number]: {
         [yOffset: number]: {
             x: number;
@@ -9,27 +9,27 @@ declare type MinShifts = {
 declare type BaseSegment = {
     src: string;
 };
-declare type CopySegment = BaseSegment & {
+export declare type CopySegment = BaseSegment & {
     transform: 'copy';
     start: number;
     end: number;
 };
 declare type PreparedCopySegment = CopySegment & {};
-declare type GlideSegment = BaseSegment & {
+export declare type GlideSegment = BaseSegment & {
     transform: 'glide';
     time: number;
     length: number;
 };
 declare type PreparedGlideSegment = GlideSegment & {
-    minShifts: MinShifts;
+    shift: Shift;
 };
-declare type MovementSegment = BaseSegment & {
+export declare type MovementSegment = BaseSegment & {
     transform: 'movement';
     start: number;
     end: number;
 };
 declare type PreparedMovementSegment = MovementSegment & {
-    minShiftss: MinShifts[];
+    shifts: Shift[];
 };
 export declare type Segment = CopySegment | GlideSegment | MovementSegment;
 export declare type PreparedSegment = PreparedCopySegment | PreparedGlideSegment | PreparedMovementSegment;
