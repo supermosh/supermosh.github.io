@@ -9,13 +9,13 @@ type Shift = {
 type BaseSegment = {
   src: string;
 };
-type CopySegment = BaseSegment & {
+export type CopySegment = BaseSegment & {
   transform: 'copy';
   start: number;
   end: number;
 };
 type PreparedCopySegment = CopySegment & {}
-type GlideSegment = BaseSegment & {
+export type GlideSegment = BaseSegment & {
   transform: 'glide';
   time: number;
   length: number;
@@ -23,7 +23,7 @@ type GlideSegment = BaseSegment & {
 type PreparedGlideSegment = GlideSegment & {
   shift: Shift;
 };
-type MovementSegment = BaseSegment & {
+export type MovementSegment = BaseSegment & {
   transform: 'movement';
   start: number;
   end: number;
