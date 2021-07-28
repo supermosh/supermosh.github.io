@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -10,8 +11,32 @@ export default () => {
 
         <h1>About Supermosh</h1>
 
+        <div>Made with &lt;3 by Nino Filiu</div>
+        <div><a href="https://ninofiliu.com" target="_blank" rel="noreferrer noopener">ninofiliu.com</a></div>
+        <div><a href="https://www.instagram.com/ssttaacckkyy/" target="_blank" rel="noreferrer noopener">instagram.com/ssttaacckkyy</a></div>
+        <div><a href="https://twitter.com/ninofiliu" target="_blank" rel="noreferrer noopener">twitter.com/ninofiliu</a></div>
+        <div><a href="mailto:nino.filiu@gmail.com" target="_blank" rel="noreferrer noopener">nino.filiu@gmail.com</a></div>
+        <div><a href="https://github.com/supermosh/supermosh.github.io" target="_blank" rel="noreferrer noopener">Source code</a></div>
+
         <section className={expanded === 0 ? '--expanded' : ''}>
-          <h2 onClick={() => setExpanded(expanded === 0 ? -1 : 0)}>
+          <h2 onClick={() => setExpanded(expanded === 0 ? -1 : 0)} role="button">
+            <span className="plus">[+]</span>
+            <span className="minus">[-]</span>
+            &nbsp;Is Supermosh free?
+          </h2>
+          <div className="section-content">
+            <p>Yes.</p>
+            <p>Supermosh is completely free. Just go to <Link to="/studio">the studio</Link> and start glitching.</p>
+            <p>There is no hidden cost. You will not have to create an account. Your personal data will not be harvested. Supermosh will not use your computer to mine bitcoins in the background. Nothing.</p>
+            <p>By coding Supermosh, I want to experiment, do something that has never been done before, and enable artists to get creative. I do not care about the money.</p>
+            <p>
+              That being said, you are encouraged to mention me when posting Supermosh-generated visuals! I&apos;m on <a href="https://www.instagram.com/ssttaacckkyy/" target="_blank" rel="noreferrer noopener">Instagram</a> and <a href="https://twitter.com/ninofiliu" target="_blank" rel="noreferrer noopener">Twitter</a>.
+            </p>
+          </div>
+        </section>
+
+        <section className={expanded === 1 ? '--expanded' : ''}>
+          <h2 onClick={() => setExpanded(expanded === 1 ? -1 : 1)}>
             <span className="plus">[+]</span>
             <span className="minus">[-]</span>
             &nbsp;What is datamoshing?
@@ -43,49 +68,19 @@ export default () => {
           </div>
         </section>
 
-        <section className={expanded === 1 ? '--expanded' : ''}>
-          <h2 onClick={() => setExpanded(expanded === 1 ? -1 : 1)} role="button">
+        <section className={expanded === 2 ? '--expanded' : ''}>
+          <h2 onClick={() => setExpanded(expanded === 2 ? -1 : 2)} role="button">
             <span className="plus">[+]</span>
             <span className="minus">[-]</span>
             &nbsp;What are typical datamosh effects?
           </h2>
           <div className="section-content">
             <p>
-              <strong>Glide</strong>
-              : one P-frame is copied several times instead of appearing just once, thus repeating a movement over and over
+              <strong>Glide</strong>: one P-frame is copied several times instead of appearing just once, thus repeating a movement over and over
             </p>
             <p>
-              <strong>Movement</strong>
-              : an I-frame is deleted, making the P-frames afterward apply to the first part of the video, thus applying the movement of the second part to the image of the first part
+              <strong>Movement</strong>: an I-frame is deleted, making the P-frames afterward apply to the first part of the video, thus applying the movement of the second part to the image of the first part
             </p>
-          </div>
-        </section>
-
-        <section className={expanded === 2 ? '--expanded' : ''}>
-          <h2 onClick={() => setExpanded(expanded === 2 ? -1 : 2)} role="button">
-            <span className="plus">[+]</span>
-            <span className="minus">[-]</span>
-            &nbsp;How is datamosh typically done?
-          </h2>
-          <div className="section-content">
-            <p>You can use existing software taylored for datamoshing but they are expensive. After Effects starts at $21/mo and the only datamoshing plugin available there costs $40.</p>
-            <p>
-              But you can do it manually, which is more interesting but also much more complex. First you have to convert your video to a codec where datamoshing is possible, typically using a command line tool like
-              {' '}
-              <a href="https://ffmpeg.org/" target="_blank" rel="noreferrer noopener">ffmpeg</a>
-              , because web-based conversions are rate-limited, malware-prone, and not tweakable enough.
-            </p>
-            <p>
-              Then you would use
-              {' '}
-              <a href="http://avidemux.sourceforge.net/" target="_blank" rel="noreferrer noopener">Avidemux</a>
-              , a software from the early 2000s. You
-              {' '}
-              <em>want</em>
-              {' '}
-              a software this old and broken, this modern software fixes your glitches... which is not what you want! Avidemux allows you to do frame-by-frame manipulation, but as soon as you start doing weird stuff, the preview window breaks. You have to export your video everytime in order to preview them.
-            </p>
-            <p>That is pretty much it but this journey is painful, expecially the part when you have to specify codec configurations to ffmpeg, because, besides the fact that ffmpeg is a pain in the ass to configure, that is when you really have to have precise technical knowledge on how compression algorithms work.</p>
           </div>
         </section>
 
@@ -93,20 +88,19 @@ export default () => {
           <h2 onClick={() => setExpanded(expanded === 3 ? -1 : 3)} role="button">
             <span className="plus">[+]</span>
             <span className="minus">[-]</span>
-            &nbsp;Is Supermosh free?
+            &nbsp;How is datamosh typically done?
           </h2>
           <div className="section-content">
-            <p>Yes.</p>
+            <p>You can use existing software taylored for datamoshing but they are expensive. After Effects starts at $21/mo and the only datamoshing plugin available there costs $40.</p>
             <p>
-              Supermosh is completely free. Just go to the
-              {' '}
-              <Link to="/studio">the studio</Link>
-              {' '}
-              and start glitching.
-              {' '}
+              But you can do it manually, which is more interesting but also much more complex. First you have to convert your video to a codec where datamoshing is possible, typically using a command line tool like <a href="https://ffmpeg.org/" target="_blank" rel="noreferrer noopener">ffmpeg</a>, because web-based conversions are rate-limited, malware-prone, and not tweakable enough.
             </p>
-            <p>There is no hidden cost. You will not have to create an account. Your personal data will not be harvested. Supermosh will not use your computer to mine bitcoins in the background. Nothing.</p>
-            <p>By coding Supermosh, I want to experiment, do something that has never been done before, and enable artists to get creative. I do not care about the money.</p>
+            <p>
+              Then you would use <a href="http://avidemux.sourceforge.net/" target="_blank" rel="noreferrer noopener">Avidemux</a>, a software from the early 2000s. You <em>have to use</em> a software this old and broken, since modern software fixes your glitches... which is not what you want! Avidemux allows you to do frame-by-frame manipulation, but as soon as you start doing weird stuff, the preview window breaks. You have to export your video everytime in order to preview them.
+            </p>
+            <p>
+              That is pretty much it but this journey is painful, expecially the part when you have to specify codec configurations to ffmpeg, because, besides the fact that ffmpeg is a pain in the ass to configure, that is when you really have to have precise technical knowledge on how compression algorithms work.
+            </p>
           </div>
         </section>
 
@@ -117,39 +111,9 @@ export default () => {
             &nbsp;I have found a bug, what should I do?
           </h2>
           <div className="section-content">
-            <p>Supermosh is under active development in an experimental area of web technologies. There will be bugs. If you found one, please report it!</p>
+            <p>Supermosh is under active development in an experimental area of web technologies. There will be bugs, I know. If you found one, please report it!</p>
             <p>
-              Whichever way you&apos;re more confortable with: you can reach me
-              {' '}
-              <a href="https://www.instagram.com/ssttaacckkyy/" target="_blank" rel="noreferrer noopener">on instagram</a>
-              ,
-              {' '}
-              <a href="https://twitter.com/ninofiliu" target="_blank" rel="noreferrer noopener">on twitter</a>
-              ,
-              {' '}
-              <a href="mailto:nino.filiu@gmail.com" target="_blank" rel="noreferrer noopener">by mail</a>
-              , or
-              {' '}
-              <a href="https://github.com/supermosh/supermosh.github.io/issues" target="_blank" rel="noreferrer noopener">open an issue on Github</a>
-              .
-            </p>
-          </div>
-        </section>
-
-        <section className={expanded === 5 ? '--expanded' : ''}>
-          <h2 onClick={() => setExpanded(expanded === 5 ? -1 : 5)} role="button">
-            <span className="plus">[+]</span>
-            <span className="minus">[-]</span>
-            &nbsp;Who is behind Supermosh?
-          </h2>
-          <div className="section-content">
-            <p>A team of one!</p>
-            <p>I am Nino Filiu, a software developer and artist from Paris.</p>
-            <p>
-              All my links and everything you would wanna know about me are on
-              {' '}
-              <a href="https://ninofiliu.com" target="_blank" rel="noreferrer noopener">my website</a>
-              .
+              You can contact me directly, or if you prefer you can <a href="https://github.com/supermosh/supermosh.github.io/issues" target="_blank" rel="noreferrer noopener">open an issue on Github</a>.
             </p>
           </div>
         </section>
