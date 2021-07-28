@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { Segment } from 'supermosh';
+import { CopySegment, MovementSegment, Segment } from 'supermosh';
 import StartEndInput from './StartEndInput';
 import { Video } from './types';
 
@@ -80,6 +80,12 @@ export default ({
     setSegments([...segments]);
   };
 
+  const onStartEndChange = (i: number, start: number, end: number) => {
+    (segments[i] as CopySegment | MovementSegment).start = start;
+    (segments[i] as CopySegment | MovementSegment).end = end;
+    setSegments([...segments]);
+  };
+
   return (
     <div className="Segments">
       {videos.length === 0 ? (
@@ -132,10 +138,10 @@ export default ({
                     <option key={video.key} value={video.src}>{video.file.name}</option>
                   ))}
                 </select>
-                {segment.transform === 'copy' && (
+                {(segment.transform === 'copy' || segment.transform === 'movement') && (
                   <StartEndInput
                     segment={segment}
-                    onChange={(newStart, newEnd) => { console.log(newStart, newEnd); }}
+                    onChange={(start, end) => onStartEndChange(i, start, end)}
                   />
                 )}
                 {segment.transform === 'glide' && (
@@ -151,22 +157,6 @@ export default ({
                       placeholder="length"
                       value={segment.length.toString()}
                       onInput={(evt) => setNumberField(i, 'length', (evt.target as HTMLInputElement).value)}
-                    />
-                  </>
-                )}
-                {segment.transform === 'movement' && (
-                  <>
-                    <input
-                      type="number"
-                      placeholder="start"
-                      value={segment.start.toString()}
-                      onInput={(evt) => setNumberField(i, 'start', (evt.target as HTMLInputElement).value)}
-                    />
-                    <input
-                      type="number"
-                      placeholder="end"
-                      value={segment.end.toString()}
-                      onInput={(evt) => setNumberField(i, 'end', (evt.target as HTMLInputElement).value)}
                     />
                   </>
                 )}
