@@ -260,40 +260,51 @@ nav a:hover {
   margin-left: 12px;
 }
 
-/* RangeInput */
-.RangeInput {
+/* StartEndInput */
+.StartEndInput,
+.TimeLengthInput {
   width: 192px;
   margin-left: 12px;
 }
-.RangeInput .display-button {
+.StartEndInput .display-button,
+.TimeLengthInput .display-button {
   padding-top: 0;
   padding-bottom: 0;
   width: 100%;
 }
-.RangeInput .modal-content {
+.StartEndInput .modal-content,
+.TimeLengthInput .modal-content {
   height: 100%;
   background: white;
   padding: 48px;
   box-sizing: border-box;
 }
-.RangeInput .videos {
+.StartEndInput .videos {
   display: flex;
 }
-.RangeInput .videos > div {
+.StartEndInput .videos > div {
   flex-basis: 0;
   flex-grow: 1;
 }
-.RangeInput video {
+.StartEndInput video {
   width: 100%;
 }
-.RangeInput input {
+.StartEndInput input,
+.TimeLengthInput input {
   width: 100%;
 }
-.RangeInput .buttons {
+.TimeLengthInput video {
+  max-height: 30vh;
+  margin: auto;
+  display: block;
+}
+.StartEndInput .buttons,
+.TimeLengthInput .buttons {
   text-align: right;
   margin-top: 12px;
 }
-.RangeInput .cancel {
+.StartEndInput .cancel,
+.TimeLengthInput .cancel {
   margin-right: 12px;
 }
 

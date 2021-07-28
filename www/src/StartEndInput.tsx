@@ -65,7 +65,7 @@ export default ({
   }, [start, end, editing]);
 
   return (
-    <div className="RangeInput">
+    <div className="StartEndInput">
       <button
         type="button"
         className="u-normal-button display-button"
