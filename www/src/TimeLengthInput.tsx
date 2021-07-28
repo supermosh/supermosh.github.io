@@ -1,68 +1,64 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CopySegment, MovementSegment } from 'supermosh';
+import { GlideSegment } from 'supermosh';
 import Modal from './Modal';
 
 export default ({
   segment,
   onChange,
 }: {
-  segment: CopySegment | MovementSegment
-  onChange: (newStart: number, newEnd: number) => void
+  segment: GlideSegment;
+  onChange: (newTime: number, newLength: number) => void;
 }) => {
   const [editing, setEditing] = useState<boolean>(false);
-  const [start, setStart] = useState<number>(segment.start);
-  const [end, setEnd] = useState<number>(segment.end);
-  const startVideo = useRef<HTMLVideoElement>(null);
+  const [time, setTime] = useState<number>(segment.time);
+  const [length, setLength] = useState<number>(segment.length);
+  const timeVideo = useRef<HTMLVideoElement>(null);
   const loopVideo = useRef<HTMLVideoElement>(null);
-  const endVideo = useRef<HTMLVideoElement>(null);
   const loopTimeoutId = useRef<number>(0);
 
-  const onStartChange = (newStart: number) => {
-    setStart(newStart);
-    startVideo.current.currentTime = newStart;
-    if (newStart > end) {
-      setEnd(newStart);
-      endVideo.current.currentTime = newStart;
+  const onTimeChange = (newTime: number) => {
+    setTime(newTime);
+    timeVideo.current.currentTime = newTime;
+    if (newTime + length > loopVideo.current.duration) {
+      setLength(loopVideo.current.duration - newTime);
     }
   };
 
-  const onEndChange = (newEnd: number) => {
-    setEnd(newEnd);
-    endVideo.current.currentTime = newEnd;
-    if (newEnd < start) {
-      setStart(newEnd);
-      startVideo.current.currentTime = newEnd;
+  const onLengthChange = (newLength: number) => {
+    setLength(newLength);
+    if (time + newLength > loopVideo.current.duration) {
+      setTime(loopVideo.current.duration - newLength);
     }
   };
 
   const loop = () => {
     if (!loopVideo.current) return;
-    if (end === start) {
-      loopVideo.current.currentTime = start;
+    if (time === loopVideo.current.duration || length === 0) {
+      loopVideo.current.currentTime = time;
       loopVideo.current.pause();
       return;
     }
-    loopVideo.current.currentTime = start;
+    loopVideo.current.currentTime = time;
     if (loopVideo.current.paused) loopVideo.current.play();
-    loopTimeoutId.current = setTimeout(loop, (end - start) * 1000);
+    loopTimeoutId.current = setTimeout(loop, length * 1000);
   };
 
   const cancel = () => {
     setEditing(false);
-    setStart(segment.start);
-    setEnd(segment.end);
+    setTime(segment.time);
+    setLength(segment.length);
   };
 
   const save = () => {
     setEditing(false);
-    onChange(start, end);
+    onChange(time, length);
   };
 
   useEffect(() => {
     if (!loopVideo.current) return;
     if (loopTimeoutId.current) clearTimeout(loopTimeoutId.current);
     loop();
-  }, [start, end, editing]);
+  }, [time, length, editing]);
 
   return (
     <div className="RangeInput">
@@ -71,7 +67,7 @@ export default ({
         className="u-normal-button display-button"
         onClick={() => setEditing(true)}
       >
-        {`${segment.start}s - ${segment.end}s`}
+        {`${segment.time}s, ${segment.length}s`}
       </button>
 
       {editing && (
@@ -80,10 +76,10 @@ export default ({
             <div className="videos">
               <div>
                 <div>
-                  <video src={segment.src} ref={startVideo} />
+                  <video src={segment.src} ref={timeVideo} />
                 </div>
                 <div>
-                  {`Start: ${start}s`}
+                  {`Time: ${time}s`}
                 </div>
                 <div>
                   <input
@@ -91,30 +87,24 @@ export default ({
                     min="0"
                     max={loopVideo.current?.duration}
                     step="0.1"
-                    value={start}
-                    onChange={(evt) => onStartChange(+evt.target.value)}
+                    value={time}
+                    onChange={(evt) => onTimeChange(+evt.target.value)}
                   />
                 </div>
               </div>
               <div>
                 <video src={segment.src} ref={loopVideo} muted />
                 <div>
-                  {`Duration: ${(end - start).toFixed(1)}s`}
-                </div>
-              </div>
-              <div>
-                <video src={segment.src} ref={endVideo} />
-                <div>
-                  {`End: ${end}s`}
+                  {`Length: ${length.toFixed(1)}s`}
                 </div>
                 <div>
                   <input
                     type="range"
                     min="0"
-                    max={loopVideo.current?.duration}
+                    max={loopVideo.current ? (loopVideo.current.duration - time) : Infinity}
                     step="0.1"
-                    value={end}
-                    onChange={(evt) => onEndChange(+evt.target.value)}
+                    value={length}
+                    onChange={(evt) => onLengthChange(+evt.target.value)}
                   />
                 </div>
               </div>

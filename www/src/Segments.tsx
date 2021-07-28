@@ -1,7 +1,8 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { CopySegment, MovementSegment, Segment } from 'supermosh';
+import { CopySegment, GlideSegment, MovementSegment, Segment } from 'supermosh';
 import StartEndInput from './StartEndInput';
 import { Video } from './types';
+import TimeLengthInput from './TimeLengthInput';
 
 export default ({
   videos,
@@ -74,15 +75,15 @@ export default ({
     setSegments([...segments]);
   };
 
-  const setNumberField = (i: number, field: string, value: string) => {
-    const nbValue = +value;
-    segments[i][field] = nbValue;
-    setSegments([...segments]);
-  };
-
   const onStartEndChange = (i: number, start: number, end: number) => {
     (segments[i] as CopySegment | MovementSegment).start = start;
     (segments[i] as CopySegment | MovementSegment).end = end;
+    setSegments([...segments]);
+  };
+
+  const onTimeLengthChange = (i: number, time: number, length: number) => {
+    (segments[i] as GlideSegment).time = time;
+    (segments[i] as GlideSegment).length = length;
     setSegments([...segments]);
   };
 
@@ -145,20 +146,10 @@ export default ({
                   />
                 )}
                 {segment.transform === 'glide' && (
-                  <>
-                    <input
-                      type="number"
-                      placeholder="time"
-                      value={segment.time.toString()}
-                      onInput={(evt) => setNumberField(i, 'time', (evt.target as HTMLInputElement).value)}
-                    />
-                    <input
-                      type="number"
-                      placeholder="length"
-                      value={segment.length.toString()}
-                      onInput={(evt) => setNumberField(i, 'length', (evt.target as HTMLInputElement).value)}
-                    />
-                  </>
+                  <TimeLengthInput
+                    segment={segment}
+                    onChange={(time, length) => onTimeLengthChange(i, time, length)}
+                  />
                 )}
               </div>
             ))
