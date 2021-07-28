@@ -20,4 +20,7 @@ module.exports = {
       dest: '/index.html',
     },
   ],
+  buildOptions: {
+    out: '../docs',
+  },
 };

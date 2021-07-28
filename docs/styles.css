@@ -1,31 +1,347 @@
-body {
-  margin: 0;
-  background-color: black;
-  font-size: 1.3rem;
-}
-video {
-  z-index: -1;
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  inset: 0 0 0 0;
-  object-fit: cover;
-  filter: brightness(0.3);
-}
-.text {
-  color: white;
+/* globals */
+:root {
   font-family: 'Courier New', Courier, monospace;
-  width: 95%;
-  max-width: 550px;
-  margin: 10em auto;
-}
-hr {
-  border: 1px solid white;
-  margin: 2em 0;
 }
 a {
-  color: white;
+  color: black;
 }
 a:hover {
-  color: grey;
+  opacity: 0.5;
+}
+button {
+  font: inherit;
+}
+h1 {
+  margin: 0 0 48px 0;
+}
+hr {
+  border: none;
+  border-bottom: 1px solid black;
+  margin: 24px 0;
+}
+input {
+  font: inherit;
+}
+input[type=number],
+input[type=text] {
+  border: 1px solid black;
+}
+select {
+  font: inherit;
+  border: 1px solid black;
+  background-color: white;
+}
+select:hover {
+  cursor: pointer;
+}
+
+/* utilities */
+.u-icon-button {
+  border: none;
+  background: transparent;
+  width: 32px;
+  height: 32px;
+}
+.u-icon-button:hover {
+  opacity: 0.5;
+  cursor: pointer;
+}
+.u-normal-button {
+  border: 1px solid black;
+  background-color: white;
+  padding: 12px;
+}
+.u-normal-button:hover {
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+/* app */
+.App {
+  position: fixed;
+  inset: 0 0 0 0;
+	display: flex;
+  overflow: hidden;
+}
+nav {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid black;
+}
+nav a {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+nav a:hover {
+  opacity: 0.5;
+}
+@media screen and (max-width: 1000px) {
+  .App {
+    flex-direction: column;
+  }
+  nav {
+    width: 100%;
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid black;
+  }
+}
+
+/* home */
+.Home {
+  width: calc(100vw - 49px);
+  display: flex;
+}
+.Home .article {
+  width: 50%;
+  margin: 24px;
+}
+.Home .ctas {
+  padding: 48px 0;
+}
+.Home .cta {
+  display: inline-flex;
+  padding: 12px;
+  color: black;
+  border: 1px solid black;
+  background-color: white;
+  align-items: center;
+  text-decoration: none;
+}
+.Home .cta + .cta {
+  margin-left: 12px;
+}
+.Home .cta:hover {
+  color: black;
+  opacity: 0.5;
+}
+.Home .cta img {
+  margin-right: 12px;
+}
+.Home .media {
+  width: 50%;
+}
+.Home .media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@media screen and (max-width: 1000px) {
+  .Home {
+    width: 100%;
+    height: calc(100vh - 49px);
+    overflow-y: auto;
+  }
+  .Home .article {
+    width: 100%;
+  }
+  .Home .media {
+    display: none;
+  }
+  .Home .ctas {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .Home .cta + .cta {
+    margin-left: 0;
+    margin-top: 12px;
+  }
+}
+
+/* studio */
+.Studio {
+  width: calc(100vw - 49px);
+  display: grid;
+  background-color: black;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+}
+@media screen and (max-width: 1000px) {
+}
+
+/* about */
+.About {
+  width: 100%;
+  height: 100vh;
+  overflow-y: auto;
+}
+.About .article {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 24px;
+  max-width: 700px;
+  margin: auto;
+}
+.About h2:hover {
+  opacity: 0.5;
+  cursor: pointer;
+}
+.About section:not(.--expanded) .section-content {
+  display: none;
+}
+.About section:not(.--expanded) .minus {
+  display: none;
+}
+.About section.--expanded .plus {
+  display: none;
+}
+@media screen and (max-width: 1000px) {
+}
+
+/* Modal */
+.Modal {
+  position: fixed;
+  inset: 0 0 0 0;
+  background-color: rgba(0,0,0,0.5);
+}
+.Modal .box {
+  position: absolute;
+  inset: 96px;
+}
+
+/* Videos */
+.Videos {
+  padding: 12px;
+  overflow-y: auto;
+  background-color: white;
+}
+.Videos .media {
+  height: 48px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+.Videos .thumb {
+  width: 96px;
+  height: 100%;
+  object-fit: cover;
+}
+.Videos .thumb:hover {
+  cursor: pointer;
+}
+.Videos .name {
+  width: calc(100% - 152px);
+  padding: 0 12px;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.Videos .preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Segments */
+.Segments {
+  padding: 12px;
+  overflow-y: auto;
+  background-color: white;
+}
+.Segments .row {
+  display: flex;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.Segments .transform {
+  width: 120px;
+}
+.Segments .src {
+  width: calc(100% - 444px);
+  margin-left: 12px;
+}
+.Segments input[type=number] {
+  width: 192px;
+  margin-left: 12px;
+}
+
+/* StartEndInput */
+.StartEndInput,
+.TimeLengthInput {
+  width: 192px;
+  margin-left: 12px;
+}
+.StartEndInput .display-button,
+.TimeLengthInput .display-button {
+  padding-top: 0;
+  padding-bottom: 0;
+  width: 100%;
+}
+.StartEndInput .modal-content,
+.TimeLengthInput .modal-content {
+  height: 100%;
+  background: white;
+  padding: 48px;
+  box-sizing: border-box;
+}
+.StartEndInput .videos {
+  display: flex;
+}
+.StartEndInput .videos > div {
+  flex-basis: 0;
+  flex-grow: 1;
+}
+.StartEndInput video {
+  width: 100%;
+}
+.StartEndInput input,
+.TimeLengthInput input {
+  width: 100%;
+}
+.TimeLengthInput video {
+  max-height: 30vh;
+  margin: auto;
+  display: block;
+}
+.StartEndInput .buttons,
+.TimeLengthInput .buttons {
+  text-align: right;
+  margin-top: 12px;
+}
+.StartEndInput .cancel,
+.TimeLengthInput .cancel {
+  margin-right: 12px;
+}
+
+/* Render */
+.Render {
+  padding: 12px;
+  overflow-y: auto;
+  background-color: white;
+}
+
+/* Result */
+.Result-empty {
+  padding: 12px;
+  overflow-y: auto;
+  background-color: white;
+}
+.Result-done {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+}
+.Result-done .desc {
+  background-color: white;
+  padding: 12px;
+  overflow-y: auto;
+}
+.Result-done .thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.Result-done .thumb:hover {
+  cursor: pointer;
+}
+.Result-done .preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }

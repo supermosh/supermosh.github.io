@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "snowpack dev"
+    "dev": "snowpack dev",
+    "build": "snowpack build"
   },
   "devDependencies": {
     "@snowpack/plugin-typescript": "^1.2.1",
