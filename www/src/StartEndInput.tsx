@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CopySegment, MovementSegment } from 'supermosh';
 import Modal from './Modal';
 
@@ -15,6 +15,7 @@ export default ({
   const startVideo = useRef<HTMLVideoElement>(null);
   const loopVideo = useRef<HTMLVideoElement>(null);
   const endVideo = useRef<HTMLVideoElement>(null);
+  const loopTimeoutId = useRef<number>(0);
 
   const onStartChange = (newStart: number) => {
     setStart(newStart);
@@ -34,11 +35,40 @@ export default ({
     }
   };
 
+  const loop = () => {
+    if (!loopVideo.current) return;
+    if (end === start) {
+      loopVideo.current.currentTime = start;
+      loopVideo.current.pause();
+      return;
+    }
+    loopVideo.current.currentTime = start;
+    if (loopVideo.current.paused) loopVideo.current.play();
+    loopTimeoutId.current = setTimeout(loop, (end - start) * 1000);
+  };
+
+  const cancel = () => {
+    setEditing(false);
+    setStart(segment.start);
+    setEnd(segment.end);
+  };
+
+  const save = () => {
+    setEditing(false);
+    onChange(start, end);
+  };
+
+  useEffect(() => {
+    if (!loopVideo.current) return;
+    if (loopTimeoutId.current) clearTimeout(loopTimeoutId.current);
+    loop();
+  }, [start, end, editing]);
+
   return (
     <div className="StartEndInput">
       <button
         type="button"
-        className="u-normal-button"
+        className="u-normal-button display-button"
         onClick={() => setEditing(true)}
       >
         {`${segment.start}s-${segment.end}s`}
@@ -48,31 +78,62 @@ export default ({
         <Modal onClose={() => setEditing(false)}>
           <div className="modal-content">
             <div className="videos">
-              <video src={segment.src} ref={startVideo} />
-              <video src={segment.src} ref={loopVideo} />
-              <video src={segment.src} ref={endVideo} />
+              <div>
+                <div>
+                  <video src={segment.src} ref={startVideo} />
+                </div>
+                <div>
+                  {`Start: ${start}s`}
+                </div>
+                <div>
+                  <input
+                    type="range"
+                    min="0"
+                    max={loopVideo.current?.duration}
+                    step="0.1"
+                    value={start}
+                    onChange={(evt) => onStartChange(+evt.target.value)}
+                  />
+                </div>
+              </div>
+              <div>
+                <video src={segment.src} ref={loopVideo} muted />
+                <div>
+                  {`Duration: ${(end - start).toFixed(1)}s`}
+                </div>
+              </div>
+              <div>
+                <video src={segment.src} ref={endVideo} />
+                <div>
+                  {`End: ${end}s`}
+                </div>
+                <div>
+                  <input
+                    type="range"
+                    min="0"
+                    max={loopVideo.current?.duration}
+                    step="0.1"
+                    value={end}
+                    onChange={(evt) => onEndChange(+evt.target.value)}
+                  />
+                </div>
+              </div>
             </div>
-            <div className="row">
-              <input
-                type="range"
-                min="0"
-                max={loopVideo.current?.duration}
-                step="0.1"
-                value={start}
-                onChange={(evt) => onStartChange(+evt.target.value)}
-              />
-              {`Start: ${start}s`}
-            </div>
-            <div className="row">
-              <input
-                type="range"
-                min="0"
-                max={loopVideo.current?.duration}
-                step="0.1"
-                value={end}
-                onChange={(evt) => onEndChange(+evt.target.value)}
-              />
-              {`End: ${end}s`}
+            <div className="buttons">
+              <button
+                type="button"
+                className="u-normal-button cancel"
+                onClick={cancel}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="u-normal-button save"
+                onClick={save}
+              >
+                Save
+              </button>
             </div>
           </div>
         </Modal>

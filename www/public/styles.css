@@ -265,7 +265,7 @@ nav a:hover {
   width: 192px;
   margin-left: 12px;
 }
-.StartEndInput button {
+.StartEndInput .display-button {
   padding-top: 0;
   padding-bottom: 0;
   width: 100%;
@@ -279,16 +279,22 @@ nav a:hover {
 .StartEndInput .videos {
   display: flex;
 }
-.StartEndInput .videos video {
-  width: 33%;
+.StartEndInput .videos > div {
+  flex-basis: 0;
+  flex-grow: 1;
 }
-.StartEndInput .row {
-  padding: 12px 0;
-  display: flex;
-  align-items: center;
+.StartEndInput video {
+  width: 100%;
 }
-.StartEndInput .row input {
-  margin-right: 24px;
+.StartEndInput input {
+  width: 100%;
+}
+.StartEndInput .buttons {
+  text-align: right;
+  margin-top: 12px;
+}
+.StartEndInput .cancel {
+  margin-right: 12px;
 }
 
 /* Render */
