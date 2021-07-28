@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -8,16 +9,16 @@ export default () => (
       <p>Datamosh is the coolest video effect but it&apos;s currently a pain in the ass to achieve: you have to use software from 20 years ago, use the command line, and struggle with the complex technicalities of video codecs. Either this or pay for expensive datamosh plugins to even more expensive video editing tools.</p>
       <p>The mission of Supermosh is to empower artists to create interesting visuals while being restrained by neither the complexity of the underlying technology nor the price barrier. As such, Supermosh is:</p>
       <p>
-        <strong>Simple</strong>
-        : upload your videos, define your effects, download your edit. That&apos;s it.
+        <strong>Simple</strong>: upload your videos, define your effects, download your edit. That&apos;s it.
       </p>
       <p>
-        <strong>Free</strong>
-        : and I mean, actually free, not free in exchange for personal data, an account creation, or anything.
+        <strong>Powerful</strong>: Supermosh allows you to preview your output and tweak parameters, unlike traditional datamoshing using Avidemux.
       </p>
       <p>
-        <strong>Powerful</strong>
-        : Supermosh allows you to preview your output, unlike traditional datamoshing using Avidemux
+        <strong>Free</strong>: and I mean, actually free, not free in exchange for personal data, an account creation, or anything.
+      </p>
+      <p>
+        That being said, you are encouraged to mention me when posting Supermosh-generated visuals! I&apos;m <a href="https://ninofiliu.com" target="_blank" rel="noreferrer noopener">Nino Filiu</a>, I&apos;m on <a href="https://www.instagram.com/ssttaacckkyy/" target="_blank" rel="noreferrer noopener">Instagram</a> and <a href="https://twitter.com/ninofiliu" target="_blank" rel="noreferrer noopener">Twitter</a>.
       </p>
       <div className="ctas">
         <Link className="cta" to="/studio">
@@ -38,20 +39,6 @@ export default () => (
         !
       </p>
       <p>
-        A project by
-        {' '}
-        <a href="https://ninofiliu.com" target="_blank" rel="noreferrer noopener">Nino Filiu</a>
-        {' '}
-        -
-        {' '}
-        <a href="https://www.instagram.com/ssttaacckkyy/" target="_blank" rel="noreferrer noopener">Instagram</a>
-        {' '}
-        /
-        {' '}
-        <a href="https://twitter.com/ninofiliu" target="_blank" rel="noreferrer noopener">Twitter</a>
-        {' '}
-        /
-        {' '}
         <a href="https://github.com/supermosh/supermosh.github.io" target="_blank" rel="noreferrer noopener">Source Code</a>
       </p>
     </div>
