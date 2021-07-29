@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "snowpack dev",
-    "build": "snowpack build"
+    "build": "rm -rf ../docs && snowpack build && touch ../docs/.nojekyll"
   },
   "devDependencies": {
     "@snowpack/plugin-typescript": "^1.2.1",
