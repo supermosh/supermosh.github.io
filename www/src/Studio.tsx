@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Segment } from 'supermosh';
+import mixpanel from 'mixpanel-browser';
 import Videos from './Videos';
 import Segments from './Segments';
 import { Output, SavedSegment, Video } from './types';
@@ -18,6 +19,7 @@ export default () => {
     (async () => {
       const savedFiles = await filesStore.getAll();
       if (savedFiles.length && window.confirm('Restore previous work?')) {
+        mixpanel.track('restored previous work');
         const savedVideos = await Promise.all(savedFiles.map(savedFileToVideo));
         setVideos(savedVideos);
         const savedSegments = await segmentsStore.getAll();
@@ -27,6 +29,9 @@ export default () => {
         }
         setSegments(savedSegments);
       } else {
+        if (savedFiles.length) {
+          mixpanel.track('ignored previous work restored');
+        }
         await Promise.all([
           filesStore.clear(),
           segmentsStore.clear(),
@@ -48,6 +53,9 @@ export default () => {
       await segmentsStore.save(savedSegments);
     })();
   }, [segments]);
+
+  useEffect(() => mixpanel.track('update videos', { dimensions: videos.map((video) => ({ width: video.width, height: video.height })) }), [videos]);
+  useEffect(() => mixpanel.track('update segments', { segments }), [segments]);
 
   return (
     <div className="Studio">

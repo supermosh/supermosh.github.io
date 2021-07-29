@@ -1,11 +1,18 @@
-import React from 'react';
-import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Switch, Route, Link, useLocation } from 'react-router-dom';
+import mixpanel from 'mixpanel-browser';
 import Home from './Home';
 import About from './About';
 import Studio from './Studio';
 
-export default () => (
-  <BrowserRouter>
+const Main = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    mixpanel.track('navigation', { pathname: location.pathname });
+  }, [location]);
+
+  return (
     <div className="App">
       <nav>
         <Link to="/"><img src="/icons/home.svg" alt="home icon" /></Link>
@@ -18,5 +25,11 @@ export default () => (
         <Route path="/"><Home /></Route>
       </Switch>
     </div>
+  );
+};
+
+export default () => (
+  <BrowserRouter>
+    <Main />
   </BrowserRouter>
 );
