@@ -24,7 +24,15 @@ export default () => /* @__PURE__ */ React.createElement("div", {
 }, /* @__PURE__ */ React.createElement("img", {
   src: "/icons/studio.svg",
   alt: "studio icon"
-}), " ", "Start glitching"), /* @__PURE__ */ React.createElement(Link, {
+}), " ", "Start glitching"), /* @__PURE__ */ React.createElement("a", {
+  className: "cta",
+  href: "https://youtu.be/1Hm_OtV2SSg",
+  target: "_blank",
+  rel: "noreferrer noopener"
+}, /* @__PURE__ */ React.createElement("img", {
+  src: "/icons/tutorial.svg",
+  alt: "tutorial icon"
+}), " ", "Watch tutorial"), /* @__PURE__ */ React.createElement(Link, {
   className: "cta",
   to: "/about"
 }, /* @__PURE__ */ React.createElement("img", {

@@ -154,14 +154,25 @@ nav a:hover {
 
 /* studio */
 .Studio {
-  width: calc(100vw - 49px);
-  display: grid;
-  background-color: black;
-  grid-template-rows: repeat(2, minmax(0, 1fr));
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
+}
+@media screen and (min-width: 1000px) {
+  .Studio {
+    width: calc(100vw - 49px);
+    display: grid;
+    background-color: black;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+  }
 }
 @media screen and (max-width: 1000px) {
+  .Studio {
+    max-height: calc(100vh - 49px);
+    overflow-y: auto;
+  }
+  .Studio > * {
+    border-bottom: 1px solid black;
+  }
 }
 
 /* about */
@@ -198,6 +209,7 @@ nav a:hover {
   position: fixed;
   inset: 0 0 0 0;
   background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
 }
 .Modal .box {
   position: absolute;
@@ -322,11 +334,12 @@ nav a:hover {
   background-color: white;
 }
 .Result-done {
+  background-color: black;
   display: grid;
   grid-template-rows: repeat(2, minmax(0, 1fr));
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1px;
-}
+} 
 .Result-done .desc {
   background-color: white;
   padding: 12px;
