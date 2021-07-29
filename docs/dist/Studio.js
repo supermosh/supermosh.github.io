@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from "../_snowpack/pkg/react.js";
+import mixpanel from "../_snowpack/pkg/mixpanel-browser.js";
 import Videos from "./Videos.js";
 import Segments from "./Segments.js";
 import Render from "./Render.js";
@@ -14,6 +15,7 @@ export default () => {
     (async () => {
       const savedFiles = await filesStore.getAll();
       if (savedFiles.length && window.confirm("Restore previous work?")) {
+        mixpanel.track("restored previous work");
         const savedVideos = await Promise.all(savedFiles.map(savedFileToVideo));
         setVideos(savedVideos);
         const savedSegments = await segmentsStore.getAll();
@@ -23,6 +25,9 @@ export default () => {
         }
         setSegments(savedSegments);
       } else {
+        if (savedFiles.length) {
+          mixpanel.track("ignored previous work restored");
+        }
         await Promise.all([
           filesStore.clear(),
           segmentsStore.clear()
@@ -43,6 +48,8 @@ export default () => {
       await segmentsStore.save(savedSegments);
     })();
   }, [segments]);
+  useEffect(() => mixpanel.track("update videos", {dimensions: videos.map((video) => ({width: video.width, height: video.height}))}), [videos]);
+  useEffect(() => mixpanel.track("update segments", {segments}), [segments]);
   return /* @__PURE__ */ React.createElement("div", {
     className: "Studio"
   }, /* @__PURE__ */ React.createElement(Videos, {
