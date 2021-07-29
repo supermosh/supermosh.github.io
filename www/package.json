@@ -1,7 +1,6 @@
 {
   "scripts": {
-    "dev": "snowpack dev",
-    "build": "rm -rf ../docs && snowpack build && touch ../docs/.nojekyll"
+    "dev": "snowpack dev"
   },
   "devDependencies": {
     "@snowpack/plugin-typescript": "^1.2.1",
@@ -19,12 +18,13 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
-    "supermosh": "file:../core",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
     "@types/react-router-dom": "^5.1.8",
+    "mixpanel-browser": "^2.41.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^5.2.0",
+    "supermosh": "file:../core"
   }
 }
