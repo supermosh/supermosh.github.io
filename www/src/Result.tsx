@@ -38,16 +38,19 @@ export default ({ output }: {output: Output}) => {
         <div>{readableVideoSize}</div>
         <div>{`type: ${output.videoType}`}</div>
       </div>
-      <video
-        className="thumb"
-        src={output.videoUrl}
-        muted
-        autoPlay
-        loop
-        onClick={() => setPreviewingVideo(true)}
-        title="Click to preview"
-        onCanPlay={(evt) => setVideoDuration((evt.target as HTMLVideoElement).duration)}
-      />
+      <div>
+        <video
+          className="thumb"
+          src={output.videoUrl}
+          muted
+          autoPlay
+          loop
+          onClick={() => setPreviewingVideo(true)}
+          title="Click to preview"
+          onCanPlay={(evt) => setVideoDuration((evt.target as HTMLVideoElement).duration)}
+        />
+
+      </div>
       <div className="desc">
         <div>Last frame</div>
         <div>{`${output.width}x${output.height}`}</div>
@@ -55,12 +58,15 @@ export default ({ output }: {output: Output}) => {
         <div>{`type: ${output.imageUrl.split(';')[0].split(':')[1]}`}</div>
         {output.imageUrl.length}
       </div>
-      <img
-        className="thumb"
-        src={output.imageUrl}
-        alt=""
-        onClick={() => setPreviewingImage(true)}
-      />
+      <div>
+        <img
+          className="thumb"
+          src={output.imageUrl}
+          alt=""
+          onClick={() => setPreviewingImage(true)}
+        />
+
+      </div>
 
       {previewingVideo && (
         <Modal onClose={() => setPreviewingVideo(false)}>
