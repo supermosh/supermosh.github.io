@@ -1,4 +1,4 @@
-![cover](./cover.png)
+![cover](./www/public/media/cover.png)
 
 # Supermosh
 
