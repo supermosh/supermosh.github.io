@@ -4,8 +4,12 @@
 
 An experiment to enable datamoshing in the browser
 
-Try it out! [supermosh.github.io](https://supermosh.github.io/)
+[⏯️ Try it out!](https://supermosh.github.io/)
 
-This repository contains the [core library](./core) and [the source behind the website](./www). Docs related to the core lib are coming!
+[📺 Watch the tutorial](https://www.youtube.com/watch?v=1Hm_OtV2SSg)
 
-By Nino Filiu - [ninofiliu.com](https://ninofiliu.com) / [github.com/ninofiliu](https://github.com/ninofiliu/) / [twitter.com/ninofiliu](https://twitter.com/ninofiliu) / [instagram.com/ssttaacckkyy](https://www.instagram.com/ssttaacckkyy/)
+🔧 core library is under [./core](./core) (docs coming soon)
+
+🕸️ website code is under [./www](./www)
+
+🧑‍💻 by Nino Filiu - [ninofiliu.com](https://ninofiliu.com) / [github.com/ninofiliu](https://github.com/ninofiliu/) / [twitter.com/ninofiliu](https://twitter.com/ninofiliu) / [instagram.com/ssttaacckkyy](https://www.instagram.com/ssttaacckkyy/)
