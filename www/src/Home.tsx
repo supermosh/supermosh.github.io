@@ -26,6 +26,11 @@ export default () => (
           {' '}
           Start glitching
         </Link>
+        <a className="cta" href="https://youtu.be/1Hm_OtV2SSg" target="_blank" rel="noreferrer noopener">
+          <img src="/icons/tutorial.svg" alt="tutorial icon" />
+          {' '}
+          Watch tutorial
+        </a>
         <Link className="cta" to="/about">
           <img src="/icons/info.svg" alt="info icon" />
           {' '}

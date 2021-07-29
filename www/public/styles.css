@@ -209,6 +209,7 @@ nav a:hover {
   position: fixed;
   inset: 0 0 0 0;
   background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
 }
 .Modal .box {
   position: absolute;
@@ -338,7 +339,7 @@ nav a:hover {
   grid-template-rows: repeat(2, minmax(0, 1fr));
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1px;
-}
+} 
 .Result-done .desc {
   background-color: white;
   padding: 12px;
