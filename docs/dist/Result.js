@@ -27,7 +27,7 @@ export default ({output}) => {
     className: "Result-done"
   }, /* @__PURE__ */ React.createElement("div", {
     className: "desc"
-  }, /* @__PURE__ */ React.createElement("div", null, "Video"), /* @__PURE__ */ React.createElement("div", null, `${output.width}x${output.height}`), /* @__PURE__ */ React.createElement("div", null, readableVideoDuration), /* @__PURE__ */ React.createElement("div", null, readableVideoSize), /* @__PURE__ */ React.createElement("div", null, `type: ${output.videoType}`)), /* @__PURE__ */ React.createElement("video", {
+  }, /* @__PURE__ */ React.createElement("div", null, "Video"), /* @__PURE__ */ React.createElement("div", null, `${output.width}x${output.height}`), /* @__PURE__ */ React.createElement("div", null, readableVideoDuration), /* @__PURE__ */ React.createElement("div", null, readableVideoSize), /* @__PURE__ */ React.createElement("div", null, `type: ${output.videoType}`)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("video", {
     className: "thumb",
     src: output.videoUrl,
     muted: true,
@@ -36,14 +36,14 @@ export default ({output}) => {
     onClick: () => setPreviewingVideo(true),
     title: "Click to preview",
     onCanPlay: (evt) => setVideoDuration(evt.target.duration)
-  }), /* @__PURE__ */ React.createElement("div", {
+  })), /* @__PURE__ */ React.createElement("div", {
     className: "desc"
-  }, /* @__PURE__ */ React.createElement("div", null, "Last frame"), /* @__PURE__ */ React.createElement("div", null, `${output.width}x${output.height}`), /* @__PURE__ */ React.createElement("div", null, readableImageSize), /* @__PURE__ */ React.createElement("div", null, `type: ${output.imageUrl.split(";")[0].split(":")[1]}`), output.imageUrl.length), /* @__PURE__ */ React.createElement("img", {
+  }, /* @__PURE__ */ React.createElement("div", null, "Last frame"), /* @__PURE__ */ React.createElement("div", null, `${output.width}x${output.height}`), /* @__PURE__ */ React.createElement("div", null, readableImageSize), /* @__PURE__ */ React.createElement("div", null, `type: ${output.imageUrl.split(";")[0].split(":")[1]}`), output.imageUrl.length), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("img", {
     className: "thumb",
     src: output.imageUrl,
     alt: "",
     onClick: () => setPreviewingImage(true)
-  }), previewingVideo && /* @__PURE__ */ React.createElement(Modal, {
+  })), previewingVideo && /* @__PURE__ */ React.createElement(Modal, {
     onClose: () => setPreviewingVideo(false)
   }, /* @__PURE__ */ React.createElement("video", {
     className: "preview",
