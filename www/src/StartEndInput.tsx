@@ -44,7 +44,7 @@ export default ({
     }
     loopVideo.current.currentTime = start;
     if (loopVideo.current.paused) loopVideo.current.play();
-    loopTimeoutId.current = setTimeout(loop, (end - start) * 1000);
+    loopTimeoutId.current = window.setTimeout(loop, (end - start) * 1000);
   };
 
   const cancel = () => {
