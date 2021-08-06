@@ -38,7 +38,7 @@ const fps = 30;
 const size = 16;
 const xyShifts = [0, 1, -1, 2, -2, 4, -4, 8, -8];
 
-const getShift = (previous: ImageData, real: ImageData) => {
+export const getShift = (previous: ImageData, real: ImageData) => {
   const { width, height } = previous;
   const shift: Shift = {};
 
@@ -80,7 +80,7 @@ const getShift = (previous: ImageData, real: ImageData) => {
   return shift;
 };
 
-const approximate = (previous: ImageData, shift: Shift): ImageData => {
+export const approximate = (previous: ImageData, shift: Shift): ImageData => {
   const { width, height } = previous;
   const out = new ImageData(width, height);
 
