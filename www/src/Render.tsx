@@ -22,9 +22,15 @@ export default ({
   const renderRootRef = useRef(null);
   const [rendering, setRendering] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [prepProg, setPrepProg] = useState<number[]>([]);
+  const [runProg, setRunProg] = useState<number[]>([]);
 
   const render = async () => {
     try {
+      prepProg.splice(0, prepProg.length, ...segments.map(() => 0));
+      setPrepProg([...prepProg]);
+      runProg.splice(0, prepProg.length, ...segments.map(() => 0));
+      setRunProg([...runProg]);
       setRendering(true);
       setError(null);
       mixpanel.track('begin render', { segments });
@@ -43,12 +49,17 @@ export default ({
       }
 
       const preparedSegments: PreparedSegment[] = [];
-      for (const segment of segments) {
+      for (let i = 0; i < segments.length; i++) {
+        const segment = segments[i];
+        prepProg[i] = 0.5;
+        setPrepProg([...prepProg]);
         switch (segment.transform) {
           case 'copy': preparedSegments.push(segment); break;
           case 'glide': preparedSegments.push(await prepareGlideSegment(segment, renderRootRef.current)); break;
           case 'movement': preparedSegments.push(await prepareMovementSegment(segment, renderRootRef.current)); break;
         }
+        prepProg[i] = 1;
+        setPrepProg([...prepProg]);
       }
 
       const canvas = document.createElement('canvas');
@@ -63,12 +74,17 @@ export default ({
       const recorder = new MediaRecorder(stream);
       recorder.start();
 
-      for (const segment of preparedSegments) {
+      for (let i = 0; i < preparedSegments.length; i++) {
+        const segment = preparedSegments[i];
+        runProg[i] = 0.5;
+        setRunProg([...runProg]);
         switch (segment.transform) {
           case 'copy': await runCopySegment(segment, ctx, renderRootRef.current); break;
           case 'glide': await runGlideSegment(segment, ctx); break;
           case 'movement': await runMovementSegment(segment, ctx); break;
         }
+        runProg[i] = 1;
+        setRunProg([...runProg]);
       }
 
       recorder.addEventListener('dataavailable', async (evt) => {
@@ -104,6 +120,22 @@ export default ({
       {rendering ? (
         <>
           <p>Rendering in progress...</p>
+          <div>
+            {prepProg.map((prog, i) => (
+              <div key={i}>
+                <progress value={prog} />
+                {`Preparing segment ${i}/${segments.length} (${segments[i].transform})`}
+              </div>
+            ))}
+          </div>
+          <div>
+            {runProg.map((prog, i) => (
+              <div key={i}>
+                <progress value={prog} />
+                {`Running segment ${i}/${segments.length} (${segments[i].transform})`}
+              </div>
+            ))}
+          </div>
           <p>Don&apos;t mind the weird stuff happening below</p>
         </>
       ) : (
