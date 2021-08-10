@@ -357,6 +357,9 @@ nav a:hover {
   overflow-y: auto;
   background-color: white;
 }
+.Render progress {
+  margin-right: 12px;
+}
 
 /* Result */
 .Result-empty {
