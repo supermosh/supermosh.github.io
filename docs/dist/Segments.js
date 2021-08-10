@@ -110,20 +110,20 @@ export default ({
     value: "glide"
   }, "glide"), /* @__PURE__ */ React.createElement("option", {
     value: "movement"
-  }, "movement")), /* @__PURE__ */ React.createElement("select", {
+  }, "movement")), (segment.transform === "copy" || segment.transform === "movement") && /* @__PURE__ */ React.createElement(StartEndInput, {
+    segment,
+    onChange: (start, end) => onStartEndChange(i, start, end)
+  }), segment.transform === "glide" && /* @__PURE__ */ React.createElement(TimeLengthInput, {
+    segment,
+    onChange: (time, length) => onTimeLengthChange(i, time, length)
+  }), /* @__PURE__ */ React.createElement("select", {
     className: "src",
     value: segment.src,
     onInput: (evt) => setSrc(i, evt.target.value)
   }, videos.map((video) => /* @__PURE__ */ React.createElement("option", {
     key: video.key,
     value: video.src
-  }, video.file.name))), (segment.transform === "copy" || segment.transform === "movement") && /* @__PURE__ */ React.createElement(StartEndInput, {
-    segment,
-    onChange: (start, end) => onStartEndChange(i, start, end)
-  }), segment.transform === "glide" && /* @__PURE__ */ React.createElement(TimeLengthInput, {
-    segment,
-    onChange: (time, length) => onTimeLengthChange(i, time, length)
-  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("button", {
+  }, video.file.name))))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("button", {
     type: "button",
     className: "u-normal-button",
     onClick: add
