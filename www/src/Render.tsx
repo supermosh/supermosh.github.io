@@ -51,15 +51,32 @@ export default ({
       const preparedSegments: PreparedSegment[] = [];
       for (let i = 0; i < segments.length; i++) {
         const segment = segments[i];
-        prepProg[i] = 0.5;
-        setPrepProg([...prepProg]);
         switch (segment.transform) {
-          case 'copy': preparedSegments.push(segment); break;
-          case 'glide': preparedSegments.push(await prepareGlideSegment(segment, renderRootRef.current)); break;
-          case 'movement': preparedSegments.push(await prepareMovementSegment(segment, renderRootRef.current)); break;
+          case 'copy':
+            prepProg[i] = 0.5;
+            setPrepProg([...prepProg]);
+            preparedSegments.push(segment);
+            prepProg[i] = 1;
+            setPrepProg([...prepProg]);
+            break;
+          case 'glide':
+            prepProg[i] = 0.5;
+            setPrepProg([...prepProg]);
+            preparedSegments.push(await prepareGlideSegment(segment, renderRootRef.current));
+            prepProg[i] = 1;
+            setPrepProg([...prepProg]);
+            break;
+          case 'movement':
+            prepProg[i] = 0;
+            setPrepProg([...prepProg]);
+            preparedSegments.push(await prepareMovementSegment(segment, renderRootRef.current, (prog) => {
+              prepProg[i] = prog;
+              setPrepProg([...prepProg]);
+            }));
+            prepProg[i] = 1;
+            setPrepProg([...prepProg]);
+            break;
         }
-        prepProg[i] = 1;
-        setPrepProg([...prepProg]);
       }
 
       const canvas = document.createElement('canvas');
@@ -76,15 +93,38 @@ export default ({
 
       for (let i = 0; i < preparedSegments.length; i++) {
         const segment = preparedSegments[i];
-        runProg[i] = 0.5;
-        setRunProg([...runProg]);
         switch (segment.transform) {
-          case 'copy': await runCopySegment(segment, ctx, renderRootRef.current); break;
-          case 'glide': await runGlideSegment(segment, ctx); break;
-          case 'movement': await runMovementSegment(segment, ctx); break;
+          case 'copy':
+            runProg[i] = 0;
+            setRunProg([...runProg]);
+            await runCopySegment(segment, ctx, renderRootRef.current, (prog) => {
+              runProg[i] = prog;
+              setRunProg([...runProg]);
+            });
+            runProg[i] = 1;
+            setRunProg([...runProg]);
+            break;
+          case 'glide':
+            runProg[i] = 0;
+            setRunProg([...runProg]);
+            await runGlideSegment(segment, ctx, (prog) => {
+              runProg[i] = prog;
+              setRunProg([...runProg]);
+            });
+            runProg[i] = 1;
+            setRunProg([...runProg]);
+            break;
+          case 'movement':
+            runProg[i] = 0;
+            setRunProg([...runProg]);
+            await runMovementSegment(segment, ctx, (prog) => {
+              runProg[i] = prog;
+              setRunProg([...runProg]);
+            });
+            runProg[i] = 1;
+            setRunProg([...runProg]);
+            break;
         }
-        runProg[i] = 1;
-        setRunProg([...runProg]);
       }
 
       recorder.addEventListener('dataavailable', async (evt) => {
