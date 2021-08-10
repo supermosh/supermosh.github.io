@@ -130,15 +130,6 @@ export default ({
                   <option value="glide">glide</option>
                   <option value="movement">movement</option>
                 </select>
-                <select
-                  className="src"
-                  value={segment.src}
-                  onInput={(evt) => setSrc(i, (evt.target as HTMLSelectElement).value)}
-                >
-                  {videos.map((video) => (
-                    <option key={video.key} value={video.src}>{video.file.name}</option>
-                  ))}
-                </select>
                 {(segment.transform === 'copy' || segment.transform === 'movement') && (
                   <StartEndInput
                     segment={segment}
@@ -151,6 +142,15 @@ export default ({
                     onChange={(time, length) => onTimeLengthChange(i, time, length)}
                   />
                 )}
+                <select
+                  className="src"
+                  value={segment.src}
+                  onInput={(evt) => setSrc(i, (evt.target as HTMLSelectElement).value)}
+                >
+                  {videos.map((video) => (
+                    <option key={video.key} value={video.src}>{video.file.name}</option>
+                  ))}
+                </select>
               </div>
             ))
           )}
