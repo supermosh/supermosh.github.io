@@ -175,7 +175,11 @@ export const prepareGlideSegment = async (segment: GlideSegment, renderRoot: HTM
   return { ...segment, shift };
 };
 
-export const prepareMovementSegment = async (segment: MovementSegment, renderRoot: HTMLElement): Promise<PreparedMovementSegment> => {
+export const prepareMovementSegment = async (
+  segment: MovementSegment,
+  renderRoot: HTMLElement,
+  onProgress?: (progress: number) => void,
+): Promise<PreparedMovementSegment> => {
   const video = document.createElement('video');
   renderRoot.append(video);
   video.src = segment.src;
@@ -203,6 +207,7 @@ export const prepareMovementSegment = async (segment: MovementSegment, renderRoo
     ctx.drawImage(video, 0, 0);
     const real = ctx.getImageData(0, 0, width, height);
     shifts.push(getShift(previous, real));
+    if (onProgress) onProgress((video.currentTime - segment.start) / (segment.end - segment.start));
   }
 
   video.remove();
@@ -211,7 +216,12 @@ export const prepareMovementSegment = async (segment: MovementSegment, renderRoo
   return { ...segment, shifts };
 };
 
-export const runCopySegment = async (segment: PreparedCopySegment, ctx: CanvasRenderingContext2D, renderRoot: HTMLElement): Promise<void> => {
+export const runCopySegment = async (
+  segment: PreparedCopySegment,
+  ctx: CanvasRenderingContext2D,
+  renderRoot: HTMLElement,
+  onProgress?: (progress: number) => void,
+): Promise<void> => {
   const video = document.createElement('video');
   video.src = segment.src;
   renderRoot.append(video);
@@ -223,24 +233,36 @@ export const runCopySegment = async (segment: PreparedCopySegment, ctx: CanvasRe
     video.currentTime += 1 / fps;
     await elementEvent(video, 'seeked');
     await new Promise((resolve) => requestAnimationFrame(resolve));
+    if (onProgress) onProgress((video.currentTime - segment.start) / (segment.end - segment.start));
   }
   video.remove();
 };
 
-export const runGlideSegment = async (segment: PreparedGlideSegment, ctx: CanvasRenderingContext2D): Promise<void> => {
+export const runGlideSegment = async (
+  segment: PreparedGlideSegment,
+  ctx: CanvasRenderingContext2D,
+  onProgress?: (progress: number) => void,
+): Promise<void> => {
   for (let i = 0; i < segment.length * fps; i++) {
     const previous = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
     const next = approximate(previous, segment.shift);
     ctx.putImageData(next, 0, 0);
     await new Promise((resolve) => requestAnimationFrame(resolve));
+    if (onProgress) onProgress(i / segment.length);
   }
 };
 
-export const runMovementSegment = async (segment: PreparedMovementSegment, ctx: CanvasRenderingContext2D): Promise<void> => {
-  for (const shift of segment.shifts) {
+export const runMovementSegment = async (
+  segment: PreparedMovementSegment,
+  ctx: CanvasRenderingContext2D,
+  onProgress?: (progress: number) => void,
+): Promise<void> => {
+  for (let i = 0; i < segment.shifts.length; i++) {
+    const shift = segment.shifts[i];
     const previous = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
     const next = approximate(previous, shift);
     ctx.putImageData(next, 0, 0);
     await new Promise((resolve) => requestAnimationFrame(resolve));
+    if (onProgress) onProgress(i / segment.shifts.length);
   }
 };
