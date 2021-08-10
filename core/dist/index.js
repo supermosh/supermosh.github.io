@@ -119,7 +119,7 @@ export const prepareGlideSegment = async (segment, renderRoot) => {
     canvas.remove();
     return { ...segment, shift };
 };
-export const prepareMovementSegment = async (segment, renderRoot) => {
+export const prepareMovementSegment = async (segment, renderRoot, onProgress) => {
     const video = document.createElement('video');
     renderRoot.append(video);
     video.src = segment.src;
@@ -142,12 +142,14 @@ export const prepareMovementSegment = async (segment, renderRoot) => {
         ctx.drawImage(video, 0, 0);
         const real = ctx.getImageData(0, 0, width, height);
         shifts.push(getShift(previous, real));
+        if (onProgress)
+            onProgress((video.currentTime - segment.start) / (segment.end - segment.start));
     }
     video.remove();
     canvas.remove();
     return { ...segment, shifts };
 };
-export const runCopySegment = async (segment, ctx, renderRoot) => {
+export const runCopySegment = async (segment, ctx, renderRoot, onProgress) => {
     const video = document.createElement('video');
     video.src = segment.src;
     renderRoot.append(video);
@@ -159,22 +161,29 @@ export const runCopySegment = async (segment, ctx, renderRoot) => {
         video.currentTime += 1 / fps;
         await elementEvent(video, 'seeked');
         await new Promise((resolve) => requestAnimationFrame(resolve));
+        if (onProgress)
+            onProgress((video.currentTime - segment.start) / (segment.end - segment.start));
     }
     video.remove();
 };
-export const runGlideSegment = async (segment, ctx) => {
+export const runGlideSegment = async (segment, ctx, onProgress) => {
     for (let i = 0; i < segment.length * fps; i++) {
         const previous = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
         const next = approximate(previous, segment.shift);
         ctx.putImageData(next, 0, 0);
         await new Promise((resolve) => requestAnimationFrame(resolve));
+        if (onProgress)
+            onProgress(i / segment.length);
     }
 };
-export const runMovementSegment = async (segment, ctx) => {
-    for (const shift of segment.shifts) {
+export const runMovementSegment = async (segment, ctx, onProgress) => {
+    for (let i = 0; i < segment.shifts.length; i++) {
+        const shift = segment.shifts[i];
         const previous = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
         const next = approximate(previous, shift);
         ctx.putImageData(next, 0, 0);
         await new Promise((resolve) => requestAnimationFrame(resolve));
+        if (onProgress)
+            onProgress(i / segment.shifts.length);
     }
 };
