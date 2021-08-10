@@ -201,8 +201,6 @@ nav a:hover {
 .About section.--expanded .plus {
   display: none;
 }
-@media screen and (max-width: 1000px) {
-}
 
 /* Modal */
 .Modal {
@@ -248,6 +246,11 @@ nav a:hover {
   height: 100%;
   object-fit: contain;
 }
+@media screen and (max-width: 1000px) {
+  .Videos {
+    padding: 48px 12px;
+  }
+}
 
 /* Segments */
 .Segments {
@@ -267,9 +270,23 @@ nav a:hover {
   width: calc(100% - 444px);
   margin-left: 12px;
 }
-.Segments input[type=number] {
-  width: 192px;
-  margin-left: 12px;
+@media screen and (max-width: 1000px) {
+  .Segments {
+    padding: 48px 12px;
+  }
+}
+@media screen and (max-width: 1250px) {
+  .Segments .row {
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .Segments .src {
+    width: 100%;
+    margin-left: 0;
+  }
+  .Segments .transform {
+    width: calc(50% - 54px);
+  }
 }
 
 /* StartEndInput */
@@ -309,6 +326,8 @@ nav a:hover {
   max-height: 30vh;
   margin: auto;
   display: block;
+  width: 100%;
+  object-fit: contain;
 }
 .StartEndInput .buttons,
 .TimeLengthInput .buttons {
@@ -319,12 +338,27 @@ nav a:hover {
 .TimeLengthInput .cancel {
   margin-right: 12px;
 }
+@media screen and (max-width: 1250px) {
+  .StartEndInput,
+  .TimeLengthInput {
+    width: calc(50% - 54px);
+  }
+  
+}
+@media screen and (max-width: 1000px) {
+  .StartEndInput .videos {
+    flex-direction: column;
+  }
+}
 
 /* Render */
 .Render {
   padding: 12px;
   overflow-y: auto;
   background-color: white;
+}
+.Render progress {
+  margin-right: 12px;
 }
 
 /* Result */

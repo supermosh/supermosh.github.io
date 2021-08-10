@@ -15,8 +15,14 @@ export default ({
   const renderRootRef = useRef(null);
   const [rendering, setRendering] = useState(false);
   const [error, setError] = useState(null);
+  const [prepProg, setPrepProg] = useState([]);
+  const [runProg, setRunProg] = useState([]);
   const render = async () => {
     try {
+      prepProg.splice(0, prepProg.length, ...segments.map(() => 0));
+      setPrepProg([...prepProg]);
+      runProg.splice(0, prepProg.length, ...segments.map(() => 0));
+      setRunProg([...runProg]);
       setRendering(true);
       setError(null);
       mixpanel.track("begin render", {segments});
@@ -29,16 +35,32 @@ export default ({
         }
       }
       const preparedSegments = [];
-      for (const segment of segments) {
+      for (let i = 0; i < segments.length; i++) {
+        const segment = segments[i];
         switch (segment.transform) {
           case "copy":
+            prepProg[i] = 0.5;
+            setPrepProg([...prepProg]);
             preparedSegments.push(segment);
+            prepProg[i] = 1;
+            setPrepProg([...prepProg]);
             break;
           case "glide":
+            prepProg[i] = 0.5;
+            setPrepProg([...prepProg]);
             preparedSegments.push(await prepareGlideSegment(segment, renderRootRef.current));
+            prepProg[i] = 1;
+            setPrepProg([...prepProg]);
             break;
           case "movement":
-            preparedSegments.push(await prepareMovementSegment(segment, renderRootRef.current));
+            prepProg[i] = 0;
+            setPrepProg([...prepProg]);
+            preparedSegments.push(await prepareMovementSegment(segment, renderRootRef.current, (prog) => {
+              prepProg[i] = prog;
+              setPrepProg([...prepProg]);
+            }));
+            prepProg[i] = 1;
+            setPrepProg([...prepProg]);
             break;
         }
       }
@@ -51,16 +73,38 @@ export default ({
       const stream = canvas.captureStream();
       const recorder = new MediaRecorder(stream);
       recorder.start();
-      for (const segment of preparedSegments) {
+      for (let i = 0; i < preparedSegments.length; i++) {
+        const segment = preparedSegments[i];
         switch (segment.transform) {
           case "copy":
-            await runCopySegment(segment, ctx, renderRootRef.current);
+            runProg[i] = 0;
+            setRunProg([...runProg]);
+            await runCopySegment(segment, ctx, renderRootRef.current, (prog) => {
+              runProg[i] = prog;
+              setRunProg([...runProg]);
+            });
+            runProg[i] = 1;
+            setRunProg([...runProg]);
             break;
           case "glide":
-            await runGlideSegment(segment, ctx);
+            runProg[i] = 0;
+            setRunProg([...runProg]);
+            await runGlideSegment(segment, ctx, (prog) => {
+              runProg[i] = prog;
+              setRunProg([...runProg]);
+            });
+            runProg[i] = 1;
+            setRunProg([...runProg]);
             break;
           case "movement":
-            await runMovementSegment(segment, ctx);
+            runProg[i] = 0;
+            setRunProg([...runProg]);
+            await runMovementSegment(segment, ctx, (prog) => {
+              runProg[i] = prog;
+              setRunProg([...runProg]);
+            });
+            runProg[i] = 1;
+            setRunProg([...runProg]);
             break;
         }
       }
@@ -91,7 +135,15 @@ export default ({
   };
   return /* @__PURE__ */ React.createElement("div", {
     className: "Render"
-  }, error && /* @__PURE__ */ React.createElement("p", null, error), rendering ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("p", null, "Rendering in progress..."), /* @__PURE__ */ React.createElement("p", null, "Don't mind the weird stuff happening below")) : /* @__PURE__ */ React.createElement("button", {
+  }, error && /* @__PURE__ */ React.createElement("p", null, error), rendering ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("p", null, "Rendering in progress..."), /* @__PURE__ */ React.createElement("div", null, prepProg.map((prog, i) => /* @__PURE__ */ React.createElement("div", {
+    key: i
+  }, /* @__PURE__ */ React.createElement("progress", {
+    value: prog
+  }), `Preparing segment ${i}/${segments.length} (${segments[i].transform})`))), /* @__PURE__ */ React.createElement("div", null, runProg.map((prog, i) => /* @__PURE__ */ React.createElement("div", {
+    key: i
+  }, /* @__PURE__ */ React.createElement("progress", {
+    value: prog
+  }), `Running segment ${i}/${segments.length} (${segments[i].transform})`))), /* @__PURE__ */ React.createElement("p", null, "Don't mind the weird stuff happening below")) : /* @__PURE__ */ React.createElement("button", {
     type: "button",
     className: "u-normal-button",
     onClick: render
