@@ -15,9 +15,9 @@ const Main = () => {
   return (
     <div className="App">
       <nav>
-        <Link to="/"><img src="/icons/home.svg" alt="home icon" /></Link>
-        <Link to="/studio"><img src="/icons/studio.svg" alt="studio icon" /></Link>
-        <Link to="/about"><img src="/icons/info.svg" alt="info icon" /></Link>
+        <Link to="/" title="Home"><img src="/icons/home.svg" alt="home icon" /></Link>
+        <Link to="/studio" title="Studio"><img src="/icons/studio.svg" alt="studio icon" /></Link>
+        <Link to="/about" title="About"><img src="/icons/info.svg" alt="info icon" /></Link>
       </nav>
       <Switch>
         <Route path="/studio"><Studio /></Route>
