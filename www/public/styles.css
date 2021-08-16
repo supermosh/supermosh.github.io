@@ -153,8 +153,6 @@ nav a:hover {
 }
 
 /* studio */
-.Studio {
-}
 @media screen and (min-width: 1000px) {
   .Studio {
     width: calc(100vw - 49px);
