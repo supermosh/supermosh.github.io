@@ -1,28 +1,31 @@
 import React, {useEffect} from "../_snowpack/pkg/react.js";
 import {BrowserRouter, Switch, Route, Link, useLocation} from "../_snowpack/pkg/react-router-dom.js";
-import mixpanel from "../_snowpack/pkg/mixpanel-browser.js";
+import track from "./track.js";
 import Home from "./Home.js";
 import About from "./About.js";
 import Studio from "./Studio.js";
 const Main = () => {
   const location = useLocation();
   useEffect(() => {
-    mixpanel.track("navigation", {pathname: location.pathname});
+    track("navigation", {pathname: location.pathname});
   }, [location]);
   return /* @__PURE__ */ React.createElement("div", {
     className: "App"
   }, /* @__PURE__ */ React.createElement("nav", null, /* @__PURE__ */ React.createElement(Link, {
-    to: "/"
+    to: "/",
+    title: "Home"
   }, /* @__PURE__ */ React.createElement("img", {
     src: "/icons/home.svg",
     alt: "home icon"
   })), /* @__PURE__ */ React.createElement(Link, {
-    to: "/studio"
+    to: "/studio",
+    title: "Studio"
   }, /* @__PURE__ */ React.createElement("img", {
     src: "/icons/studio.svg",
     alt: "studio icon"
   })), /* @__PURE__ */ React.createElement(Link, {
-    to: "/about"
+    to: "/about",
+    title: "About"
   }, /* @__PURE__ */ React.createElement("img", {
     src: "/icons/info.svg",
     alt: "info icon"

@@ -7,7 +7,7 @@ import {
   runGlideSegment,
   runMovementSegment
 } from "../_snowpack/link/core/dist/index.js";
-import mixpanel from "../_snowpack/pkg/mixpanel-browser.js";
+import track from "./track.js";
 export default ({
   segments,
   setOutput
@@ -25,7 +25,7 @@ export default ({
       setRunProg([...runProg]);
       setRendering(true);
       setError(null);
-      mixpanel.track("begin render", {segments});
+      track("begin render", {segments});
       const beginRenderTime = performance.now();
       const {width, height} = await getDimensions(segments);
       for (let i = 0; i < segments.length; i++) {
@@ -124,11 +124,11 @@ export default ({
         });
         canvas.remove();
         setRendering(false);
-        mixpanel.track("end render", {time: (performance.now() - beginRenderTime) / 1e3});
+        track("end render", {time: (performance.now() - beginRenderTime) / 1e3});
       }, {once: true});
       recorder.stop();
     } catch (e) {
-      mixpanel.track("render error", {message: e.message});
+      track("render error", {message: e.message});
       setError(e.message);
       setRendering(false);
     }
