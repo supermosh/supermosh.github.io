@@ -14,3 +14,5 @@ rules:
   no-await-in-loop: off
   no-plusplus: off
   no-restricted-syntax: off
+  no-unused-vars: off
+  '@typescript-eslint/no-unused-vars': error
