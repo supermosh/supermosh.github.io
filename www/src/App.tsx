@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Switch, Route, Link, useLocation } from 'react-router-dom';
-import mixpanel from 'mixpanel-browser';
+import track from './track';
 import Home from './Home';
 import About from './About';
 import Studio from './Studio';
@@ -9,7 +9,7 @@ const Main = () => {
   const location = useLocation();
 
   useEffect(() => {
-    mixpanel.track('navigation', { pathname: location.pathname });
+    track('navigation', { pathname: location.pathname });
   }, [location]);
 
   return (
