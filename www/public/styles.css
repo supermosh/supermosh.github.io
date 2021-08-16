@@ -211,7 +211,7 @@ nav a:hover {
 }
 .Modal .box {
   position: absolute;
-  inset: 96px;
+  inset: 5vw;
 }
 
 /* Videos */
@@ -305,8 +305,9 @@ nav a:hover {
 .TimeLengthInput .modal-content {
   height: 100%;
   background: white;
-  padding: 48px;
+  padding: 5vw;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 .StartEndInput .videos {
   display: flex;
