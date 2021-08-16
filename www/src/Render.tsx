@@ -9,7 +9,7 @@ import {
   runMovementSegment,
   Segment,
 } from 'supermosh';
-import mixpanel from 'mixpanel-browser';
+import track from './track';
 import { Output } from './types';
 
 export default ({
@@ -33,7 +33,7 @@ export default ({
       setRunProg([...runProg]);
       setRendering(true);
       setError(null);
-      mixpanel.track('begin render', { segments });
+      track('begin render', { segments });
       const beginRenderTime = performance.now();
 
       const { width, height } = await getDimensions(segments);
@@ -144,11 +144,11 @@ export default ({
         canvas.remove();
 
         setRendering(false);
-        mixpanel.track('end render', { time: (performance.now() - beginRenderTime) / 1000 });
+        track('end render', { time: (performance.now() - beginRenderTime) / 1000 });
       }, { once: true });
       recorder.stop();
     } catch (e) {
-      mixpanel.track('render error', { message: e.message });
+      track('render error', { message: e.message });
       setError(e.message);
       setRendering(false);
     }
