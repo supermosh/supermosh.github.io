@@ -1,10 +1,7 @@
 import mixpanel from 'mixpanel-browser';
 
 if (window.location.hostname === 'supermosh.github.io') {
-  console.log('tracking');
-  mixpanel.init('eaea796d6217c6d87165d71ff1a82e0b', { debug: true });
-} else {
-  console.log('not tracking');
+  mixpanel.init('eaea796d6217c6d87165d71ff1a82e0b');
 }
 
 export default (...args) => {
