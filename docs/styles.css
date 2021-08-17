@@ -360,6 +360,18 @@ nav a:hover {
   margin-right: 12px;
 }
 
+/* RenderOptions */
+.RenderOptions > div {
+  margin: 12px 0;
+  display: flex;
+}
+.RenderOptions > div > span {
+  width: 200px;
+}
+.RenderOptions > div > input {
+  width: calc(100% - 200px);
+}
+
 /* Result */
 .Result-empty {
   padding: 12px;

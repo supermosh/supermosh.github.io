@@ -8,6 +8,7 @@ import {
   runMovementSegment
 } from "../_snowpack/link/core/dist/index.js";
 import track from "./track.js";
+import RenderOptions from "./RenderOptions.js";
 export default ({
   segments,
   setOutput
@@ -143,11 +144,11 @@ export default ({
     key: i
   }, /* @__PURE__ */ React.createElement("progress", {
     value: prog
-  }), `Running segment ${i}/${segments.length} (${segments[i].transform})`))), /* @__PURE__ */ React.createElement("p", null, "Don't mind the weird stuff happening below")) : /* @__PURE__ */ React.createElement("button", {
+  }), `Running segment ${i}/${segments.length} (${segments[i].transform})`))), /* @__PURE__ */ React.createElement("p", null, "Don't mind the weird stuff happening below")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", {
     type: "button",
     className: "u-normal-button",
     onClick: render
-  }, "render"), /* @__PURE__ */ React.createElement("div", {
+  }, "render"), /* @__PURE__ */ React.createElement(RenderOptions, null)), /* @__PURE__ */ React.createElement("div", {
     ref: renderRootRef
   }));
 };
