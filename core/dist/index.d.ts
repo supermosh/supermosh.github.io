@@ -1,10 +1,7 @@
 declare type Shift = {
-    [xOffset: number]: {
-        [yOffset: number]: {
-            x: number;
-            y: number;
-        };
-    };
+    data: Int8Array;
+    get(x: number, y: number): number;
+    set(x: number, y: number, value: number): void;
 };
 declare type BaseSegment = {
     src: string;
@@ -33,7 +30,7 @@ declare type PreparedMovementSegment = MovementSegment & {
 };
 export declare type Segment = CopySegment | GlideSegment | MovementSegment;
 export declare type PreparedSegment = PreparedCopySegment | PreparedGlideSegment | PreparedMovementSegment;
-export declare const getShift: (previous: ImageData, real: ImageData) => Shift;
+export declare const getShift: (previous: ImageData, current: ImageData) => Shift;
 export declare const approximate: (previous: ImageData, shift: Shift) => ImageData;
 export declare const elementEvent: (element: HTMLElement, eventName: string) => Promise<unknown>;
 export declare const getDimensions: (segments: Segment[]) => Promise<{

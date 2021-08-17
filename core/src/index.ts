@@ -1,11 +1,8 @@
 type Shift = {
-  [xOffset: number]: {
-    [yOffset: number]: {
-      x: number,
-      y: number,
-    };
-  };
-};
+  data: Int8Array;
+  get(x: number, y: number): number;
+  set(x: number, y: number, value: number): void;
+}
 type BaseSegment = {
   src: string;
 };
@@ -38,13 +35,25 @@ const fps = 30;
 const size = 16;
 const xyShifts = [0, 1, -1, 2, -2, 4, -4, 8, -8];
 
-export const getShift = (previous: ImageData, real: ImageData) => {
-  const { width, height } = previous;
-  const shift: Shift = {};
+const createShift = (w: number, h: number): Shift => {
+  const getIndex = (x: number, y: number) => y * w + x;
+  const data = new Int8Array(w * h);
+  return {
+    data,
+    get: (x, y) => data[getIndex(x, y)],
+    set: (x, y, value) => { data[getIndex(x, y)] = value; },
+  };
+};
 
-  for (let xOffset = 0; xOffset < width; xOffset += size) {
+export const getShift = (previous: ImageData, current: ImageData) => {
+  const { width, height } = previous;
+  const shift = createShift(~~(width / size), ~~(height / size));
+
+  for (let xi = 0; xi < width / size; xi++) {
+    const xOffset = xi * size;
     if (!shift[xOffset]) shift[xOffset] = [];
-    for (let yOffset = 0; yOffset < height; yOffset += size) {
+    for (let yi = 0; yi < height / size; yi++) {
+      const yOffset = yi * size;
       if (!shift[xOffset][yOffset]) shift[xOffset][yOffset] = { x: NaN, y: NaN };
 
       const xMax = Math.min(xOffset + size, width);
@@ -61,9 +70,9 @@ export const getShift = (previous: ImageData, real: ImageData) => {
               const ysrc = (y + yShift + height) % height;
               const isrc = 4 * (width * ysrc + xsrc);
               const idst = 4 * (width * y + x);
-              diff += Math.abs(previous.data[isrc + 0] - real.data[idst + 0]);
-              diff += Math.abs(previous.data[isrc + 1] - real.data[idst + 1]);
-              diff += Math.abs(previous.data[isrc + 2] - real.data[idst + 2]);
+              diff += Math.abs(previous.data[isrc + 0] - current.data[idst + 0]);
+              diff += Math.abs(previous.data[isrc + 1] - current.data[idst + 1]);
+              diff += Math.abs(previous.data[isrc + 2] - current.data[idst + 2]);
             }
           }
 
