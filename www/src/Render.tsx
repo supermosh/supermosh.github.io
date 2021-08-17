@@ -11,6 +11,7 @@ import {
 } from 'supermosh';
 import track from './track';
 import { Output } from './types';
+import RenderOptions from './RenderOptions';
 
 export default ({
   segments,
@@ -179,7 +180,10 @@ export default ({
           <p>Don&apos;t mind the weird stuff happening below</p>
         </>
       ) : (
-        <button type="button" className="u-normal-button" onClick={render}>render</button>
+        <>
+          <button type="button" className="u-normal-button" onClick={render}>render</button>
+          <RenderOptions />
+        </>
       )}
       <div ref={renderRootRef} />
     </div>

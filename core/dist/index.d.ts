@@ -30,6 +30,11 @@ declare type PreparedMovementSegment = MovementSegment & {
 };
 export declare type Segment = CopySegment | GlideSegment | MovementSegment;
 export declare type PreparedSegment = PreparedCopySegment | PreparedGlideSegment | PreparedMovementSegment;
+export declare const config: {
+    fps: number;
+    size: number;
+    xyShifts: number[];
+};
 export declare const getShift: (previous: ImageData, current: ImageData) => Shift;
 export declare const approximate: (previous: ImageData, shift: Shift) => ImageData;
 export declare const elementEvent: (element: HTMLElement, eventName: string) => Promise<unknown>;

@@ -1,8 +1,9 @@
-const fps = 30;
-const size = 16;
-const xyShifts = [0, 1, -1, 2, -2, 4, -4, 8, -8];
+export const config = {
+    fps: 30,
+    size: 16,
+    xyShifts: [0, 1, -1, 2, -2, 4, -4, 8, -8],
+};
 const createShift = (w, h) => {
-    debugger;
     const getIndex = (x, y) => y * w + x;
     const data = new Int8Array(w * h);
     return {
@@ -13,20 +14,20 @@ const createShift = (w, h) => {
 };
 export const getShift = (previous, current) => {
     const { width, height } = previous;
-    const shift = createShift(~~(width / size), ~~(height / size));
-    for (let xi = 0; xi < width / size; xi++) {
-        const xOffset = xi * size;
+    const shift = createShift(~~(width / config.size), ~~(height / config.size));
+    for (let xi = 0; xi < width / config.size; xi++) {
+        const xOffset = xi * config.size;
         if (!shift[xOffset])
             shift[xOffset] = [];
-        for (let yi = 0; yi < height / size; yi++) {
-            const yOffset = yi * size;
+        for (let yi = 0; yi < height / config.size; yi++) {
+            const yOffset = yi * config.size;
             if (!shift[xOffset][yOffset])
                 shift[xOffset][yOffset] = { x: NaN, y: NaN };
-            const xMax = Math.min(xOffset + size, width);
-            const yMax = Math.min(yOffset + size, height);
+            const xMax = Math.min(xOffset + config.size, width);
+            const yMax = Math.min(yOffset + config.size, height);
             let minDiff = +Infinity;
-            for (const xShift of xyShifts) {
-                for (const yShift of xyShifts) {
+            for (const xShift of config.xyShifts) {
+                for (const yShift of config.xyShifts) {
                     let diff = 0;
                     for (let x = xOffset; x < xMax; x++) {
                         for (let y = yOffset; y < yMax; y++) {
@@ -56,10 +57,10 @@ export const approximate = (previous, shift) => {
     for (let i = 3; i < out.data.length; i += 4) {
         out.data[i] = 255;
     }
-    for (let xOffset = 0; xOffset < width; xOffset += size) {
-        for (let yOffset = 0; yOffset < height; yOffset += size) {
-            const xMax = Math.min(xOffset + size, width);
-            const yMax = Math.min(yOffset + size, height);
+    for (let xOffset = 0; xOffset < width; xOffset += config.size) {
+        for (let yOffset = 0; yOffset < height; yOffset += config.size) {
+            const xMax = Math.min(xOffset + config.size, width);
+            const yMax = Math.min(yOffset + config.size, height);
             for (let x = xOffset; x < xMax; x++) {
                 for (let y = yOffset; y < yMax; y++) {
                     const xsrc = (x + shift[xOffset][yOffset].x + width) % width;
@@ -115,7 +116,7 @@ export const prepareGlideSegment = async (segment, renderRoot) => {
     const previous = ctx.getImageData(0, 0, width, height);
     const real = await (async () => {
         while (!video.ended) {
-            video.currentTime += 1 / fps;
+            video.currentTime += 1 / config.fps;
             await elementEvent(video, 'seeked');
             await new Promise((resolve) => requestAnimationFrame(resolve));
             ctx.drawImage(video, 0, 0);
@@ -149,7 +150,7 @@ export const prepareMovementSegment = async (segment, renderRoot, onProgress) =>
     while (video.currentTime < segment.end) {
         ctx.drawImage(video, 0, 0);
         const previous = ctx.getImageData(0, 0, width, height);
-        video.currentTime += 1 / fps;
+        video.currentTime += 1 / config.fps;
         await elementEvent(video, 'seeked');
         ctx.drawImage(video, 0, 0);
         const real = ctx.getImageData(0, 0, width, height);
@@ -170,7 +171,7 @@ export const runCopySegment = async (segment, ctx, renderRoot, onProgress) => {
     await elementEvent(video, 'seeked');
     while (video.currentTime < segment.end) {
         ctx.drawImage(video, 0, 0);
-        video.currentTime += 1 / fps;
+        video.currentTime += 1 / config.fps;
         await elementEvent(video, 'seeked');
         await new Promise((resolve) => requestAnimationFrame(resolve));
         if (onProgress)
@@ -179,7 +180,7 @@ export const runCopySegment = async (segment, ctx, renderRoot, onProgress) => {
     video.remove();
 };
 export const runGlideSegment = async (segment, ctx, onProgress) => {
-    for (let i = 0; i < segment.length * fps; i++) {
+    for (let i = 0; i < segment.length * config.fps; i++) {
         const previous = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
         const next = approximate(previous, segment.shift);
         ctx.putImageData(next, 0, 0);
