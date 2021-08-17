@@ -31,9 +31,11 @@ type PreparedMovementSegment = MovementSegment & {
 export type Segment = CopySegment | GlideSegment | MovementSegment;
 export type PreparedSegment = PreparedCopySegment | PreparedGlideSegment | PreparedMovementSegment;
 
-const fps = 30;
-const size = 16;
-const xyShifts = [0, 1, -1, 2, -2, 4, -4, 8, -8];
+export const config = {
+  fps: 30,
+  size: 16,
+  xyShifts: [0, 1, -1, 2, -2, 4, -4, 8, -8],
+};
 
 const createShift = (w: number, h: number): Shift => {
   const getIndex = (x: number, y: number) => y * w + x;
@@ -47,21 +49,21 @@ const createShift = (w: number, h: number): Shift => {
 
 export const getShift = (previous: ImageData, current: ImageData) => {
   const { width, height } = previous;
-  const shift = createShift(~~(width / size), ~~(height / size));
+  const shift = createShift(~~(width / config.size), ~~(height / config.size));
 
-  for (let xi = 0; xi < width / size; xi++) {
-    const xOffset = xi * size;
+  for (let xi = 0; xi < width / config.size; xi++) {
+    const xOffset = xi * config.size;
     if (!shift[xOffset]) shift[xOffset] = [];
-    for (let yi = 0; yi < height / size; yi++) {
-      const yOffset = yi * size;
+    for (let yi = 0; yi < height / config.size; yi++) {
+      const yOffset = yi * config.size;
       if (!shift[xOffset][yOffset]) shift[xOffset][yOffset] = { x: NaN, y: NaN };
 
-      const xMax = Math.min(xOffset + size, width);
-      const yMax = Math.min(yOffset + size, height);
+      const xMax = Math.min(xOffset + config.size, width);
+      const yMax = Math.min(yOffset + config.size, height);
 
       let minDiff = +Infinity;
-      for (const xShift of xyShifts) {
-        for (const yShift of xyShifts) {
+      for (const xShift of config.xyShifts) {
+        for (const yShift of config.xyShifts) {
           let diff = 0;
 
           for (let x = xOffset; x < xMax; x++) {
@@ -97,10 +99,10 @@ export const approximate = (previous: ImageData, shift: Shift): ImageData => {
     out.data[i] = 255;
   }
 
-  for (let xOffset = 0; xOffset < width; xOffset += size) {
-    for (let yOffset = 0; yOffset < height; yOffset += size) {
-      const xMax = Math.min(xOffset + size, width);
-      const yMax = Math.min(yOffset + size, height);
+  for (let xOffset = 0; xOffset < width; xOffset += config.size) {
+    for (let yOffset = 0; yOffset < height; yOffset += config.size) {
+      const xMax = Math.min(xOffset + config.size, width);
+      const yMax = Math.min(yOffset + config.size, height);
 
       for (let x = xOffset; x < xMax; x++) {
         for (let y = yOffset; y < yMax; y++) {
@@ -165,7 +167,7 @@ export const prepareGlideSegment = async (segment: GlideSegment, renderRoot: HTM
 
   const real = await (async () => {
     while (!video.ended) {
-      video.currentTime += 1 / fps;
+      video.currentTime += 1 / config.fps;
       await elementEvent(video, 'seeked');
       await new Promise((resolve) => requestAnimationFrame(resolve));
       ctx.drawImage(video, 0, 0);
@@ -211,7 +213,7 @@ export const prepareMovementSegment = async (
   while (video.currentTime < segment.end) {
     ctx.drawImage(video, 0, 0);
     const previous = ctx.getImageData(0, 0, width, height);
-    video.currentTime += 1 / fps;
+    video.currentTime += 1 / config.fps;
     await elementEvent(video, 'seeked');
     ctx.drawImage(video, 0, 0);
     const real = ctx.getImageData(0, 0, width, height);
@@ -239,7 +241,7 @@ export const runCopySegment = async (
   await elementEvent(video, 'seeked');
   while (video.currentTime < segment.end) {
     ctx.drawImage(video, 0, 0);
-    video.currentTime += 1 / fps;
+    video.currentTime += 1 / config.fps;
     await elementEvent(video, 'seeked');
     await new Promise((resolve) => requestAnimationFrame(resolve));
     if (onProgress) onProgress((video.currentTime - segment.start) / (segment.end - segment.start));
@@ -252,7 +254,7 @@ export const runGlideSegment = async (
   ctx: CanvasRenderingContext2D,
   onProgress?: (progress: number) => void,
 ): Promise<void> => {
-  for (let i = 0; i < segment.length * fps; i++) {
+  for (let i = 0; i < segment.length * config.fps; i++) {
     const previous = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
     const next = approximate(previous, segment.shift);
     ctx.putImageData(next, 0, 0);
