@@ -1,0 +1,1 @@
+export default "/dist/pkg/core_rs_bg.wasm";
