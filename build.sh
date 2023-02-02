@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 rm -rf docs
-cd www
-npx snowpack build
+cd app
+pnpm run build
 cd ..
 > docs/.nojekyll
 cp docs/{index,studio}.html

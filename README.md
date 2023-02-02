@@ -1,4 +1,4 @@
-![cover](./www/public/media/cover.png)
+![cover](./app/public/media/cover.png)
 
 # Supermosh
 
@@ -10,6 +10,6 @@ An experiment to enable datamoshing in the browser
 
 🔧 core library is under [./core](./core) (docs coming soon)
 
-🕸️ website code is under [./www](./www)
+🕸️ website source code is under [./app](./app)
 
 🧑‍💻 by Nino Filiu - [ninofiliu.com](https://ninofiliu.com) / [github.com/ninofiliu](https://github.com/ninofiliu/) / [twitter.com/ninofiliu](https://twitter.com/ninofiliu) / [instagram.com/ssttaacckkyy](https://www.instagram.com/ssttaacckkyy/)
