@@ -1,8 +1,0 @@
-{
-  "imports": {
-    "mixpanel-browser": "./mixpanel-browser.js",
-    "react": "./react.js",
-    "react-dom": "./react-dom.js",
-    "react-router-dom": "./react-router-dom.js"
-  }
-}

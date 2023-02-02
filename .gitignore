@@ -1,3 +1,2 @@
-node_modules
-public/static
-out
+/app/node_modules
+/core/node_modules
