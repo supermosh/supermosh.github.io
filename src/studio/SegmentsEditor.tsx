@@ -20,21 +20,125 @@ export const SegmentsEditor = ({
           <li key={i}>
             <ul>
               <li>
-                <span>name</span>
                 <Select
                   value={segment.name}
                   options={files.map((file) => file.name)}
                   onChange={(name) => {
-                    segments[i] = { ...segment, name };
+                    segment.name = name;
                     setSegments([...segments]);
                   }}
                 />
               </li>
-              {Object.entries(segment).map(([key, value]) => (
-                <li key={key}>
-                  {key}: {value}
-                </li>
-              ))}
+              <li>
+                <Select
+                  value={segment.kind}
+                  options={["copy", "glide", "drift"]}
+                  onChange={(kind) => {
+                    // @ts-ignore
+                    segments[i] = (
+                      {
+                        copy: {
+                          name: segment.name,
+                          kind,
+                          start: 0,
+                          end: 0,
+                        },
+                        glide: {
+                          name: segment.name,
+                          kind,
+                          start: 0,
+                          time: 0,
+                        },
+                        drift: {
+                          name: segment.name,
+                          kind,
+                          start: 0,
+                          end: 0,
+                        },
+                      } as const
+                    )[kind];
+                    setSegments([...segments]);
+                  }}
+                />
+              </li>
+              {segment.kind === "copy" && (
+                <>
+                  <li>
+                    <span>start</span>
+                    <input
+                      type="range"
+                      value={segment.start}
+                      onChange={(evt) => {
+                        segment.start = +evt.target.value;
+                        setSegments([...segments]);
+                      }}
+                    />
+                  </li>
+                  <li>
+                    <span>end</span>
+                    <input
+                      type="range"
+                      value={segment.end}
+                      onChange={(evt) => {
+                        segment.end = +evt.target.value;
+                        setSegments([...segments]);
+                      }}
+                    />
+                  </li>
+                </>
+              )}
+              {segment.kind === "drift" && (
+                <>
+                  <li>
+                    <span>start</span>
+                    <input
+                      type="range"
+                      value={segment.start}
+                      onChange={(evt) => {
+                        segment.start = +evt.target.value;
+                        setSegments([...segments]);
+                      }}
+                    />
+                  </li>
+                  <li>
+                    <span>end</span>
+                    <input
+                      type="range"
+                      value={segment.end}
+                      onChange={(evt) => {
+                        segment.end = +evt.target.value;
+                        setSegments([...segments]);
+                      }}
+                    />
+                  </li>
+                </>
+              )}
+              {segment.kind === "glide" && (
+                <>
+                  <li>
+                    <span>start</span>
+                    <input
+                      type="range"
+                      value={segment.start}
+                      onChange={(evt) => {
+                        segment.start = +evt.target.value;
+                        setSegments([...segments]);
+                      }}
+                    />
+                  </li>
+                  <li>
+                    <span>time</span>
+                    <input
+                      type="range"
+                      value={segment.time}
+                      onChange={(evt) => {
+                        segment.time = +evt.target.value;
+                        setSegments([...segments]);
+                      }}
+                    />
+                  </li>
+                </>
+              )}
             </ul>
           </li>
         ))}
