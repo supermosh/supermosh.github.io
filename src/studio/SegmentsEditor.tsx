@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 
+import { Select } from "../components/Select";
 import type { Segment } from "./types";
 
 export const SegmentsEditor = ({
@@ -18,6 +19,17 @@ export const SegmentsEditor = ({
         {segments.map((segment, i) => (
           <li key={i}>
             <ul>
+              <li>
+                <span>name</span>
+                <Select
+                  value={segment.name}
+                  options={files.map((file) => file.name)}
+                  onChange={(name) => {
+                    segments[i] = { ...segment, name };
+                    setSegments([...segments]);
+                  }}
+                />
+              </li>
               {Object.entries(segment).map(([key, value]) => (
                 <li key={key}>
                   {key}: {value}

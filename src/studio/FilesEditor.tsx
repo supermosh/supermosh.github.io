@@ -20,10 +20,15 @@ export const FilesEditor = ({
   const fetched = useRef(false);
   (async () => {
     if (fetched.current || files.length > 0) return;
-    const resp = await fetch("/motocross.mp4");
-    const blob = await resp.blob();
-    const file = new File([blob], "motocross.mp4");
-    setFiles([file]);
+    const [bike, motocross] = await Promise.all(
+      ["bike.mp4", "motocross.mp4"].map(async (name) => {
+        const resp = await fetch(`/${name}`);
+        const blob = await resp.blob();
+        const file = new File([blob], name);
+        return file;
+      })
+    );
+    setFiles([bike, motocross]);
   })();
 
   return (
