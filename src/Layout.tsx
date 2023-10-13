@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Link, Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 
 const Cont = styled.div`
   position: absolute;
@@ -11,7 +11,7 @@ const Menu = styled.nav`
   display: flex;
   flex-direction: column;
 `;
-const LinkIcon = styled(Link)`
+const LinkIcon = styled(NavLink)`
   width: 48px;
   height: 48px;
   display: flex;
@@ -22,8 +22,16 @@ const LinkIcon = styled(Link)`
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
   }
+  &.active {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
 `;
-const Content = styled.div``;
+const Content = styled.div`
+  padding: 16px;
+  height: 100vh;
+  width: calc(100vw - 49px);
+  overflow-y: auto;
+`;
 
 const Icon = ({ name }: { name: string }) => (
   <span className="material-icons">{name}</span>

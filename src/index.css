@@ -1,6 +1,10 @@
 :root {
   color-scheme: dark;
+  font-family: sans-serif;
 }
 body {
   margin: 0;
+}
+* {
+  box-sizing: border-box;
 }
