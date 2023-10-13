@@ -26,3 +26,4 @@ rules:
       args: after-used
       argsIgnorePattern: "^_"
   "@typescript-eslint/consistent-type-imports": error
+  "@typescript-eslint/no-explicit-any": off
