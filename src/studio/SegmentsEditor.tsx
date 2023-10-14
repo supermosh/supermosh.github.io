@@ -1,14 +1,14 @@
 import type { Dispatch, SetStateAction } from "react";
 
 import { Select } from "../components/Select";
-import type { Segment } from "./types";
+import type { Segment, Vid } from "./types";
 
 export const SegmentsEditor = ({
-  files,
+  vids,
   segments,
   setSegments,
 }: {
-  files: File[];
+  vids: Record<string, Vid>;
   segments: Segment[];
   setSegments: Dispatch<SetStateAction<Segment[]>>;
 }) => {
@@ -22,7 +22,7 @@ export const SegmentsEditor = ({
               <li>
                 <Select
                   value={segment.name}
-                  options={files.map((file) => file.name)}
+                  options={Object.keys(vids)}
                   onChange={(name) => {
                     segment.name = name;
                     setSegments([...segments]);
@@ -142,21 +142,24 @@ export const SegmentsEditor = ({
             </ul>
           </li>
         ))}
-        {files.length > 0 && (
-          <li>
-            <button
-              onClick={() =>
-                setSegments([
-                  ...segments,
-                  { name: files[0].name, kind: "copy", start: 0, end: 0 },
-                ])
-              }
-            >
-              add
-            </button>
-          </li>
-        )}
       </ol>
+      {Object.keys(vids).length > 0 && (
+        <button
+          onClick={() =>
+            setSegments([
+              ...segments,
+              {
+                name: Object.keys(vids)[0],
+                kind: "copy",
+                start: 0,
+                end: 0,
+              },
+            ])
+          }
+        >
+          add
+        </button>
+      )}
     </>
   );
 };

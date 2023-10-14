@@ -1,21 +1,22 @@
 import { useState } from "react";
 
 import { FilesEditor } from "./FilesEditor";
-import type { Vid } from "./types";
+import { SegmentsEditor } from "./SegmentsEditor";
+import type { Segment, Vid } from "./types";
 
 export const Studio = () => {
   const [vids, setVids] = useState<Record<string, Vid>>({});
-  // const [segments, setSegments] = useState<Segment[]>([]);
+  const [segments, setSegments] = useState<Segment[]>([]);
 
   return (
     <>
       <FilesEditor vids={vids} setVids={setVids} />
-      {/* <SegmentsEditor
-        files={files}
+      <SegmentsEditor
+        vids={vids}
         segments={segments}
         setSegments={setSegments}
       />
-      <Renderer files={files} segments={segments} /> */}
+      {/* <Renderer files={files} segments={segments} /> */}
     </>
   );
 };
