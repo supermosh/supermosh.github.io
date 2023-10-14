@@ -1,10 +1,12 @@
+import { useState } from "react";
+
 import { x } from "../shorts";
 import type { Segment } from "./types";
 
 const codec = "vp8";
 const fps = 29.97;
 const start = 0;
-const end = fps * 10;
+const end = fps * 1;
 
 const encode = async (file: File) => {
   const video = document.createElement("video");
@@ -32,7 +34,7 @@ const encode = async (file: File) => {
       video.addEventListener("seeked", r, { once: true })
     );
     const frame = new VideoFrame(video, { timestamp: video.currentTime });
-    encoder.encode(frame);
+    encoder.encode(frame, { keyFrame: f === 0 });
     frame.close();
   }
   await encoder.flush();
@@ -87,7 +89,12 @@ export const Renderer = ({
   files: File[];
   segments: Segment[];
 }) => {
+  const [src, setSrc] = useState("");
+  const [rendering, setRendering] = useState(false);
+
   const render = async () => {
+    setRendering(true);
+
     const encoded = await Promise.all(files.map(encode));
     const [head, ...tail] = encoded;
     if (!head) throw new Error("not enough segments");
@@ -101,18 +108,26 @@ export const Renderer = ({
     const allChunks = segments.flatMap((segment) => {
       const chunks = chunksByName[segment.name];
       if (segment.kind === "copy") return chunks;
+      if (segment.kind === "glide")
+        return Array(30)
+          .fill(null)
+          .map(() => chunks.slice(-1)[0]);
       throw new Error("not impl");
     });
 
     const frames = await decode(allChunks);
-    const url = await record(width, height, frames);
-    console.log(url);
+    const newSrc = await record(width, height, frames);
+    setSrc(newSrc);
+    setRendering(false);
   };
 
   return (
     <>
       <h1>Render</h1>
-      <button onClick={render}>render</button>
+      <button onClick={render} disabled={rendering}>
+        render
+      </button>
+      <video src={src} muted loop autoPlay controls />
     </>
   );
 };
