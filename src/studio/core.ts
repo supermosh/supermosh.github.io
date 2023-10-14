@@ -25,7 +25,6 @@ export const encode = async (file: File) => {
 
   let f = 0;
   while (!video.ended) {
-    console.log(f);
     video.currentTime = f / fps;
     await new Promise((r) =>
       video.addEventListener("seeked", r, { once: true })

@@ -41,11 +41,13 @@ export const FilesEditor = ({
     <>
       <h1>Files</h1>
       <ul>
-        {Object.entries(vids).map(([name, vid]) => (
-          <li key={name}>
-            {name} ({vid.width}x{vid.height}, {vid.chunks.length} frames)
-          </li>
-        ))}
+        {Object.entries(vids)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([name, vid]) => (
+            <li key={name}>
+              {name} ({vid.width}x{vid.height}, {vid.chunks.length} frames)
+            </li>
+          ))}
       </ul>
       <input type="file" accept="video/*" onChange={onUpload} />
     </>
