@@ -2,8 +2,6 @@ import { x } from "../shorts";
 
 const codec = "vp8";
 const fps = 29.97;
-const start = 0;
-const end = fps * 1;
 
 export const encode = async (file: File) => {
   const video = document.createElement("video");
@@ -25,7 +23,9 @@ export const encode = async (file: File) => {
   });
   encoder.configure({ codec, width, height });
 
-  for (let f = start; f < end; f++) {
+  let f = 0;
+  while (!video.ended) {
+    console.log(f);
     video.currentTime = f / fps;
     await new Promise((r) =>
       video.addEventListener("seeked", r, { once: true })
@@ -33,6 +33,7 @@ export const encode = async (file: File) => {
     const frame = new VideoFrame(video, { timestamp: video.currentTime });
     encoder.encode(frame, { keyFrame: f === 0 });
     frame.close();
+    f++;
   }
   await encoder.flush();
   return { width, height, chunks };
