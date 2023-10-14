@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { FilesEditor } from "./FilesEditor";
+import { Renderer } from "./Renderer";
 import { SegmentsEditor } from "./SegmentsEditor";
 import type { Segment } from "./types";
 
@@ -16,6 +17,7 @@ export const Studio = () => {
         segments={segments}
         setSegments={setSegments}
       />
+      <Renderer files={files} segments={segments} />
     </>
   );
 };
