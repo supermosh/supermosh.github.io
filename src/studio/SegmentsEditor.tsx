@@ -22,12 +22,22 @@ export const SegmentsEditor = ({
               onClick={() => {
                 const tmp = segments[i];
                 segments[i] = segments[i - 1];
+                segments[i - 1] = tmp;
+                setSegments([...segments]);
               }}
               disabled={i === 0}
             >
               up
             </button>
-            <button onClick={() => {}} disabled={i === segments.length - 1}>
+            <button
+              onClick={() => {
+                const tmp = segments[i];
+                segments[i] = segments[i + 1];
+                segments[i + 1] = tmp;
+                setSegments([...segments]);
+              }}
+              disabled={i === segments.length - 1}
+            >
               down
             </button>
             <Select
