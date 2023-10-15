@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 
 import { Select } from "../components/Select";
+import { StartEndEditor } from "./StartEndEditor";
 import type { Segment, Vid } from "./types";
 
 export const SegmentsEditor = ({
@@ -78,59 +79,17 @@ export const SegmentsEditor = ({
                 setSegments([...segments]);
               }}
             />
+            {(segment.kind === "copy" || segment.kind === "drift") && (
+              <StartEndEditor
+                value={segment}
+                onChange={(newSegment) => {
+                  segments[i] = newSegment;
+                  setSegments([...segments]);
+                }}
+                vid={vids[segment.name]}
+              />
+            )}
             <ul>
-              {segment.kind === "copy" && (
-                <>
-                  <li>
-                    <span>start</span>
-                    <input
-                      type="range"
-                      value={segment.start}
-                      onChange={(evt) => {
-                        segment.start = +evt.target.value;
-                        setSegments([...segments]);
-                      }}
-                    />
-                  </li>
-                  <li>
-                    <span>end</span>
-                    <input
-                      type="range"
-                      value={segment.end}
-                      onChange={(evt) => {
-                        segment.end = +evt.target.value;
-                        setSegments([...segments]);
-                      }}
-                    />
-                  </li>
-                </>
-              )}
-              {segment.kind === "drift" && (
-                <>
-                  <li>
-                    <span>start</span>
-                    <input
-                      type="range"
-                      value={segment.start}
-                      onChange={(evt) => {
-                        segment.start = +evt.target.value;
-                        setSegments([...segments]);
-                      }}
-                    />
-                  </li>
-                  <li>
-                    <span>end</span>
-                    <input
-                      type="range"
-                      value={segment.end}
-                      onChange={(evt) => {
-                        segment.end = +evt.target.value;
-                        setSegments([...segments]);
-                      }}
-                    />
-                  </li>
-                </>
-              )}
               {segment.kind === "glide" && (
                 <>
                   <li>
