@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 
 import { Select } from "../components/Select";
 import { StartEndEditor } from "./StartEndEditor";
+import { StartTimeEditor } from "./StartTimeEditor";
 import type { Segment, Vid } from "./types";
 
 export const SegmentsEditor = ({
@@ -89,34 +90,16 @@ export const SegmentsEditor = ({
                 vid={vids[segment.name]}
               />
             )}
-            <ul>
-              {segment.kind === "glide" && (
-                <>
-                  <li>
-                    <span>start</span>
-                    <input
-                      type="range"
-                      value={segment.start}
-                      onChange={(evt) => {
-                        segment.start = +evt.target.value;
-                        setSegments([...segments]);
-                      }}
-                    />
-                  </li>
-                  <li>
-                    <span>time</span>
-                    <input
-                      type="range"
-                      value={segment.time}
-                      onChange={(evt) => {
-                        segment.time = +evt.target.value;
-                        setSegments([...segments]);
-                      }}
-                    />
-                  </li>
-                </>
-              )}
-            </ul>
+            {segment.kind === "glide" && (
+              <StartTimeEditor
+                value={segment}
+                onChange={(newSegment) => {
+                  segments[i] = newSegment;
+                  setSegments([...segments]);
+                }}
+                vid={vids[segment.name]}
+              />
+            )}
           </li>
         ))}
       </ol>
