@@ -18,49 +18,57 @@ export const SegmentsEditor = ({
       <ol>
         {segments.map((segment, i) => (
           <li key={i}>
+            <button
+              onClick={() => {
+                const tmp = segments[i];
+                segments[i] = segments[i - 1];
+              }}
+              disabled={i === 0}
+            >
+              up
+            </button>
+            <button onClick={() => {}} disabled={i === segments.length - 1}>
+              down
+            </button>
+            <Select
+              value={segment.kind}
+              options={["copy", "glide", "drift"]}
+              onChange={(kind) => {
+                // @ts-ignore
+                segments[i] = (
+                  {
+                    copy: {
+                      name: segment.name,
+                      kind,
+                      start: 0,
+                      end: 0,
+                    },
+                    glide: {
+                      name: segment.name,
+                      kind,
+                      start: 0,
+                      time: 0,
+                    },
+                    drift: {
+                      name: segment.name,
+                      kind,
+                      start: 0,
+                      end: 0,
+                    },
+                  } as const
+                )[kind];
+                setSegments([...segments]);
+              }}
+            />
+            <Select
+              value={segment.name}
+              options={Object.keys(vids)}
+              onChange={(name) => {
+                segment.name = name;
+                setSegments([...segments]);
+              }}
+            />
             <ul>
-              <li>
-                <Select
-                  value={segment.name}
-                  options={Object.keys(vids)}
-                  onChange={(name) => {
-                    segment.name = name;
-                    setSegments([...segments]);
-                  }}
-                />
-              </li>
-              <li>
-                <Select
-                  value={segment.kind}
-                  options={["copy", "glide", "drift"]}
-                  onChange={(kind) => {
-                    // @ts-ignore
-                    segments[i] = (
-                      {
-                        copy: {
-                          name: segment.name,
-                          kind,
-                          start: 0,
-                          end: 0,
-                        },
-                        glide: {
-                          name: segment.name,
-                          kind,
-                          start: 0,
-                          time: 0,
-                        },
-                        drift: {
-                          name: segment.name,
-                          kind,
-                          start: 0,
-                          end: 0,
-                        },
-                      } as const
-                    )[kind];
-                    setSegments([...segments]);
-                  }}
-                />
-              </li>
               {segment.kind === "copy" && (
                 <>
                   <li>
