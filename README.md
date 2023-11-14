@@ -8,7 +8,7 @@ An experiment to enable datamoshing in the browser
 
 [📺 Watch the tutorial](https://www.youtube.com/watch?v=1Hm_OtV2SSg)
 
-🔧 core library is under [./core](./core) (docs coming soon)
+🔧 core library is under [./core](./core)
 
 🕸️ website source code is under [./app](./app)
 
