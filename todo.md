@@ -8,8 +8,7 @@
     - /
     - /about
   - files
-    - CRUD
-    - UI
+    - upload file indicator
   - segments
     - CRUD
     - UI
@@ -17,8 +16,10 @@
     - UI
     - converters
   - human-readable alerts
+  - demo session
 - [ ] v2.1
   - save and restore session
   - codec settings
   - built-in converters
   - npm package
+  - encoding file progress
