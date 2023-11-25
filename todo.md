@@ -8,6 +8,7 @@
     - converters
   - human-readable alerts
   - demo session
+  - optimizations
   - com
     - youtube
     - insta

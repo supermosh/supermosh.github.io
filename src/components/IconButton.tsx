@@ -1,13 +1,17 @@
 import styled from "@emotion/styled";
 import { ButtonHTMLAttributes } from "react";
+import { Button } from "./Button";
 
-const IconButtonButton = styled.button`
+const IconButtonButton = styled(Button)`
   width: 46px;
   height: 46px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
 `;
 
 export const IconButton = ({

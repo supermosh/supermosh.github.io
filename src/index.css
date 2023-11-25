@@ -8,14 +8,3 @@ body {
 * {
   box-sizing: border-box;
 }
-button {
-  font: inherit;
-  cursor: hover;
-  border: 1px solid white;
-  background-color: transparent;
-  padding: 0.5em 1em;
-  cursor: pointer;
-}
-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
