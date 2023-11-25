@@ -1,14 +1,5 @@
 - [x] v1
 - [-] v2
-  - com
-    - youtube
-    - insta
-    - twitter
-    - reddit
-    - /
-    - /about
-  - files
-    - upload file indicator
   - segments
     - CRUD
     - UI
@@ -17,6 +8,13 @@
     - converters
   - human-readable alerts
   - demo session
+  - com
+    - youtube
+    - insta
+    - twitter
+    - reddit
+    - /
+    - /about
 - [ ] v2.1
   - save and restore session
   - codec settings

@@ -1,10 +1,11 @@
 import type { ChangeEventHandler, Dispatch, SetStateAction } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import { x } from "../shorts";
 import { encode } from "./core";
 import type { Vid } from "./types";
 import styled from "@emotion/styled";
+import { IconButton } from "../components/IconButton";
 
 const VidLines = styled.div`
   display: flex;
@@ -22,17 +23,17 @@ const VidLine = styled.div`
   }
 `;
 
-const FileInputContainer = styled.label`
+const FileInputContainer = styled.label<{ disabled: boolean }>`
   font: inherit;
-  cursor: hover;
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
   border: 1px solid white;
   background-color: transparent;
   padding: 0.5em 1em;
-  cursor: pointer;
   display: inline-block;
   margin: 0.5em 0;
-
-  :hover {
+  opacity: ${(props) => (props.disabled ? 0.5 : 1)};
+  :hover,
+  :focus {
     background-color: rgba(255, 255, 255, 0.1);
   }
   input {
@@ -47,7 +48,10 @@ export const FilesEditor = ({
   vids: Record<string, Vid>;
   setVids: Dispatch<SetStateAction<Record<string, Vid>>>;
 }) => {
+  const [uploading, setUploading] = useState(false);
+
   const onUpload: ChangeEventHandler<HTMLInputElement> = async (evt) => {
+    setUploading(true);
     const file = x(evt.target.files)[0];
     evt.target.value = "";
     const src = URL.createObjectURL(file);
@@ -55,6 +59,7 @@ export const FilesEditor = ({
     let name = file.name;
     while (name in vids) name += ".";
     setVids({ ...vids, [name]: { src, chunks, width, height } });
+    setUploading(false);
   };
 
   // debug
@@ -82,14 +87,13 @@ export const FilesEditor = ({
             .sort(([a], [b]) => a.localeCompare(b))
             .map(([name, vid]) => (
               <VidLine key={name}>
-                <button
+                <IconButton
+                  name="delete"
                   onClick={() => {
                     delete vids[name];
                     setVids({ ...vids });
                   }}
-                >
-                  <span className="material-icons">delete</span>
-                </button>
+                />
                 <video src={vid.src} muted loop autoPlay />
                 <div>
                   {`${name} (${vid.width}x${vid.height}px, ${vid.chunks.length} frames)`}
@@ -100,9 +104,14 @@ export const FilesEditor = ({
       ) : (
         <p>No video uploaded yet</p>
       )}
-      <FileInputContainer>
-        Add video
-        <input type="file" accept="video/*" onChange={onUpload} />
+      <FileInputContainer disabled={uploading}>
+        {uploading ? "Uploading..." : "Add video"}
+        <input
+          type="file"
+          accept="video/*"
+          onChange={onUpload}
+          disabled={uploading}
+        />
       </FileInputContainer>
     </>
   );
