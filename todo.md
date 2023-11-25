@@ -1,12 +1,24 @@
-# Roadmap
-
-- com youtube
-- com insta
-- com twitter
-- home page
-- about page
-- segments: compact
-- render: prettier UI
-- render: converters
-- explicit alerts everywhere
-- codecs & fps settings
+- [x] v1
+- [-] v2
+  - com
+    - youtube
+    - insta
+    - twitter
+    - reddit
+    - /
+    - /about
+  - files
+    - CRUD
+    - UI
+  - segments
+    - CRUD
+    - UI
+  - render
+    - UI
+    - converters
+  - human-readable alerts
+- [ ] v2.1
+  - save and restore session
+  - codec settings
+  - built-in converters
+  - npm package
