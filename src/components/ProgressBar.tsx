@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 
 const Cont = styled.div`
   width: 256px;
-  height: 46px;
+  height: 36px;
   background-color: grey;
   position: relative;
 `;

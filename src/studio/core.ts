@@ -3,7 +3,10 @@ import { x } from "../shorts";
 const codec = "vp8";
 const fps = 30;
 
-export const encode = async (file: File) => {
+export const encode = async (
+  file: File,
+  onProgress: (progress: number) => unknown = () => {}
+) => {
   const video = document.createElement("video");
   video.src = URL.createObjectURL(file);
   video.muted = true;
@@ -33,6 +36,7 @@ export const encode = async (file: File) => {
     encoder.encode(frame, { keyFrame: f === 0 });
     frame.close();
     f++;
+    onProgress(video.currentTime / video.duration);
   }
   await encoder.flush();
   return { width, height, chunks };
