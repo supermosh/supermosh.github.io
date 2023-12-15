@@ -15,6 +15,7 @@
     - /about
   - responsive
   - encoding progress
+  - issue template
 - [ ] v2.1
   - save and restore session
   - codec settings

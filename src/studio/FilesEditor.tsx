@@ -63,16 +63,23 @@ export const FilesEditor = ({
 }) => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [error, setError] = useState("");
 
   const onUpload: ChangeEventHandler<HTMLInputElement> = async (evt) => {
     setUploading(true);
-    const file = x(evt.target.files)[0];
-    evt.target.value = "";
-    const src = URL.createObjectURL(file);
-    const { width, height, chunks } = await encode(file, setProgress);
-    let name = file.name;
-    while (name in vids) name += ".";
-    setVids({ ...vids, [name]: { src, chunks, width, height } });
+    setError("");
+    try {
+      const file = x(evt.target.files)[0];
+      evt.target.value = "";
+      const src = URL.createObjectURL(file);
+      const { width, height, chunks } = await encode(file, setProgress);
+      let name = file.name;
+      while (name in vids) name += ".";
+      setVids({ ...vids, [name]: { src, chunks, width, height } });
+    } catch (e) {
+      setError(`${e}`);
+      console.error(e);
+    }
     setUploading(false);
   };
 
@@ -131,6 +138,24 @@ export const FilesEditor = ({
           </FileInputContainer>
           {uploading && <ProgressBar progress={progress} />}
         </Hor>
+        {error && (
+          <Vert>
+            <div>An error occurred while trying to encode this video:</div>
+            <div>{error}</div>
+            <div>
+              You might fix this by uploading your video in another codec, or
+              uploading a smaller file. If the issue persists, please let me
+              know about it in a{" "}
+              <a
+                href="https://github.com/supermosh/supermosh.github.io/issues/"
+                target="_blank"
+              >
+                bug issue
+              </a>{" "}
+              and I'll investigate. Thanks!
+            </div>
+          </Vert>
+        )}
       </Vert>
     </>
   );
