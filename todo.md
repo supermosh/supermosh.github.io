@@ -3,6 +3,8 @@
   - segments
     - CRUD
     - UI
+    - video duration stored in state
+    - frame index input
   - render
     - UI
     - converters

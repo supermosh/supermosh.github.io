@@ -1,0 +1,28 @@
+import type { InputProps } from "../studio/types";
+import { NumberInput } from "./NumberInput";
+
+export const RangeInput = ({
+  value,
+  onChange,
+  label,
+  min,
+  max,
+  step,
+}: InputProps<number> & {
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+}) => {
+  return (
+    <div>
+      {label}
+      <input
+        type="range"
+        onChange={(evt) => onChange(evt.target.valueAsNumber)}
+        {...{ min, max, step, value }}
+      />
+      <NumberInput {...{ value, onChange, min, max, step }} />
+    </div>
+  );
+};
