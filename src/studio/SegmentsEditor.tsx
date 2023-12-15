@@ -46,9 +46,7 @@ export const SegmentsEditor = ({
                     setSegments([...segments]);
                   }}
                   disabled={i === 0}
-                >
-                  up
-                </IconButton>
+                />
                 <IconButton
                   name="keyboard_arrow_down"
                   onClick={() => {
@@ -58,9 +56,13 @@ export const SegmentsEditor = ({
                     setSegments([...segments]);
                   }}
                   disabled={i === segments.length - 1}
-                >
-                  down
-                </IconButton>
+                />
+                <IconButton
+                  name="delete"
+                  onClick={() => {
+                    setSegments(segments.filter((_, j) => i !== j));
+                  }}
+                />
                 <Select
                   value={segment.kind}
                   options={["copy", "glide", "drift"]}

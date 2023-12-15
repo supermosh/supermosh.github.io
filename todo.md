@@ -5,12 +5,7 @@
     - UI
     - video duration stored in state
     - frame index input
-  - render
-    - UI
-    - converters
-  - human-readable alerts
   - demo session
-  - optimizations
   - com
     - youtube
     - insta
@@ -19,9 +14,10 @@
     - /
     - /about
   - responsive
+  - encoding progress
 - [ ] v2.1
   - save and restore session
   - codec settings
   - built-in converters
   - npm package
-  - encoding file progress
+  - modal on error
