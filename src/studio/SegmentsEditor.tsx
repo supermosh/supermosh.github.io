@@ -1,12 +1,12 @@
+import styled from "@emotion/styled";
 import { type Dispatch, type SetStateAction } from "react";
 
+import { Button } from "../components/Button";
+import { IconButton } from "../components/IconButton";
 import { Select } from "../components/Select";
 import { StartEndEditor } from "./StartEndEditor";
 import { StartTimeEditor } from "./StartTimeEditor";
 import type { Segment, Vid } from "./types";
-import { Button } from "../components/Button";
-import styled from "@emotion/styled";
-import { IconButton } from "../components/IconButton";
 
 const SegmentLines = styled.div`
   display: flex;
