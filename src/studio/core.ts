@@ -1,7 +1,7 @@
 import { x } from "../shorts";
 
 const codec = "vp8";
-const fps = 29.97;
+const fps = 30;
 
 export const encode = async (file: File) => {
   const video = document.createElement("video");
@@ -60,7 +60,8 @@ export const decode = async (chunks: EncodedVideoChunk[]) => {
 export const record = async (
   width: number,
   height: number,
-  frames: VideoFrame[]
+  frames: VideoFrame[],
+  onProgress: (progress: number) => unknown = () => {}
 ) => {
   const canvas = document.createElement("canvas");
   canvas.width = width;
@@ -75,6 +76,7 @@ export const record = async (
     ctx.drawImage(frames[i], 0, 0);
     frames[i].close();
     await new Promise((r) => requestAnimationFrame(r));
+    onProgress(i / frames.length);
   }
   recorder.stop();
   const evt: BlobEvent = await new Promise((r) =>

@@ -1,8 +1,26 @@
+import styled from "@emotion/styled";
 import { useState } from "react";
 
+import { Button, LinkButton } from "../components/Button";
+import { ProgressBar } from "../components/ProgressBar";
 import { x } from "../shorts";
 import { decode, record } from "./core";
 import type { Segment, Vid } from "./types";
+
+const Vert = styled.div`
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  > video {
+    max-width: 100%;
+  }
+`;
+
+const Hor = styled.div`
+  display: flex;
+  gap: 8px;
+`;
 
 export const Renderer = ({
   vids,
@@ -13,9 +31,18 @@ export const Renderer = ({
 }) => {
   const [src, setSrc] = useState("");
   const [rendering, setRendering] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const cantRender = (() => {
+    if (!segments.length) return "No segments added yet";
+    if (segments[0]!.kind !== "copy")
+      return "First segment should be of kind 'copy'";
+    return "";
+  })();
 
   const render = async () => {
     setRendering(true);
+    setProgress(0);
 
     const { width, height } = vids[segments[0].name];
 
@@ -34,7 +61,7 @@ export const Renderer = ({
     });
 
     const frames = await decode(allChunks);
-    const newSrc = await record(width, height, frames);
+    const newSrc = await record(width, height, frames, setProgress);
     setSrc(newSrc);
     setRendering(false);
   };
@@ -42,13 +69,21 @@ export const Renderer = ({
   return (
     <>
       <h1>Render</h1>
-      <button onClick={render} disabled={rendering}>
-        render
-      </button>
-      <a href={src} download="supermosh.webm">
-        download
-      </a>
-      <video src={src} muted loop autoPlay controls />
+      <Vert>
+        {cantRender && <div>Cant render: {cantRender}</div>}
+        <Hor>
+          <Button onClick={render} disabled={rendering || !!cantRender}>
+            render
+          </Button>
+          {rendering && <ProgressBar progress={progress} />}
+          {!rendering && src && (
+            <LinkButton href={src} download={`supermosh_`}>
+              download
+            </LinkButton>
+          )}
+        </Hor>
+        {src && <video src={src} muted loop autoPlay controls />}
+      </Vert>
     </>
   );
 };

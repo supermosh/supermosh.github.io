@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
-import { ButtonHTMLAttributes } from "react";
+import type { ButtonHTMLAttributes } from "react";
+
 import { Button } from "./Button";
 
 const IconButtonButton = styled(Button)`
