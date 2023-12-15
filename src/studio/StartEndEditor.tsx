@@ -15,6 +15,7 @@ const Cont = styled.div`
 
 const Video = styled.video`
   position: absolute;
+  z-index: 100;
 `;
 
 export const StartEndEditor = ({
@@ -27,10 +28,13 @@ export const StartEndEditor = ({
 
   const play = () => {
     if (!video.current) return;
-    video.current.currentTime = value.start;
+    const timeStart =
+      (value.start * video.current.duration) / vid.chunks.length;
+    const timeEnd = (value.end * video.current.duration) / vid.chunks.length;
+    video.current.currentTime = timeStart;
     video.current.play();
     clearInterval(timeout.current);
-    timeout.current = window.setTimeout(play, (value.end - value.start) * 1000);
+    timeout.current = window.setTimeout(play, (timeEnd - timeStart) * 1000);
   };
 
   const pause = () => {
@@ -52,8 +56,8 @@ export const StartEndEditor = ({
       <RangeInput
         label="start"
         min={0}
-        max={video.current?.duration ?? Infinity}
-        step={1 / 29.97}
+        max={vid.chunks.length}
+        step={1}
         value={value.start}
         onChange={(start) => {
           const end = Math.max(value.end, start);
@@ -64,8 +68,8 @@ export const StartEndEditor = ({
       <RangeInput
         label="end"
         min={0}
-        max={video.current?.duration ?? Infinity}
-        step={1 / 29.97}
+        max={vid.chunks.length}
+        step={1}
         value={value.end}
         onChange={(end) => {
           const start = Math.min(value.start, end);

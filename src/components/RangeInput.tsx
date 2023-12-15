@@ -20,9 +20,9 @@ export const RangeInput = ({
       <input
         type="range"
         onChange={(evt) => onChange(evt.target.valueAsNumber)}
-        {...{ min, max, step, value }}
+        {...{ value, min, max, step }}
       />
-      <NumberInput {...{ value, onChange, min, max, step }} />
+      <NumberInput value={value} {...{ onChange, min, max, step }} />
     </div>
   );
 };

@@ -1,6 +1,23 @@
+import styled from "@emotion/styled";
 import { useRef } from "react";
 
+import { NumberInput } from "../components/NumberInput";
+import { RangeInput } from "../components/RangeInput";
 import type { GlideSegment, InputProps, Vid } from "./types";
+
+const Cont = styled.div`
+  position: relative;
+  &:not(:hover) {
+    video {
+      display: none;
+    }
+  }
+`;
+
+const Video = styled.video`
+  position: absolute;
+  z-index: 100;
+`;
 
 export const StartTimeEditor = ({
   vid,
@@ -9,38 +26,32 @@ export const StartTimeEditor = ({
 }: { vid: Vid } & InputProps<GlideSegment>) => {
   const video = useRef<HTMLVideoElement | null>(null);
 
-  if (video.current) video.current.currentTime = value.start;
+  if (video.current) {
+    const timeStart =
+      (value.start * video.current.duration) / vid.chunks.length;
+    video.current.currentTime = timeStart;
+  }
 
   return (
-    <div>
-      <div>
-        start
-        <input
-          type="range"
-          min={0}
-          max={video.current?.duration}
-          step={1 / 29.97}
-          value={value.start}
-          onChange={(evt) => {
-            const start = +evt.target.value;
-            onChange({ ...value, start });
-          }}
-        />
-      </div>
+    <Cont>
+      <RangeInput
+        label="start"
+        value={value.start}
+        onChange={(start) => onChange({ ...value, start })}
+        min={0}
+        max={vid.chunks.length}
+        step={1}
+      />
       <div>
         time
-        <input
-          type="range"
-          min={0}
-          max={10}
+        <NumberInput
           value={value.time}
-          onChange={(evt) => {
-            const time = +evt.target.value;
-            onChange({ ...value, time });
-          }}
+          onChange={(time) => onChange({ ...value, time })}
+          min={0}
+          step={1}
         />
       </div>
-      <video ref={video} src={vid.src} muted playsInline />
-    </div>
+      <Video ref={video} src={vid.src} autoPlay muted playsInline />
+    </Cont>
   );
 };
