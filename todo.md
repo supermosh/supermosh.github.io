@@ -18,6 +18,7 @@
     - reddit
     - /
     - /about
+  - responsive
 - [ ] v2.1
   - save and restore session
   - codec settings

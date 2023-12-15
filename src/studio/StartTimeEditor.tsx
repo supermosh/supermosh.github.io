@@ -17,6 +17,13 @@ const Cont = styled.div`
 const Video = styled.video`
   position: absolute;
   z-index: 100;
+  transform: translateY(8px);
+`;
+
+const Hor = styled.div`
+  display: flex;
+  gap: 8px;
+  width: 100%;
 `;
 
 export const StartTimeEditor = ({
@@ -35,22 +42,22 @@ export const StartTimeEditor = ({
   return (
     <Cont>
       <RangeInput
-        label="start"
+        label="start frame"
         value={value.start}
         onChange={(start) => onChange({ ...value, start })}
         min={0}
         max={vid.chunks.length}
         step={1}
       />
-      <div>
-        time
+      <Hor>
         <NumberInput
           value={value.time}
           onChange={(time) => onChange({ ...value, time })}
           min={0}
           step={1}
         />
-      </div>
+        nb frames
+      </Hor>
       <Video ref={video} src={vid.src} autoPlay muted playsInline />
     </Cont>
   );

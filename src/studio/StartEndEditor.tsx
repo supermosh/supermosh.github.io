@@ -7,6 +7,10 @@ import { useFrame } from "./useFrame";
 
 const Cont = styled.div`
   position: relative;
+  height: 46px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   &:not(:hover) {
     video {
       display: none;
@@ -17,6 +21,7 @@ const Cont = styled.div`
 const Video = styled.video`
   position: absolute;
   z-index: 100;
+  bottom: calc(100% + 8px);
 `;
 
 export const StartEndEditor = ({
@@ -51,7 +56,7 @@ export const StartEndEditor = ({
   return (
     <Cont>
       <RangeInput
-        label="start"
+        label="start frame"
         min={0}
         max={vid.chunks.length}
         step={1}
@@ -64,7 +69,7 @@ export const StartEndEditor = ({
         }}
       />
       <RangeInput
-        label="end"
+        label="end frame"
         min={0}
         max={vid.chunks.length}
         step={1}

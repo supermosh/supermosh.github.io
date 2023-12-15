@@ -8,15 +8,16 @@ import { StartEndEditor } from "./StartEndEditor";
 import { StartTimeEditor } from "./StartTimeEditor";
 import type { Segment, Vid } from "./types";
 
-const SegmentLines = styled.div`
+const Vert = styled.div`
   display: flex;
-  gap: 0.5em;
   flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
 `;
 
 const SegmentLine = styled.div`
   display: flex;
-  gap: 0.5em;
+  gap: 8px;
 `;
 
 export const SegmentsEditor = ({
@@ -31,9 +32,9 @@ export const SegmentsEditor = ({
   return (
     <>
       <h1>Segments</h1>
-      {segments.length ? (
-        <>
-          <SegmentLines>
+      <Vert>
+        {segments.length ? (
+          <>
             {segments.map((segment, i) => (
               <SegmentLine key={i}>
                 <IconButton
@@ -120,29 +121,29 @@ export const SegmentsEditor = ({
                 )}
               </SegmentLine>
             ))}
-          </SegmentLines>
-        </>
-      ) : (
-        <p>No segment added yet</p>
-      )}
+          </>
+        ) : (
+          <div>No segment added yet</div>
+        )}
 
-      {Object.keys(vids).length > 0 && (
-        <Button
-          onClick={() =>
-            setSegments([
-              ...segments,
-              {
-                name: Object.keys(vids)[0],
-                kind: "copy",
-                start: 0,
-                end: 0,
-              },
-            ])
-          }
-        >
-          Add segment
-        </Button>
-      )}
+        {Object.keys(vids).length > 0 && (
+          <Button
+            onClick={() =>
+              setSegments([
+                ...segments,
+                {
+                  name: Object.keys(vids)[0],
+                  kind: "copy",
+                  start: 0,
+                  end: 0,
+                },
+              ])
+            }
+          >
+            Add segment
+          </Button>
+        )}
+      </Vert>
     </>
   );
 };

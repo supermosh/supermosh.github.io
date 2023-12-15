@@ -10,14 +10,14 @@ import { IconButton } from "../components/IconButton";
 const VidLines = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
+  gap: 8px;
 `;
 
 const VidLine = styled.div`
   display: flex;
   height: 46px;
   align-items: center;
-  gap: 0.5em;
+  gap: 8px;
   video {
     height: 100%;
   }
