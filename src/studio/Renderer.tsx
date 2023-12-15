@@ -76,13 +76,20 @@ export const Renderer = ({
             render
           </Button>
           {rendering && <ProgressBar progress={progress} />}
-          {!rendering && src && (
-            <LinkButton href={src} download={`supermosh_`}>
+        </Hor>
+        {src && (
+          <>
+            <video src={src} muted loop autoPlay controls />
+            <LinkButton
+              href={src}
+              download={`supermosh_${new Date()
+                .toISOString()
+                .substring(0, 19)}`}
+            >
               download
             </LinkButton>
-          )}
-        </Hor>
-        {src && <video src={src} muted loop autoPlay controls />}
+          </>
+        )}
       </Vert>
     </>
   );
