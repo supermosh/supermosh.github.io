@@ -3,6 +3,7 @@ import { useRef } from "react";
 
 import { RangeInput } from "../components/RangeInput";
 import type { CopySegment, DriftSegment, InputProps, Vid } from "./types";
+import { useFrame } from "./useFrame";
 
 const Cont = styled.div`
   position: relative;
@@ -24,32 +25,28 @@ export const StartEndEditor = ({
   onChange,
 }: { vid: Vid } & InputProps<CopySegment | DriftSegment>) => {
   const video = useRef<HTMLVideoElement | null>(null);
-  const timeout = useRef(0);
+  const startRef = useRef(value.start);
+  const endRef = useRef(value.end);
 
-  const play = () => {
+  useFrame(() => {
     if (!video.current) return;
-    const timeStart =
-      (value.start * video.current.duration) / vid.chunks.length;
-    const timeEnd = (value.end * video.current.duration) / vid.chunks.length;
-    video.current.currentTime = timeStart;
-    video.current.play();
-    clearInterval(timeout.current);
-    timeout.current = window.setTimeout(play, (timeEnd - timeStart) * 1000);
-  };
 
-  const pause = () => {
-    if (!video.current) return;
-    video.current.pause();
-    clearInterval(timeout.current);
-  };
+    const startTime =
+      (startRef.current * video.current.duration) / vid.chunks.length;
+    const endTime =
+      (endRef.current * video.current.duration) / vid.chunks.length;
+    if (
+      video.current.currentTime < startTime ||
+      video.current.currentTime > endTime
+    )
+      video.current.currentTime = startTime;
 
-  if (video.current) {
-    if (video.current.paused) {
-      if (value.start !== value.end) play();
+    if (startRef.current === endRef.current) {
+      if (video.current.played) video.current.pause();
     } else {
-      if (value.start === value.end) pause();
+      if (video.current.paused) video.current.play();
     }
-  }
+  });
 
   return (
     <Cont>
@@ -62,7 +59,8 @@ export const StartEndEditor = ({
         onChange={(start) => {
           const end = Math.max(value.end, start);
           onChange({ ...value, start, end });
-          play();
+          startRef.current = start;
+          endRef.current = end;
         }}
       />
       <RangeInput
@@ -74,7 +72,8 @@ export const StartEndEditor = ({
         onChange={(end) => {
           const start = Math.min(value.start, end);
           onChange({ ...value, start, end });
-          play();
+          startRef.current = start;
+          endRef.current = end;
         }}
       />
       <Video ref={video} src={vid.src} muted playsInline />
