@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import type { ChangeEventHandler, Dispatch, SetStateAction } from "react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import { IconButton } from "../components/IconButton";
 import { ProgressBar } from "../components/ProgressBar";
@@ -82,22 +82,6 @@ export const FilesEditor = ({
     }
     setUploading(false);
   };
-
-  // debug
-  const fetched = useRef(false);
-  (async () => {
-    if (fetched.current || Object.keys(vids).length > 0) return;
-    await Promise.all(
-      ["motocross.mp4"].map(async (name) => {
-        const resp = await fetch(`/${name}`);
-        const blob = await resp.blob();
-        const file = new File([blob], name);
-        // @ts-ignores
-        onUpload({ target: { files: [file] } });
-      })
-    );
-    fetched.current = true;
-  })();
 
   return (
     <>
