@@ -42,21 +42,23 @@ export const Renderer = ({
 
   const render = async () => {
     setRendering(true);
+    setSrc("");
     setProgress(0);
 
     const { width, height } = vids[segments[0].name];
 
     const allChunks = segments.flatMap((segment) => {
+      console.log(JSON.stringify(segment, null, 2));
       const chunks = x(vids[segment.name]).chunks;
       switch (segment.kind) {
         case "copy":
-          return chunks;
+          return chunks.slice(segment.start, segment.end);
         case "glide":
-          return Array(chunks.length)
+          return Array(segment.time)
             .fill(null)
-            .map(() => chunks.slice(-1)[0]);
+            .map(() => chunks[segment.start]);
         case "drift":
-          return chunks.slice(1);
+          throw new Error("ayo");
       }
     });
 
