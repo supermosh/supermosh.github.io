@@ -46,7 +46,7 @@ export const StartTimeEditor = ({
         value={value.start}
         onChange={(start) => onChange({ ...value, start })}
         min={0}
-        max={vid.chunks.length}
+        max={vid.chunks.length - 1}
         step={1}
       />
       <Hor>

@@ -58,7 +58,7 @@ export const StartEndEditor = ({
       <RangeInput
         label="start frame"
         min={0}
-        max={vid.chunks.length}
+        max={vid.chunks.length - 1}
         step={1}
         value={value.start}
         onChange={(start) => {
@@ -71,7 +71,7 @@ export const StartEndEditor = ({
       <RangeInput
         label="end frame"
         min={0}
-        max={vid.chunks.length}
+        max={vid.chunks.length - 1}
         step={1}
         value={value.end}
         onChange={(end) => {
