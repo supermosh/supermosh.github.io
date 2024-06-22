@@ -1,8 +1,8 @@
-import React, { Dispatch, SetStateAction } from 'react';
-import { CopySegment, GlideSegment, MovementSegment, Segment } from 'supermosh';
-import StartEndInput from './StartEndInput';
-import { Video } from './types';
-import TimeLengthInput from './TimeLengthInput';
+import React, { Dispatch, SetStateAction } from "react";
+import { CopySegment, GlideSegment, MovementSegment, Segment } from "supermosh";
+import StartEndInput from "./StartEndInput";
+import { Video } from "./types";
+import TimeLengthInput from "./TimeLengthInput";
 
 export default ({
   videos,
@@ -32,7 +32,7 @@ export default ({
     setSegments([
       ...segments,
       {
-        transform: 'copy',
+        transform: "copy",
         src: videos[0].src,
         start: 0,
         end: 0,
@@ -40,27 +40,27 @@ export default ({
     ]);
   };
 
-  const setTransform = (i: number, transform: Segment['transform']) => {
+  const setTransform = (i: number, transform: Segment["transform"]) => {
     switch (transform) {
-      case 'copy':
+      case "copy":
         segments[i] = {
-          transform: 'copy',
+          transform: "copy",
           src: segments[i].src,
           start: 0,
           end: 0,
         };
         break;
-      case 'glide':
+      case "glide":
         segments[i] = {
-          transform: 'glide',
+          transform: "glide",
           src: segments[i].src,
           time: 0,
           length: 0,
         };
         break;
-      case 'movement':
+      case "movement":
         segments[i] = {
-          transform: 'movement',
+          transform: "movement",
           src: segments[i].src,
           start: 0,
           end: 0,
@@ -101,7 +101,7 @@ export default ({
                 <button
                   className="u-icon-button"
                   type="button"
-                  style={{ visibility: i > 0 ? 'visible' : 'hidden' }}
+                  style={{ visibility: i > 0 ? "visible" : "hidden" }}
                   onClick={() => moveUp(i)}
                 >
                   <img src="/icons/up.svg" alt="" />
@@ -109,7 +109,9 @@ export default ({
                 <button
                   className="u-icon-button"
                   type="button"
-                  style={{ visibility: i < segments.length - 1 ? 'visible' : 'hidden' }}
+                  style={{
+                    visibility: i < segments.length - 1 ? "visible" : "hidden",
+                  }}
                   onClick={() => moveDown(i)}
                 >
                   <img src="/icons/down.svg" alt="" />
@@ -124,42 +126,51 @@ export default ({
                 <select
                   className="transform"
                   value={segment.transform}
-                  onInput={(evt) => setTransform(i, (evt.target as HTMLSelectElement).value as Segment['transform'])}
+                  onInput={(evt) =>
+                    setTransform(
+                      i,
+                      (evt.target as HTMLSelectElement)
+                        .value as Segment["transform"],
+                    )
+                  }
                 >
                   <option value="copy">copy</option>
                   <option value="glide">glide</option>
                   <option value="movement">movement</option>
                 </select>
-                {(segment.transform === 'copy' || segment.transform === 'movement') && (
+                {(segment.transform === "copy" ||
+                  segment.transform === "movement") && (
                   <StartEndInput
                     segment={segment}
                     onChange={(start, end) => onStartEndChange(i, start, end)}
                   />
                 )}
-                {segment.transform === 'glide' && (
+                {segment.transform === "glide" && (
                   <TimeLengthInput
                     segment={segment}
-                    onChange={(time, length) => onTimeLengthChange(i, time, length)}
+                    onChange={(time, length) =>
+                      onTimeLengthChange(i, time, length)
+                    }
                   />
                 )}
                 <select
                   className="src"
                   value={segment.src}
-                  onInput={(evt) => setSrc(i, (evt.target as HTMLSelectElement).value)}
+                  onInput={(evt) =>
+                    setSrc(i, (evt.target as HTMLSelectElement).value)
+                  }
                 >
                   {videos.map((video) => (
-                    <option key={video.key} value={video.src}>{video.file.name}</option>
+                    <option key={video.key} value={video.src}>
+                      {video.file.name}
+                    </option>
                   ))}
                 </select>
               </div>
             ))
           )}
           <div>
-            <button
-              type="button"
-              className="u-normal-button"
-              onClick={add}
-            >
+            <button type="button" className="u-normal-button" onClick={add}>
               Add a segment
             </button>
           </div>

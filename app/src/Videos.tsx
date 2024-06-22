@@ -30,7 +30,7 @@ export default ({
     await filesStore.delete(videos[i].key);
 
     const newSegments = segments.filter(
-      (segment) => segment.src !== videos[i].src
+      (segment) => segment.src !== videos[i].src,
     );
     if (newSegments.length < segments.length) {
       setSegments(newSegments);

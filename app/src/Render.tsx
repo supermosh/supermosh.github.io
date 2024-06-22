@@ -65,7 +65,7 @@ export default ({
             prepProg[i] = 0.5;
             setPrepProg([...prepProg]);
             preparedSegments.push(
-              await prepareGlideSegment(segment, renderRootRef.current!)
+              await prepareGlideSegment(segment, renderRootRef.current!),
             );
             prepProg[i] = 1;
             setPrepProg([...prepProg]);
@@ -80,8 +80,8 @@ export default ({
                 (prog) => {
                   prepProg[i] = prog;
                   setPrepProg([...prepProg]);
-                }
-              )
+                },
+              ),
             );
             prepProg[i] = 1;
             setPrepProg([...prepProg]);
@@ -115,7 +115,7 @@ export default ({
               (prog) => {
                 runProg[i] = prog;
                 setRunProg([...runProg]);
-              }
+              },
             );
             runProg[i] = 1;
             setRunProg([...runProg]);
@@ -166,7 +166,7 @@ export default ({
             time: (performance.now() - beginRenderTime) / 1000,
           });
         },
-        { once: true }
+        { once: true },
       );
       recorder.stop();
     } catch (e) {

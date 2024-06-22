@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { config } from 'supermosh';
+import React, { useState } from "react";
+import { config } from "supermosh";
 
 export default () => {
   const [fps, setFps] = useState<string>(config.fps.toString());
   const [size, setSize] = useState<string>(config.size.toString());
   const [xyShifts, setXyShifts] = useState<string>(config.xyShifts.toString());
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
 
   return (
     <div className="RenderOptions">
@@ -37,11 +37,15 @@ export default () => {
           value={xyShifts}
           onChange={(evt) => {
             setXyShifts(evt.target.value);
-            const newXyShifts = evt.target.value.split(',').map((value) => +value);
+            const newXyShifts = evt.target.value
+              .split(",")
+              .map((value) => +value);
             if (newXyShifts.some((value) => Number.isNaN(value))) {
-              setError('Shifts should be a comma-separated list of numbers, like "0,1,-1,2,-2"');
+              setError(
+                'Shifts should be a comma-separated list of numbers, like "0,1,-1,2,-2"',
+              );
             } else {
-              setError('');
+              setError("");
               config.xyShifts = newXyShifts;
             }
           }}
