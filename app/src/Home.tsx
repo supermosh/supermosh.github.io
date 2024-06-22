@@ -64,7 +64,7 @@ export default () => (
         </Link>
         <a
           className="cta"
-          href="https://youtu.be/1Hm_OtV2SSg"
+          href="https://youtu.be/4JTZRixhSAM"
           target="_blank"
           rel="noreferrer noopener"
         >
