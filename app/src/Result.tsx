@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Output } from './types';
-import Modal from './Modal';
+import React, { useState } from "react";
+import { Output } from "./types";
+import Modal from "./Modal";
 
 const computeReadableSize = (size: number) => {
   if (size < 1024) return `${size}b`;
@@ -8,7 +8,7 @@ const computeReadableSize = (size: number) => {
   return `${Math.floor(size / 1024)}Mb`;
 };
 
-export default ({ output }: {output: Output}) => {
+export default ({ output }: { output: Output }) => {
   const [previewingVideo, setPreviewingVideo] = useState<boolean>(false);
   const [videoDuration, setVideoDuration] = useState<number>(0);
   const [previewingImage, setPreviewingImage] = useState<boolean>(false);
@@ -25,7 +25,9 @@ export default ({ output }: {output: Output}) => {
     videoDuration >= 3600 && `${Math.floor(videoDuration / 3600)}h`,
     videoDuration >= 60 && `${Math.floor((videoDuration % 3600) / 60)}mn`,
     `${Math.floor(videoDuration % 60)}s`,
-  ].filter(Boolean).join('');
+  ]
+    .filter(Boolean)
+    .join("");
   const readableVideoSize = computeReadableSize(output.videoSize);
   const readableImageSize = computeReadableSize(output.imageSize);
 
@@ -47,15 +49,16 @@ export default ({ output }: {output: Output}) => {
           loop
           onClick={() => setPreviewingVideo(true)}
           title="Click to preview"
-          onCanPlay={(evt) => setVideoDuration((evt.target as HTMLVideoElement).duration)}
+          onCanPlay={(evt) =>
+            setVideoDuration((evt.target as HTMLVideoElement).duration)
+          }
         />
-
       </div>
       <div className="desc">
         <div>Last frame</div>
         <div>{`${output.width}x${output.height}`}</div>
         <div>{readableImageSize}</div>
-        <div>{`type: ${output.imageUrl.split(';')[0].split(':')[1]}`}</div>
+        <div>{`type: ${output.imageUrl.split(";")[0].split(":")[1]}`}</div>
         {output.imageUrl.length}
       </div>
       <div>
@@ -65,12 +68,17 @@ export default ({ output }: {output: Output}) => {
           alt=""
           onClick={() => setPreviewingImage(true)}
         />
-
       </div>
 
       {previewingVideo && (
         <Modal onClose={() => setPreviewingVideo(false)}>
-          <video className="preview" src={output.videoUrl} autoPlay controls loop />
+          <video
+            className="preview"
+            src={output.videoUrl}
+            autoPlay
+            controls
+            loop
+          />
         </Modal>
       )}
       {previewingImage && (
