@@ -25,7 +25,7 @@ export default () => {
         const savedSegments = await segmentsStore.getAll();
         for (const segment of savedSegments) {
           segment.src = savedVideos.find(
-            (video) => video.key === segment.savedFileKey
+            (video) => video.key === segment.savedFileKey,
           )!.src;
           // @ts-ignore
           delete segment.savedFileKey;
@@ -62,7 +62,7 @@ export default () => {
           height: video.height,
         })),
       }),
-    [videos]
+    [videos],
   );
   useEffect(() => track("update segments", { segments }), [segments]);
 

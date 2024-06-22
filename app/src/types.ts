@@ -1,4 +1,4 @@
-import { Segment } from 'supermosh';
+import { Segment } from "supermosh";
 
 export type Video = {
   key: number;
@@ -7,7 +7,7 @@ export type Video = {
   previewing: boolean;
   width: number;
   height: number;
-}
+};
 export type Output = null | {
   width: number;
   height: number;
@@ -16,11 +16,11 @@ export type Output = null | {
   videoType: string;
   imageUrl: string;
   imageSize: number;
-}
+};
 export type SavedFile = {
   key: number;
   file: File;
-}
+};
 export type SavedSegment = Segment & {
   savedFileKey: number;
-}
+};
