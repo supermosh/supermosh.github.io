@@ -42,7 +42,7 @@ export default () => (
         </a>
         , I&apos;m on{" "}
         <a
-          href="https://www.instagram.com/ssttaacckkyy/"
+          href="https://www.instagram.com/nino.filiu/"
           target="_blank"
           rel="noreferrer noopener"
         >
