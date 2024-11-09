@@ -22,11 +22,11 @@ export default () => {
         </div>
         <div>
           <a
-            href="https://www.instagram.com/ssttaacckkyy/"
+            href="https://www.instagram.com/nino.filiu/"
             target="_blank"
             rel="noreferrer noopener"
           >
-            instagram.com/ssttaacckkyy
+            instagram.com/nino.filiu
           </a>
         </div>
         <div>
@@ -86,7 +86,7 @@ export default () => {
               That being said, you are encouraged to mention me when posting
               Supermosh-generated visuals! I&apos;m on{" "}
               <a
-                href="https://www.instagram.com/ssttaacckkyy/"
+                href="https://www.instagram.com/nino.filiu/"
                 target="_blank"
                 rel="noreferrer noopener"
               >
