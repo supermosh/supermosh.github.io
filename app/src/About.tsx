@@ -40,15 +40,6 @@ export default () => {
         </div>
         <div>
           <a
-            href="mailto:nino.filiu@gmail.com"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            nino.filiu@gmail.com
-          </a>
-        </div>
-        <div>
-          <a
             href="https://github.com/supermosh/supermosh.github.io"
             target="_blank"
             rel="noreferrer noopener"
