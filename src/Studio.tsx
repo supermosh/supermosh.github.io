@@ -3,10 +3,30 @@ import { useState } from "react";
 import { NumberInput } from "./NumberInput";
 import { SelectInput } from "./SelectInput";
 
-const codec = "vp8";
+type Codec =
+  // h264
+  | "avc1.42E01E"
+  | "avc1.42c00d"
+  | "avc1.4D401E"
+  | "avc1.64001f"
+  // h265
+  | "hvc1.1.6.L93.90"
+  // vp8
+  | "vp8"
+  // vp9
+  | "vp09.00.31.08"
+  // av1
+  | "av01.0.05M.08";
+
+const codec: Codec = "vp09.00.31.08";
 const width = 1920;
 const height = 1080;
-const fps = 24;
+const fps = 30;
+
+VideoDecoder.isConfigSupported({ codec }).then(console.log);
+VideoEncoder.isConfigSupported({ codec, width, height, framerate: fps }).then(
+  console.log
+);
 
 const encode = async (video: HTMLVideoElement) => {
   const chunks: EncodedVideoChunk[] = [];
@@ -88,6 +108,7 @@ export const Studio = () => {
 
     recorder.start();
     for (const chunk of chunks) {
+      console.log(chunks.indexOf(chunk));
       decoder.decode(chunk);
       await new Promise((r) => setTimeout(r, 1000 / fps));
     }
@@ -175,7 +196,7 @@ export const Studio = () => {
               <li>
                 <button
                   onClick={() => {
-                    setSegments(segments.filter((s, si) => i !== si));
+                    setSegments(segments.filter((_, si) => i !== si));
                   }}
                 >
                   delete
@@ -207,7 +228,16 @@ export const Studio = () => {
       <h1>Render</h1>
       <button onClick={render}>render</button>
       <br />
-      {src && <video src={src} controls muted autoPlay loop />}
+      {src && (
+        <video
+          src={src}
+          controls
+          muted
+          autoPlay
+          loop
+          style={{ width: "100%" }}
+        />
+      )}
     </>
   );
 };
