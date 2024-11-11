@@ -60,6 +60,17 @@ const computeDescription = (file: MP4File, trackId: number) => {
     },
   });
 
+  const stream = canvas.captureStream();
+  const recorder = new MediaRecorder(stream);
+  recorder.addEventListener("dataavailable", (evt) => {
+    const video = document.createElement("video");
+    document.body.append(video);
+    video.src = URL.createObjectURL(evt.data);
+    video.muted = true;
+    video.autoplay = true;
+    video.loop = true;
+  });
+
   const file = createFile();
   file.onError = console.error;
   file.onReady = (info) => {
@@ -83,10 +94,12 @@ const computeDescription = (file: MP4File, trackId: number) => {
           data: sample.data,
         })
     );
+    recorder.start();
     for (const chunk of chunks) {
       decoder.decode(chunk);
-      // await new Promise((r) => setTimeout(r, 1000 / 30));
+      await new Promise((r) => setTimeout(r, 1000 / 30));
     }
+    recorder.stop();
   };
   const buffer = new ArrayBuffer(data.byteLength) as MP4ArrayBuffer;
   new Uint8Array(buffer).set(data);
