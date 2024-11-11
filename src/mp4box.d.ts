@@ -51,6 +51,7 @@ declare module "mp4box" {
     modified: Date;
     tracks: MP4Track[];
     audioTracks: MP4AudioTrack[];
+    videoTracks: MP4VideoTrack[];
   }
 
   interface MP4Sample {
@@ -91,9 +92,10 @@ declare module "mp4box" {
     releaseUsedSamples(trackId: number, sampleNumber: number): void;
     setExtractionOptions(
       trackId: number,
-      user: any,
-      options: { nbSamples?: number; rapAlignment?: number }
+      user?: any,
+      options?: { nbSamples?: number; rapAlignment?: number }
     ): void;
+    getTrackById(trackId: number);
   }
 
   export function createFile(): MP4File;
