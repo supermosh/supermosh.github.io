@@ -76,7 +76,7 @@ export const computeChunks = (
     }
   });
 
-const record = async (chunks: EncodedVideoChunk[]) => {
+export const record = async (chunks: EncodedVideoChunk[]) => {
   const canvas = document.createElement("canvas");
   document.body.append(canvas);
   canvas.width = width;
