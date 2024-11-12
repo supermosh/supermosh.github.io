@@ -3,6 +3,7 @@ import { toBlobURL } from "@ffmpeg/util";
 import { useEffect, useRef, useState } from "react";
 
 import { FilesEditor } from "./FilesEditor";
+import { Rendering } from "./Rendering";
 import { SegmentsEditor } from "./SegmentsEditor";
 import { Segment, Vid } from "./types";
 
@@ -50,10 +51,11 @@ export const Studio = () => {
         ffmpeg={ffmpegRef.current}
       />
       <SegmentsEditor
+        vids={vids}
         segments={segments}
         setSegments={setSegments}
-        vids={vids}
       />
+      <Rendering vids={vids} segments={segments} />
     </>
   );
 };

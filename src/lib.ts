@@ -76,53 +76,42 @@ export const computeChunks = (
     }
   });
 
-export const record = async (chunks: EncodedVideoChunk[]) => {
-  const canvas = document.createElement("canvas");
-  document.body.append(canvas);
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d")!;
+export const record = async (
+  chunks: EncodedVideoChunk[],
+  mimeType: string,
+  onProgress: (progress: number) => unknown
+) =>
+  new Promise<string>((resolve) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d")!;
 
-  const decoder = new VideoDecoder({
-    error: console.error,
-    output: (frame) => {
-      ctx.drawImage(frame, 0, 0);
-      frame.close();
-    },
+    const decoder = new VideoDecoder({
+      error: console.error,
+      output: (frame) => {
+        ctx.drawImage(frame, 0, 0);
+        frame.close();
+      },
+    });
+    decoder.configure(decoderConfig);
+
+    const stream = canvas.captureStream();
+    const recorder = new MediaRecorder(stream, { mimeType });
+    recorder.addEventListener("dataavailable", (evt) => {
+      const src = URL.createObjectURL(evt.data);
+      resolve(src);
+    });
+
+    recorder.start();
+    let i = 0;
+    const interval = setInterval(() => {
+      onProgress(i / chunks.length);
+      decoder.decode(chunks[i]);
+      i++;
+      if (i === chunks.length - 1) {
+        recorder.stop();
+        clearInterval(interval);
+      }
+    }, 1000 / 30);
   });
-  decoder.configure(decoderConfig);
-
-  const stream = canvas.captureStream();
-  const recorder = new MediaRecorder(stream);
-  recorder.addEventListener("dataavailable", (evt) => {
-    const video = document.createElement("video");
-    document.body.append(video);
-    video.src = URL.createObjectURL(evt.data);
-    video.muted = true;
-    video.autoplay = true;
-    video.loop = true;
-  });
-
-  recorder.start();
-  for (const chunk of chunks) {
-    decoder.decode(chunk);
-    await new Promise((r) => setTimeout(r, 1000 / 30));
-  }
-  recorder.stop();
-};
-
-// (async () => {
-//   const ffmpeg = new FFmpeg();
-//   ffmpeg.on("progress", console.log);
-
-//   const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm";
-//   await ffmpeg.load({
-//     coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-//     wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
-//   });
-
-//   const beachChunks = await computeChunks(ffmpeg, "beach");
-//   const smileChunks = await computeChunks(ffmpeg, "smile");
-//   const chunks = [...beachChunks, ...smileChunks.slice(1, 300)];
-//   await record(chunks);
-// })();
