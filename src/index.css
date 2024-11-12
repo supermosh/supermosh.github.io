@@ -2,13 +2,12 @@
   color-scheme: dark;
   font-family: monospace;
 }
-table {
-  border-collapse: collapse;
-}
-td {
-  border: 1px solid white;
-  padding: 0.5em 1em;
-}
 button {
   cursor: pointer;
+}
+.segments {
+  display: grid;
+  grid-template-columns: 1fr repeat(6, 60px);
+  gap: 8px;
+  margin: 8px 0;
 }
