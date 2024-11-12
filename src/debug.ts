@@ -2,9 +2,11 @@ import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { fetchFile, toBlobURL } from "@ffmpeg/util";
 import { createFile, DataStream, MP4ArrayBuffer, MP4File } from "mp4box";
 
-const src = "/beach.mp4";
 const width = 640;
 const height = 360;
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+const decoderConfig: VideoDecoderConfig = {};
 
 const computeDescription = (file: MP4File, trackId: number) => {
   const track = file.getTrackById(trackId);
@@ -19,33 +21,56 @@ const computeDescription = (file: MP4File, trackId: number) => {
   throw new Error("avcC, hvcC, vpcC, or av1C box not found");
 };
 
-(async () => {
-  const ffmpeg = new FFmpeg();
-  ffmpeg.on("progress", console.log);
+const computeChunks = (ffmpeg: FFmpeg, path: string) =>
+  // eslint-disable-next-line no-async-promise-executor
+  new Promise<EncodedVideoChunk[]>(async (resolve, reject) => {
+    try {
+      const inputName = `input_${path}.mp4`;
+      const outputName = `output_${path}.mp4`;
+      await ffmpeg.writeFile(inputName, await fetchFile(`/${path}.mp4`));
+      await ffmpeg.exec(
+        `-i ${inputName} -vf scale=${width}:${height} -vcodec libx264 -g 99999999 -bf 0 -flags:v +cgop -pix_fmt yuv420p -movflags faststart -crf 15 ${outputName}`.split(
+          " "
+        )
+      );
+      const data = (await ffmpeg.readFile(outputName)) as Uint8Array;
 
-  const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm";
-  await ffmpeg.load({
-    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
+      const file = createFile();
+      file.onError = console.error;
+      file.onReady = (info) => {
+        const track = info.videoTracks[0];
+        Object.assign(decoderConfig, {
+          codec: track.codec.startsWith("vp08") ? "vp8" : track.codec,
+          codedHeight: track.video.height,
+          codedWidth: track.video.width,
+          description: computeDescription(file, track.id),
+        });
+        file.setExtractionOptions(track.id);
+        file.start();
+      };
+      file.onSamples = async (_trackId, _ref, samples) => {
+        const chunks = samples.map(
+          (sample) =>
+            new EncodedVideoChunk({
+              type: sample.is_sync ? "key" : "delta",
+              timestamp: (1e6 * sample.cts) / sample.timescale,
+              duration: (1e6 * sample.duration) / sample.timescale,
+              data: sample.data,
+            })
+        );
+
+        resolve(chunks);
+      };
+      const buffer = new ArrayBuffer(data.byteLength) as MP4ArrayBuffer;
+      new Uint8Array(buffer).set(data);
+      buffer.fileStart = 0;
+      file.appendBuffer(buffer);
+    } catch (e) {
+      reject(e);
+    }
   });
 
-  await ffmpeg.writeFile("input.mp4", await fetchFile(src));
-  await ffmpeg.exec(
-    `-i input.mp4 -vf scale=${width}:${height} -vcodec libx264 -g 99999999 -bf 0 -flags:v +cgop -pix_fmt yuv420p -movflags faststart -crf 15 output.mp4`.split(
-      " "
-    )
-  );
-  const data = (await ffmpeg.readFile("output.mp4")) as Uint8Array;
-  const video = document.createElement("video");
-  document.body.append(video);
-  video.src = URL.createObjectURL(
-    new Blob([data.buffer], { type: "video/mp4" })
-  );
-  video.muted = true;
-  video.autoplay = true;
-  video.controls = true;
-  console.log("done");
-
+const record = async (chunks: EncodedVideoChunk[]) => {
   const canvas = document.createElement("canvas");
   document.body.append(canvas);
   canvas.width = width;
@@ -59,6 +84,7 @@ const computeDescription = (file: MP4File, trackId: number) => {
       frame.close();
     },
   });
+  decoder.configure(decoderConfig);
 
   const stream = canvas.captureStream();
   const recorder = new MediaRecorder(stream);
@@ -71,38 +97,26 @@ const computeDescription = (file: MP4File, trackId: number) => {
     video.loop = true;
   });
 
-  const file = createFile();
-  file.onError = console.error;
-  file.onReady = (info) => {
-    const track = info.videoTracks[0];
-    decoder.configure({
-      codec: track.codec.startsWith("vp08") ? "vp8" : track.codec,
-      codedHeight: track.video.height,
-      codedWidth: track.video.width,
-      description: computeDescription(file, track.id),
-    });
-    file.setExtractionOptions(track.id);
-    file.start();
-  };
-  file.onSamples = async (_trackId, _ref, samples) => {
-    const chunks = samples.map(
-      (sample) =>
-        new EncodedVideoChunk({
-          type: sample.is_sync ? "key" : "delta",
-          timestamp: (1e6 * sample.cts) / sample.timescale,
-          duration: (1e6 * sample.duration) / sample.timescale,
-          data: sample.data,
-        })
-    );
-    recorder.start();
-    for (const chunk of chunks) {
-      decoder.decode(chunk);
-      await new Promise((r) => setTimeout(r, 1000 / 30));
-    }
-    recorder.stop();
-  };
-  const buffer = new ArrayBuffer(data.byteLength) as MP4ArrayBuffer;
-  new Uint8Array(buffer).set(data);
-  buffer.fileStart = 0;
-  file.appendBuffer(buffer);
+  recorder.start();
+  for (const chunk of chunks) {
+    decoder.decode(chunk);
+    await new Promise((r) => setTimeout(r, 1000 / 30));
+  }
+  recorder.stop();
+};
+
+(async () => {
+  const ffmpeg = new FFmpeg();
+  ffmpeg.on("progress", console.log);
+
+  const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm";
+  await ffmpeg.load({
+    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
+    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
+  });
+
+  const beachChunks = await computeChunks(ffmpeg, "beach");
+  const smileChunks = await computeChunks(ffmpeg, "smile");
+  const chunks = [...beachChunks, ...smileChunks.slice(1, 300)];
+  await record(chunks);
 })();
