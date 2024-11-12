@@ -21,7 +21,7 @@ const computeDescription = (file: MP4File, trackId: number) => {
   throw new Error("avcC, hvcC, vpcC, or av1C box not found");
 };
 
-const computeChunks = (ffmpeg: FFmpeg, path: string) =>
+export const computeChunks = (ffmpeg: FFmpeg, path: string) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise<EncodedVideoChunk[]>(async (resolve, reject) => {
     try {
