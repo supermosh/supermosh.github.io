@@ -1,5 +1,5 @@
 import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { fetchFile, toBlobURL } from "@ffmpeg/util";
+import { fetchFile } from "@ffmpeg/util";
 import { createFile, DataStream, MP4ArrayBuffer, MP4File } from "mp4box";
 
 const width = 640;
@@ -21,13 +21,19 @@ const computeDescription = (file: MP4File, trackId: number) => {
   throw new Error("avcC, hvcC, vpcC, or av1C box not found");
 };
 
-export const computeChunks = (ffmpeg: FFmpeg, path: string) =>
+export const computeChunks = (
+  ffmpeg: FFmpeg,
+  inputFile: File,
+  name: string,
+  width: number,
+  height: number
+) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise<EncodedVideoChunk[]>(async (resolve, reject) => {
     try {
-      const inputName = `input_${path}.mp4`;
-      const outputName = `output_${path}.mp4`;
-      await ffmpeg.writeFile(inputName, await fetchFile(`/${path}.mp4`));
+      const inputName = `input_${name}.mp4`;
+      const outputName = `output_${name}.mp4`;
+      await ffmpeg.writeFile(inputName, await fetchFile(inputFile));
       await ffmpeg.exec(
         `-i ${inputName} -vf scale=${width}:${height} -vcodec libx264 -g 99999999 -bf 0 -flags:v +cgop -pix_fmt yuv420p -movflags faststart -crf 15 ${outputName}`.split(
           " "
@@ -105,18 +111,18 @@ const record = async (chunks: EncodedVideoChunk[]) => {
   recorder.stop();
 };
 
-(async () => {
-  const ffmpeg = new FFmpeg();
-  ffmpeg.on("progress", console.log);
+// (async () => {
+//   const ffmpeg = new FFmpeg();
+//   ffmpeg.on("progress", console.log);
 
-  const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm";
-  await ffmpeg.load({
-    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
-  });
+//   const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm";
+//   await ffmpeg.load({
+//     coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
+//     wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
+//   });
 
-  const beachChunks = await computeChunks(ffmpeg, "beach");
-  const smileChunks = await computeChunks(ffmpeg, "smile");
-  const chunks = [...beachChunks, ...smileChunks.slice(1, 300)];
-  await record(chunks);
-})();
+//   const beachChunks = await computeChunks(ffmpeg, "beach");
+//   const smileChunks = await computeChunks(ffmpeg, "smile");
+//   const chunks = [...beachChunks, ...smileChunks.slice(1, 300)];
+//   await record(chunks);
+// })();
