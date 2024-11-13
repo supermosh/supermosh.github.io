@@ -4,6 +4,8 @@ import { createFile, DataStream, MP4ArrayBuffer, MP4File } from "mp4box";
 
 import { Settings } from "./types";
 
+export const FPS = 30;
+
 const computeDescription = (file: MP4File, trackId: number) => {
   const track = file.getTrackById(trackId);
   for (const entry of track.mdia.minf.stbl.stsd.entries) {
@@ -29,7 +31,9 @@ export const computeChunks = (
   new Promise<EncodedVideoChunk[]>(async (resolve, reject) => {
     try {
       const inputName = `input_${name}.mp4`;
-      const outputName = `output_${name}.mp4`;
+      const outputName = `output_${name}_${Math.random()
+        .toFixed(10)
+        .substring(2)}.mp4`;
       await ffmpeg.writeFile(inputName, await fetchFile(inputFile));
       await ffmpeg.exec(
         `-i ${inputName} -vf scale=${width}:${height} -vcodec libx264 -g 99999999 -bf 0 -flags:v +cgop -pix_fmt yuv420p -movflags faststart -crf 15 ${outputName}`.split(
@@ -112,5 +116,5 @@ export const record = async (
         recorder.stop();
         clearInterval(interval);
       }
-    }, 1000 / settings.fps);
+    }, 1000 / FPS);
   });

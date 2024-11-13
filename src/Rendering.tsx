@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 import { record } from "./lib";
+import { NumberInput } from "./NumberInput";
 import { Segment, Settings, Vid } from "./types";
 
 export const Rendering = ({
@@ -8,11 +9,13 @@ export const Rendering = ({
   vids,
   config,
   settings,
+  setSettings,
 }: {
   segments: Segment[];
   vids: Vid[];
   config: VideoDecoderConfig | null;
   settings: Settings;
+  setSettings: Dispatch<SetStateAction<Settings>>;
 }) => {
   const [rendering, setRendering] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -22,6 +25,23 @@ export const Rendering = ({
   return (
     <>
       <h1>Rendering</h1>
+      <p style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <NumberInput
+          value={settings.width}
+          onChange={(width) => setSettings({ ...settings, width })}
+          min={4}
+          step={4}
+        />
+        <span>&times;</span>
+        <NumberInput
+          value={settings.height}
+          onChange={(height) => setSettings({ ...settings, height })}
+          min={4}
+          step={4}
+        />
+        <span>px</span>
+      </p>
+
       {segments.length === 0 || config === null ? (
         <p>Please add segments in the timeline</p>
       ) : (
