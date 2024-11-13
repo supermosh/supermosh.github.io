@@ -11,6 +11,8 @@ export const FilesEditor = ({
   progress,
   onConfig,
   settings,
+  preprocessSettings,
+  setPreprocessSettings,
 }: {
   vids: Vid[];
   setVids: React.Dispatch<React.SetStateAction<Vid[]>>;
@@ -18,9 +20,10 @@ export const FilesEditor = ({
   progress: number;
   onConfig: Dispatch<SetStateAction<VideoDecoderConfig | null>>;
   settings: Settings;
+  preprocessSettings: Settings;
+  setPreprocessSettings: Dispatch<SetStateAction<Settings>>;
 }) => {
   const [loading, setLoading] = useState(false);
-  const [preprocessSettings, setPreprocessSettings] = useState(settings);
 
   return (
     <>
@@ -68,31 +71,32 @@ export const FilesEditor = ({
           disabled={loading}
         />
       </p>
-      {JSON.stringify(preprocessSettings) !== JSON.stringify(settings) && (
-        <p>
-          <button
-            disabled={loading}
-            onClick={async () => {
-              setLoading(true);
-              for (const vid of vids) {
-                vid.chunks = await computeChunks(
-                  ffmpeg,
-                  vid.file,
-                  vid.name,
-                  settings.width,
-                  settings.height,
-                  onConfig
-                );
-              }
-              setVids([...vids]);
-              setPreprocessSettings(settings);
-              setLoading(false);
-            }}
-          >
-            Reprocess files
-          </button>
-        </p>
-      )}
+      {JSON.stringify(preprocessSettings) !== JSON.stringify(settings) &&
+        !!vids.length && (
+          <p>
+            <button
+              disabled={loading}
+              onClick={async () => {
+                setLoading(true);
+                for (const vid of vids) {
+                  vid.chunks = await computeChunks(
+                    ffmpeg,
+                    vid.file,
+                    vid.name,
+                    settings.width,
+                    settings.height,
+                    onConfig
+                  );
+                }
+                setVids([...vids]);
+                setPreprocessSettings(settings);
+                setLoading(false);
+              }}
+            >
+              Reprocess files
+            </button>
+          </p>
+        )}
       {loading && (
         <p>
           <progress value={progress} />

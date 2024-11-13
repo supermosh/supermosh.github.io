@@ -16,8 +16,9 @@ export const Studio = () => {
   const [config, setConfig] = useState<VideoDecoderConfig | null>(null);
   const [settings, setSettings] = useState({
     width: 640,
-    height: 360,
+    height: 480,
   });
+  const [preprocessSettings, setPreprocessSettings] = useState(settings);
 
   useEffect(() => {
     (async () => {
@@ -51,6 +52,8 @@ export const Studio = () => {
         ffmpeg={ffmpegRef.current}
         onConfig={setConfig}
         settings={settings}
+        preprocessSettings={preprocessSettings}
+        setPreprocessSettings={setPreprocessSettings}
       />
       <SegmentsEditor
         vids={vids}
@@ -63,6 +66,7 @@ export const Studio = () => {
         config={config}
         settings={settings}
         setSettings={setSettings}
+        preprocessSettings={preprocessSettings}
       />
     </>
   );
