@@ -10,22 +10,24 @@ export const Rendering = ({
   config,
   settings,
   setSettings,
+  preprocessSettings,
 }: {
   segments: Segment[];
   vids: Vid[];
   config: VideoDecoderConfig | null;
   settings: Settings;
   setSettings: Dispatch<SetStateAction<Settings>>;
+  preprocessSettings: Settings;
 }) => {
   const [rendering, setRendering] = useState(false);
   const [progress, setProgress] = useState(0);
   const [src, setSrc] = useState("");
-  const [downloadName, setDownloadName] = useState("Supermosh.webm");
+  const [downloadName, setDownloadName] = useState("");
 
   return (
     <>
       <h1>Rendering</h1>
-      <p style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+      <p>
         <NumberInput
           value={settings.width}
           onChange={(width) => setSettings({ ...settings, width })}
@@ -40,10 +42,35 @@ export const Rendering = ({
           step={4}
         />
         <span>px</span>
+        {[
+          { name: "480p", width: 640, height: 480 },
+          { name: "720p", width: 1280, height: 720 },
+          { name: "1080p", width: 1920, height: 1080 },
+        ].map(({ name, width, height }) => (
+          <button
+            key={name}
+            onClick={() => setSettings({ width, height })}
+            disabled={settings.width === width && settings.height === height}
+          >
+            {name}
+          </button>
+        ))}
+        <button
+          onClick={() =>
+            setSettings({ width: settings.height, height: settings.width })
+          }
+        >
+          flip
+        </button>
       </p>
 
       {segments.length === 0 || config === null ? (
         <p>Please add segments in the timeline</p>
+      ) : JSON.stringify(preprocessSettings) !== JSON.stringify(settings) ? (
+        <p>
+          Rendering settings differ from files settings, please reprocess the
+          files
+        </p>
       ) : (
         <div>
           <button
