@@ -4,8 +4,8 @@ export type InputProps<T> = {
 };
 
 export type Vid = {
+  file: File;
   name: string;
-  src: string;
   chunks: EncodedVideoChunk[];
 };
 
@@ -16,4 +16,7 @@ export type Segment = {
   repeat: number;
 };
 
-export type Settings = { width: number; height: number; fps: number };
+export type Settings = {
+  width: number;
+  height: number;
+};

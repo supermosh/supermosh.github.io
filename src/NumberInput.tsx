@@ -7,7 +7,10 @@ export const NumberInput = ({
   onChange,
   ...nativeProps
 }: InputProps<number> &
-  Pick<InputHTMLAttributes<HTMLInputElement>, "min" | "max" | "disabled">) => {
+  Pick<
+    InputHTMLAttributes<HTMLInputElement>,
+    "min" | "max" | "disabled" | "step"
+  >) => {
   const [valueStr, setValueStr] = useState(`${value}`);
 
   useEffect(() => {

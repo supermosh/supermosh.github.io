@@ -17,7 +17,6 @@ export const Studio = () => {
   const [settings, setSettings] = useState({
     width: 640,
     height: 360,
-    fps: 30,
   });
 
   useEffect(() => {
@@ -63,6 +62,7 @@ export const Studio = () => {
         segments={segments}
         config={config}
         settings={settings}
+        setSettings={setSettings}
       />
     </>
   );

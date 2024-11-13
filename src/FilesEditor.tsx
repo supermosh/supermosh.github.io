@@ -1,7 +1,7 @@
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { Dispatch, SetStateAction, useState } from "react";
 
-import { computeChunks } from "./lib";
+import { computeChunks, FPS } from "./lib";
 import { Settings, Vid } from "./types";
 
 export const FilesEditor = ({
@@ -20,6 +20,8 @@ export const FilesEditor = ({
   settings: Settings;
 }) => {
   const [loading, setLoading] = useState(false);
+  const [preprocessSettings, setPreprocessSettings] = useState(settings);
+
   return (
     <>
       <h1>Files</h1>
@@ -29,20 +31,20 @@ export const FilesEditor = ({
         <ul>
           {vids.map((vid) => (
             <li key={vid.name}>
-              {vid.name} ({(vid.chunks.length / settings.fps).toFixed(2)}s)
+              {vid.name} ({(vid.chunks.length / FPS).toFixed(2)}s,{" "}
+              {vid.chunks.length} frames)
             </li>
           ))}
         </ul>
       )}
-      <p>Upload video file:</p>
       <p>
+        <span>Upload video:</span>
         <input
           type="file"
           accept="video/*"
           onChange={async (evt) => {
             setLoading(true);
             const file = evt.target.files![0];
-            const src = URL.createObjectURL(file);
             const withoutSpaces = file.name.replace(/\s/g, "_");
             let name = withoutSpaces;
             let i = 0;
@@ -58,16 +60,41 @@ export const FilesEditor = ({
               settings.height,
               onConfig
             );
-            setVids([...vids, { name, src, chunks }]);
+            setVids([...vids, { file, name, chunks }]);
             evt.target.value = "";
             setLoading(false);
+            setPreprocessSettings(settings);
           }}
           disabled={loading}
         />
       </p>
+      {JSON.stringify(preprocessSettings) !== JSON.stringify(settings) && (
+        <p>
+          <button
+            disabled={loading}
+            onClick={async () => {
+              setLoading(true);
+              for (const vid of vids) {
+                vid.chunks = await computeChunks(
+                  ffmpeg,
+                  vid.file,
+                  vid.name,
+                  settings.width,
+                  settings.height,
+                  onConfig
+                );
+              }
+              setVids([...vids]);
+              setPreprocessSettings(settings);
+              setLoading(false);
+            }}
+          >
+            Reprocess files
+          </button>
+        </p>
+      )}
       {loading && (
         <p>
-          Pre-processing video ({Math.floor(100 * progress)}%)...
           <progress value={progress} />
         </p>
       )}
