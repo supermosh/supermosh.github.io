@@ -40,6 +40,7 @@ export default tseslint.config(
           argsIgnorePattern: "^_",
         },
       ],
+      "no-async-promise-executor": "off",
     },
   }
 );

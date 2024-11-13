@@ -27,7 +27,6 @@ export const computeChunks = (
   height: number,
   onConfig: (config: VideoDecoderConfig) => unknown
 ) =>
-  // eslint-disable-next-line no-async-promise-executor
   new Promise<EncodedVideoChunk[]>(async (resolve, reject) => {
     try {
       const inputName = `input_${name}.mp4`;
