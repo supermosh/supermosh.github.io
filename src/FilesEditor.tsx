@@ -44,7 +44,7 @@ export const FilesEditor = ({
         <span>Upload video:</span>
         <input
           type="file"
-          accept="video/*"
+          accept="video/*,image/*"
           onChange={async (evt) => {
             setLoading(true);
             const file = evt.target.files![0];
