@@ -14,11 +14,11 @@ export const Studio = () => {
   const [progress, setProgress] = useState(0);
   const [segments, setSegments] = useState<Segment[]>([]);
   const [config, setConfig] = useState<VideoDecoderConfig | null>(null);
-  // const [settings, setSettings] = useState({
-  //   width: 640,
-  //   height: 360,
-  //   fps: 30
-  // })
+  const [settings, setSettings] = useState({
+    width: 640,
+    height: 360,
+    fps: 30,
+  });
 
   useEffect(() => {
     (async () => {
@@ -51,13 +51,19 @@ export const Studio = () => {
         progress={progress}
         ffmpeg={ffmpegRef.current}
         onConfig={setConfig}
+        settings={settings}
       />
       <SegmentsEditor
         vids={vids}
         segments={segments}
         setSegments={setSegments}
       />
-      <Rendering vids={vids} segments={segments} config={config} />
+      <Rendering
+        vids={vids}
+        segments={segments}
+        config={config}
+        settings={settings}
+      />
     </>
   );
 };

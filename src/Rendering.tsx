@@ -1,16 +1,18 @@
 import { useState } from "react";
 
 import { record } from "./lib";
-import { Segment, Vid } from "./types";
+import { Segment, Settings, Vid } from "./types";
 
 export const Rendering = ({
   segments,
   vids,
   config,
+  settings,
 }: {
   segments: Segment[];
   vids: Vid[];
   config: VideoDecoderConfig | null;
+  settings: Settings;
 }) => {
   const [rendering, setRendering] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -45,6 +47,7 @@ export const Rendering = ({
                 chunks,
                 config,
                 mimeType,
+                settings,
                 setProgress
               );
               setSrc(newSrc);

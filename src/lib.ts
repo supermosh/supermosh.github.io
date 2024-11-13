@@ -2,9 +2,7 @@ import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { fetchFile } from "@ffmpeg/util";
 import { createFile, DataStream, MP4ArrayBuffer, MP4File } from "mp4box";
 
-const width = 640;
-const height = 360;
-const fps = 30;
+import { Settings } from "./types";
 
 const computeDescription = (file: MP4File, trackId: number) => {
   const track = file.getTrackById(trackId);
@@ -79,12 +77,13 @@ export const record = async (
   chunks: EncodedVideoChunk[],
   config: VideoDecoderConfig,
   mimeType: string,
+  settings: Settings,
   onProgress: (progress: number) => unknown
 ) =>
   new Promise<string>((resolve) => {
     const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = settings.width;
+    canvas.height = settings.height;
     const ctx = canvas.getContext("2d")!;
 
     const decoder = new VideoDecoder({
@@ -113,5 +112,5 @@ export const record = async (
         recorder.stop();
         clearInterval(interval);
       }
-    }, 1000 / fps);
+    }, 1000 / settings.fps);
   });
