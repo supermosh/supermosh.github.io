@@ -6,9 +6,11 @@ import { Segment, Vid } from "./types";
 export const Rendering = ({
   segments,
   vids,
+  config,
 }: {
   segments: Segment[];
   vids: Vid[];
+  config: VideoDecoderConfig | null;
 }) => {
   const [rendering, setRendering] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -18,7 +20,7 @@ export const Rendering = ({
   return (
     <>
       <h1>Rendering</h1>
-      {segments.length === 0 ? (
+      {segments.length === 0 || config === null ? (
         <p>Please add segments in the timeline</p>
       ) : (
         <div>
@@ -39,7 +41,12 @@ export const Rendering = ({
               const mimeType = MediaRecorder.isTypeSupported("video/mp4")
                 ? "video/mp4"
                 : "video/webm";
-              const newSrc = await record(chunks, mimeType, setProgress);
+              const newSrc = await record(
+                chunks,
+                config,
+                mimeType,
+                setProgress
+              );
               setSrc(newSrc);
               setDownloadName(
                 `Supermosh_${new Date()

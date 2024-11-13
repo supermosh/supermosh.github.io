@@ -7,17 +7,18 @@ import { Rendering } from "./Rendering";
 import { SegmentsEditor } from "./SegmentsEditor";
 import { Segment, Vid } from "./types";
 
-// TODO
-const width = 640;
-const height = 360;
-const fps = 30;
-
 export const Studio = () => {
   const [loadingFfmpeg, setLoadingFfmpeg] = useState(true);
   const ffmpegRef = useRef(new FFmpeg());
   const [vids, setVids] = useState<Vid[]>([]);
   const [progress, setProgress] = useState(0);
   const [segments, setSegments] = useState<Segment[]>([]);
+  const [config, setConfig] = useState<VideoDecoderConfig | null>(null);
+  // const [settings, setSettings] = useState({
+  //   width: 640,
+  //   height: 360,
+  //   fps: 30
+  // })
 
   useEffect(() => {
     (async () => {
@@ -49,13 +50,14 @@ export const Studio = () => {
         setVids={setVids}
         progress={progress}
         ffmpeg={ffmpegRef.current}
+        onConfig={setConfig}
       />
       <SegmentsEditor
         vids={vids}
         segments={segments}
         setSegments={setSegments}
       />
-      <Rendering vids={vids} segments={segments} />
+      <Rendering vids={vids} segments={segments} config={config} />
     </>
   );
 };

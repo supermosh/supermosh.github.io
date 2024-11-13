@@ -1,5 +1,5 @@
 import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 import { computeChunks } from "./lib";
 import { Vid } from "./types";
@@ -14,11 +14,13 @@ export const FilesEditor = ({
   setVids,
   ffmpeg,
   progress,
+  onConfig,
 }: {
   vids: Vid[];
   setVids: React.Dispatch<React.SetStateAction<Vid[]>>;
   ffmpeg: FFmpeg;
   progress: number;
+  onConfig: Dispatch<SetStateAction<VideoDecoderConfig | null>>;
 }) => {
   const [loading, setLoading] = useState(false);
   return (
@@ -56,7 +58,8 @@ export const FilesEditor = ({
               file,
               name,
               width,
-              height
+              height,
+              onConfig
             );
             setVids([...vids, { name, src, chunks }]);
             evt.target.value = "";
