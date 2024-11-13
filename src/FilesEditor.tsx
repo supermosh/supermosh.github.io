@@ -2,12 +2,7 @@ import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { Dispatch, SetStateAction, useState } from "react";
 
 import { computeChunks } from "./lib";
-import { Vid } from "./types";
-
-// TODO
-const width = 640;
-const height = 360;
-const fps = 30;
+import { Settings, Vid } from "./types";
 
 export const FilesEditor = ({
   vids,
@@ -15,12 +10,14 @@ export const FilesEditor = ({
   ffmpeg,
   progress,
   onConfig,
+  settings,
 }: {
   vids: Vid[];
   setVids: React.Dispatch<React.SetStateAction<Vid[]>>;
   ffmpeg: FFmpeg;
   progress: number;
   onConfig: Dispatch<SetStateAction<VideoDecoderConfig | null>>;
+  settings: Settings;
 }) => {
   const [loading, setLoading] = useState(false);
   return (
@@ -32,7 +29,7 @@ export const FilesEditor = ({
         <ul>
           {vids.map((vid) => (
             <li key={vid.name}>
-              {vid.name} ({(vid.chunks.length / fps).toFixed(2)}s)
+              {vid.name} ({(vid.chunks.length / settings.fps).toFixed(2)}s)
             </li>
           ))}
         </ul>
@@ -57,8 +54,8 @@ export const FilesEditor = ({
               ffmpeg,
               file,
               name,
-              width,
-              height,
+              settings.width,
+              settings.height,
               onConfig
             );
             setVids([...vids, { name, src, chunks }]);

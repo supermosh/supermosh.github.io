@@ -15,3 +15,5 @@ export type Segment = {
   to: number;
   repeat: number;
 };
+
+export type Settings = { width: number; height: number; fps: number };
