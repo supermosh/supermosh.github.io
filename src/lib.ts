@@ -4,9 +4,7 @@ import { createFile, DataStream, MP4ArrayBuffer, MP4File } from "mp4box";
 
 const width = 640;
 const height = 360;
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-const decoderConfig: VideoDecoderConfig = {};
+const fps = 30;
 
 const computeDescription = (file: MP4File, trackId: number) => {
   const track = file.getTrackById(trackId);
@@ -26,7 +24,8 @@ export const computeChunks = (
   inputFile: File,
   name: string,
   width: number,
-  height: number
+  height: number,
+  onConfig: (config: VideoDecoderConfig) => unknown
 ) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise<EncodedVideoChunk[]>(async (resolve, reject) => {
@@ -45,7 +44,7 @@ export const computeChunks = (
       file.onError = console.error;
       file.onReady = (info) => {
         const track = info.videoTracks[0];
-        Object.assign(decoderConfig, {
+        onConfig({
           codec: track.codec.startsWith("vp08") ? "vp8" : track.codec,
           codedHeight: track.video.height,
           codedWidth: track.video.width,
@@ -78,6 +77,7 @@ export const computeChunks = (
 
 export const record = async (
   chunks: EncodedVideoChunk[],
+  config: VideoDecoderConfig,
   mimeType: string,
   onProgress: (progress: number) => unknown
 ) =>
@@ -94,7 +94,7 @@ export const record = async (
         frame.close();
       },
     });
-    decoder.configure(decoderConfig);
+    decoder.configure(config);
 
     const stream = canvas.captureStream();
     const recorder = new MediaRecorder(stream, { mimeType });
@@ -113,5 +113,5 @@ export const record = async (
         recorder.stop();
         clearInterval(interval);
       }
-    }, 1000 / 30);
+    }, 1000 / fps);
   });
