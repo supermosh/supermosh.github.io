@@ -1,0 +1,19 @@
+name: "💡 Feature Request"
+description: Suggest an improvement
+labels:
+  - enhancement
+assignees:
+  - ninofiliu
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please describe in details how you would improve Supermosh
+    validations:
+      required: true
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: In which situation have you been needing this feature?

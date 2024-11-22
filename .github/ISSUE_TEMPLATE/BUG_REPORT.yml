@@ -1,7 +1,9 @@
 name: "🐛 Bug Report"
-description: Create a new ticket for a bug.
-labels: ["bug"]
-assignees: ["ninofiliu"]
+description: Create a new ticket for a bug
+labels:
+  - bug
+assignees:
+  - ninofiliu
 body:
   - type: textarea
     id: description
