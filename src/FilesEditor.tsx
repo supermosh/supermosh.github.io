@@ -1,6 +1,7 @@
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { Dispatch, SetStateAction, useState } from "react";
 
+import { Section } from "./components/Section";
 import { computeChunks, FPS } from "./lib";
 import { Settings, Vid } from "./types";
 
@@ -26,8 +27,7 @@ export const FilesEditor = ({
   const [loading, setLoading] = useState(false);
 
   return (
-    <>
-      <h1>Files</h1>
+    <Section name="Files">
       {vids.length === 0 ? (
         <p>No video uploaded yet</p>
       ) : (
@@ -102,6 +102,6 @@ export const FilesEditor = ({
           <progress value={progress} />
         </p>
       )}
-    </>
+    </Section>
   );
 };

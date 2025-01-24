@@ -1,5 +1,6 @@
 import React, { Dispatch, SetStateAction } from "react";
 
+import { Section } from "./components/Section";
 import { NumberInput } from "./NumberInput";
 import { SelectInput } from "./SelectInput";
 import { Segment, Vid } from "./types";
@@ -17,8 +18,7 @@ export const SegmentsEditor = ({
   vids: Vid[];
 }) => {
   return (
-    <>
-      <h1>Timeline</h1>
+    <Section name="Timeline">
       {vids.length === 0 ? (
         <p>Please upload a video</p>
       ) : (
@@ -112,6 +112,6 @@ export const SegmentsEditor = ({
           </button>
         </>
       )}
-    </>
+    </Section>
   );
 };

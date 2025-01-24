@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import { Icon } from "./Icon";
+import { Icon } from "./components/Icon";
 
 export const Home = () => (
   <main className="Home">

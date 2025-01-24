@@ -1,7 +1,7 @@
 import { Link, Route, Routes } from "react-router-dom";
 
 import { Home } from "./Home";
-import { Icon } from "./Icon";
+import { Icon } from "./components/Icon";
 import { Studio } from "./Studio";
 
 export const App = () => (

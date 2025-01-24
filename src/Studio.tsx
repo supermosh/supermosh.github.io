@@ -44,7 +44,7 @@ export const Studio = () => {
   return loadingFfmpeg ? (
     <>Loading...</>
   ) : (
-    <>
+    <main>
       <FilesEditor
         vids={vids}
         setVids={setVids}
@@ -68,6 +68,6 @@ export const Studio = () => {
         setSettings={setSettings}
         preprocessSettings={preprocessSettings}
       />
-    </>
+    </main>
   );
 };
