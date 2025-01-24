@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useState } from "react";
 
+import { Section } from "./components/Section";
 import { record } from "./lib";
 import { NumberInput } from "./NumberInput";
 import { Segment, Settings, Vid } from "./types";
@@ -25,8 +26,7 @@ export const Rendering = ({
   const [downloadName, setDownloadName] = useState("");
 
   return (
-    <>
-      <h1>Rendering</h1>
+    <Section name="Rendering">
       <p>
         <NumberInput
           value={settings.width}
@@ -138,6 +138,6 @@ export const Rendering = ({
           </p>
         </>
       )}
-    </>
+    </Section>
   );
 };

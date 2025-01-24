@@ -1,0 +1,17 @@
+.Section {
+  border: 1px solid white;
+  padding: 8px;
+  position: relative;
+  margin: 32px 0px 16px 0px;
+}
+.Section h1 {
+  position: absolute;
+  background-color: black;
+  margin: 0;
+  height: 16px;
+  top: -8px;
+  padding: 0 8px;
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+}
