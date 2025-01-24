@@ -1,6 +1,7 @@
 :root {
   color-scheme: dark;
   font-family: monospace;
+  background-color: black;
 }
 button {
   cursor: pointer;
@@ -10,4 +11,39 @@ button {
   grid-template-columns: 1fr repeat(6, 60px);
   gap: 8px;
   margin: 8px 0;
+}
+.link-button {
+  color: white;
+  border: 1px solid white;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  text-decoration: none;
+}
+.link-button:hover {
+  background-color: white;
+  color: black;
+}
+
+/* layout */
+body {
+  margin: 0;
+}
+nav {
+  filter: invert(1);
+  background-color: black;
+  display: flex;
+  padding: 8px;
+  gap: 8px;
+}
+main {
+  padding: 8px;
+}
+
+/* Home */
+.Home .button-row {
+  display: flex;
+  gap: 8px;
 }
