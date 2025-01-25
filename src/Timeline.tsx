@@ -8,7 +8,7 @@ import { Segment, Vid } from "./types";
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
-export const SegmentsEditor = ({
+export const Timeline = ({
   segments,
   setSegments,
   vids,
