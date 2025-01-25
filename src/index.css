@@ -6,12 +6,6 @@
 button {
   cursor: pointer;
 }
-.segments {
-  display: grid;
-  grid-template-columns: 1fr repeat(6, 60px);
-  gap: 8px;
-  margin: 8px 0;
-}
 .link-button {
   color: white;
   border: 1px solid white;
@@ -41,9 +35,22 @@ nav {
 main {
   padding: 8px;
 }
+@media screen and (max-width: 1000px) {
+  nav {
+    flex-direction: column;
+  }
+}
 
 /* Home */
 .Home .button-row {
   display: flex;
   gap: 8px;
+}
+
+/* Timeline */
+.segments {
+  display: grid;
+  grid-template-columns: 1fr repeat(6, 60px);
+  gap: 8px;
+  margin: 8px 0;
 }

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { FilesEditor } from "./FilesEditor";
 import { Rendering } from "./Rendering";
-import { SegmentsEditor } from "./SegmentsEditor";
+import { Timeline } from "./Timeline";
 import { Segment, Vid } from "./types";
 
 export const Studio = () => {
@@ -55,11 +55,7 @@ export const Studio = () => {
         preprocessSettings={preprocessSettings}
         setPreprocessSettings={setPreprocessSettings}
       />
-      <SegmentsEditor
-        vids={vids}
-        segments={segments}
-        setSegments={setSegments}
-      />
+      <Timeline vids={vids} segments={segments} setSegments={setSegments} />
       <Rendering
         vids={vids}
         segments={segments}
