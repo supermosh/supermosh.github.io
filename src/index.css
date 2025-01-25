@@ -39,8 +39,8 @@ main {
   gap: 8px;
 }
 @media screen and (max-width: 1000px) {
-  nav {
-    flex-direction: column;
+  .no-mobile {
+    display: none;
   }
 }
 
@@ -56,6 +56,11 @@ main {
   grid-template-columns: 1fr repeat(6, 60px);
   gap: 8px;
   margin: 8px 0;
+}
+@media screen and (max-width: 1000px) {
+  .segments {
+    grid-template-columns: 1fr;
+  }
 }
 
 .RangePreview {
