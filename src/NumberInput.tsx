@@ -9,7 +9,7 @@ export const NumberInput = ({
 }: InputProps<number> &
   Pick<
     InputHTMLAttributes<HTMLInputElement>,
-    "min" | "max" | "disabled" | "step"
+    "min" | "max" | "disabled" | "step" | "onBlur" | "onFocus"
   >) => {
   const [valueStr, setValueStr] = useState(`${value}`);
 

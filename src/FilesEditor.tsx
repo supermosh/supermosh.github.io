@@ -48,6 +48,7 @@ export const FilesEditor = ({
           onChange={async (evt) => {
             setLoading(true);
             const file = evt.target.files![0];
+            const src = URL.createObjectURL(file);
             const withoutSpaces = file.name.replace(/\s/g, "_");
             let name = withoutSpaces;
             let i = 0;
@@ -63,7 +64,7 @@ export const FilesEditor = ({
               settings.height,
               onConfig
             );
-            setVids([...vids, { file, name, chunks }]);
+            setVids([...vids, { file, name, chunks, src }]);
             evt.target.value = "";
             setLoading(false);
             setPreprocessSettings(settings);
