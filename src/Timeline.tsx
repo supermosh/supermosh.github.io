@@ -1,7 +1,9 @@
 import React, { Dispatch, SetStateAction } from "react";
+import { useState } from "react";
 
 import { Section } from "./components/Section";
 import { NumberInput } from "./NumberInput";
+import { RangePreview } from "./RangePreview";
 import { SelectInput } from "./SelectInput";
 import { Segment, Vid } from "./types";
 
@@ -17,6 +19,7 @@ export const Timeline = ({
   setSegments: Dispatch<SetStateAction<Segment[]>>;
   vids: Vid[];
 }) => {
+  const [preview, setPreview] = useState<null | { vid: Vid; i: number }>(null);
   return (
     <Section name="Timeline">
       {vids.length === 0 ? (
@@ -52,19 +55,25 @@ export const Timeline = ({
                       onChange={(from) => {
                         s.from = from;
                         setSegments([...segments]);
+                        setPreview({ vid: getVid(), i: from });
                       }}
                       min={0}
                       max={s.to - 1}
                       disabled={i === 0}
+                      onFocus={() => setPreview({ vid: getVid(), i: s.from })}
+                      onBlur={() => setPreview(null)}
                     />
                     <NumberInput
                       value={s.to}
                       onChange={(to) => {
                         s.to = to;
                         setSegments([...segments]);
+                        setPreview({ vid: getVid(), i: to });
                       }}
                       min={s.from + 1}
                       max={getVid().chunks.length}
+                      onFocus={() => setPreview({ vid: getVid(), i: s.to })}
+                      onBlur={() => setPreview(null)}
                     />
                     <NumberInput
                       value={s.repeat}
@@ -75,7 +84,7 @@ export const Timeline = ({
                       min={1}
                     />
                     <button disabled={i === 0} onClick={() => swap(i, i - 1)}>
-                      up
+                      Up
                     </button>
                     <button
                       disabled={i === segments.length - 1}
@@ -112,6 +121,7 @@ export const Timeline = ({
           </button>
         </>
       )}
+      {preview && <RangePreview vid={preview.vid} i={preview.i} />}
     </Section>
   );
 };

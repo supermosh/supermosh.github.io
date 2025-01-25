@@ -4,6 +4,7 @@ export type InputProps<T> = {
 };
 
 export type Vid = {
+  src: string;
   file: File;
   name: string;
   chunks: EncodedVideoChunk[];

@@ -34,6 +34,9 @@ nav {
 }
 main {
   padding: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 800px), 1fr));
+  gap: 8px;
 }
 @media screen and (max-width: 1000px) {
   nav {
@@ -53,4 +56,11 @@ main {
   grid-template-columns: 1fr repeat(6, 60px);
   gap: 8px;
   margin: 8px 0;
+}
+
+.RangePreview {
+  display: block;
+  width: 100%;
+  max-height: 30vh;
+  object-fit: contain;
 }
