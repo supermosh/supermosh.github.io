@@ -44,7 +44,7 @@ export const Studio = () => {
   return loadingFfmpeg ? (
     <>Loading...</>
   ) : (
-    <main>
+    <main className="Studio">
       <FilesEditor
         vids={vids}
         setVids={setVids}

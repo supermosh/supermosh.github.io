@@ -32,7 +32,7 @@ nav {
   padding: 8px;
   gap: 8px;
 }
-main {
+.Studio {
   padding: 8px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 800px), 1fr));
@@ -45,9 +45,40 @@ main {
 }
 
 /* Home */
+header {
+  padding: 1em;
+  font-size: 1.5em;
+  text-align: center;
+}
 .Home .button-row {
   display: flex;
   gap: 8px;
+  justify-content: center;
+}
+.Home video {
+  width: 100%;
+}
+.faq {
+  max-width: 1300px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+.q {
+  border: 1px solid white;
+  padding: 16px;
+}
+.q h1 {
+  margin-top: 0;
+}
+.q p {
+  margin-bottom: 0;
+}
+.faq video {
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Timeline */
