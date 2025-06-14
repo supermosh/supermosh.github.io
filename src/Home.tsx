@@ -4,7 +4,13 @@ import { Icon } from "./components/Icon";
 
 export const Home = () => (
   <main className="Home">
-    <video src="/cover.mp4" muted autoPlay loop playsInline />
+    <video
+      src="https://ninofiliu.com/supermosh/cover.mp4"
+      muted
+      autoPlay
+      loop
+      playsInline
+    />
     <header>
       <h1>The first browser-based datamosh editor</h1>
       <p>
@@ -28,7 +34,13 @@ export const Home = () => (
       </p>
     </header>
     <div className="faq">
-      <video src="/1.mp4" muted autoPlay loop playsInline></video>
+      <video
+        src="https://ninofiliu.com/supermosh/1.mp4"
+        muted
+        autoPlay
+        loop
+        playsInline
+      ></video>
       <div className="q">
         <h1>What is datamoshing?</h1>
         <p>
@@ -37,7 +49,13 @@ export const Home = () => (
           are supposed to be played at, we can make the video glitch out.
         </p>
       </div>
-      <video src="/4.mp4" muted autoPlay loop playsInline></video>
+      <video
+        src="https://ninofiliu.com/supermosh/4.mp4"
+        muted
+        autoPlay
+        loop
+        playsInline
+      ></video>
       <div className="q">
         <h1>How does Supermosh compares to alternatives?</h1>
         <p>There are two traditional datamoshing techniques:</p>
@@ -55,7 +73,13 @@ export const Home = () => (
           footage by providing a powerful yet free datamosh editor.
         </p>
       </div>
-      <video src="/3.mp4" muted autoPlay loop playsInline></video>
+      <video
+        src="https://ninofiliu.com/supermosh/3.mp4"
+        muted
+        autoPlay
+        loop
+        playsInline
+      ></video>
       <div className="q">
         <h1>How does Supermosh even works?</h1>
         <p>
@@ -70,7 +94,13 @@ export const Home = () => (
           the Supermosh Studio.
         </p>
       </div>
-      <video src="/5.mp4" muted autoPlay loop playsInline></video>
+      <video
+        src="https://ninofiliu.com/supermosh/5.mp4"
+        muted
+        autoPlay
+        loop
+        playsInline
+      ></video>
       <div className="q">
         <h1>How free is Supermosh?</h1>
         <p>As free as I could make it:</p>
@@ -93,7 +123,13 @@ export const Home = () => (
           <a href="https://ninofiliu.com">my website</a>.
         </p>
       </div>
-      <video src="/2.mp4" muted autoPlay loop playsInline></video>
+      <video
+        src="https://ninofiliu.com/supermosh/2.mp4"
+        muted
+        autoPlay
+        loop
+        playsInline
+      ></video>
     </div>
   </main>
 );
