@@ -19,10 +19,7 @@ export const Home = () => (
         <Link to="/studio" className="link-button">
           <Icon name="movie" /> Start glitching
         </Link>
-        <a
-          href="https://www.youtube.com/watch?v=4JTZRixhSAM"
-          className="link-button"
-        >
+        <a href="https://youtu.be/M1OCjF-aJyo" className="link-button">
           <Icon name="info" /> Watch the tutorial
         </a>
       </p>

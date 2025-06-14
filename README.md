@@ -2,10 +2,16 @@
 
 # Supermosh
 
-An experiment to enable datamoshing in the browser
+> The first browser-based datamosh editor
 
-[⏯️ Try it out!](https://supermosh.github.io/)
+Datamoshing is one of the most sought-after video glitch effect, but demands complex technical expertise to achieve.
 
-[📺 Watch the tutorial](https://youtu.be/4JTZRixhSAM)
+Supermosh brings datamoshing capabilities to everyone through a free web-based editor, allowing anyone to glitch their images and videos.
 
-🧑‍💻 by Nino Filiu - [ninofiliu.com](https://ninofiliu.com) / [github.com/ninofiliu](https://github.com/ninofiliu/) / [twitter.com/ninofiliu](https://twitter.com/ninofiliu) / [instagram.com/nino.filiu](https://www.instagram.com/nino.filiu/)
+[⏯️ Try it out](https://supermosh.github.io/)
+
+[📺 Watch the tutorial](https://youtu.be/M1OCjF-aJyo)
+
+[🐛 Report a bug](https://github.com/supermosh/supermosh.github.io/issues)
+
+[🧑‍💻 By Nino Filiu](https://ninofiliu.com)
