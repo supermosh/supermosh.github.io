@@ -1,0 +1,56 @@
+name: "🐛 Bug Report"
+description: Create a new ticket for a bug
+labels:
+  - bug
+assignees:
+  - ninofiliu
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: Please describe details steps to reproduce your bug as well as the expected vs observed behavior of the app
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: "Screenshots"
+      description: If applicable, add screenshots to help explain your problem.
+      render: bash
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Logs"
+      description: Please copy and paste potential errors logged in the browser console.
+      render: bash
+    validations:
+      required: false
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: "Browsers"
+      description: What browsers are you seeing the problem on ?
+      multiple: true
+      options:
+        - Firefox
+        - Chrome
+        - Safari
+        - Edge
+        - Opera
+    validations:
+      required: false
+  - type: dropdown
+    id: os
+    attributes:
+      label: "OS"
+      description: What OS are you seeing the problem on ?
+      multiple: true
+      options:
+        - Windows
+        - Linux
+        - Mac
+    validations:
+      required: false
