@@ -5,7 +5,8 @@ import { Icon } from "./components/Icon";
 export const Home = () => (
   <main className="Home">
     <video
-      src="https://ninofiliu.com/supermosh/cover.mp4"
+      crossOrigin="anonymous"
+      src="https://supermosh.s3.eu-west-3.amazonaws.com/cover.mp4"
       muted
       autoPlay
       loop
@@ -35,7 +36,8 @@ export const Home = () => (
     </header>
     <div className="faq">
       <video
-        src="https://ninofiliu.com/supermosh/1.mp4"
+        crossOrigin="anonymous"
+        src="https://supermosh.s3.eu-west-3.amazonaws.com/1.mp4"
         muted
         autoPlay
         loop
@@ -50,7 +52,8 @@ export const Home = () => (
         </p>
       </div>
       <video
-        src="https://ninofiliu.com/supermosh/4.mp4"
+        crossOrigin="anonymous"
+        src="https://supermosh.s3.eu-west-3.amazonaws.com/4.mp4"
         muted
         autoPlay
         loop
@@ -74,7 +77,8 @@ export const Home = () => (
         </p>
       </div>
       <video
-        src="https://ninofiliu.com/supermosh/3.mp4"
+        crossOrigin="anonymous"
+        src="https://supermosh.s3.eu-west-3.amazonaws.com/3.mp4"
         muted
         autoPlay
         loop
@@ -95,7 +99,8 @@ export const Home = () => (
         </p>
       </div>
       <video
-        src="https://ninofiliu.com/supermosh/5.mp4"
+        crossOrigin="anonymous"
+        src="https://supermosh.s3.eu-west-3.amazonaws.com/5.mp4"
         muted
         autoPlay
         loop
@@ -124,7 +129,8 @@ export const Home = () => (
         </p>
       </div>
       <video
-        src="https://ninofiliu.com/supermosh/2.mp4"
+        crossOrigin="anonymous"
+        src="https://supermosh.s3.eu-west-3.amazonaws.com/2.mp4"
         muted
         autoPlay
         loop
