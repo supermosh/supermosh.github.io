@@ -1,5 +1,13 @@
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { fetchFile } from "@ffmpeg/util";
+import {
+  BufferTarget,
+  Mp4OutputFormat,
+  Output,
+  QUALITY_HIGH,
+  VideoSample,
+  VideoSampleSource,
+} from "mediabunny";
 import { createFile, DataStream, MP4ArrayBuffer, MP4File } from "mp4box";
 
 import { Settings } from "./types";
@@ -82,38 +90,36 @@ export const record = async (
   mimeType: string,
   settings: Settings,
   onProgress: (progress: number) => unknown
-) =>
-  new Promise<string>((resolve) => {
-    const canvas = document.createElement("canvas");
-    canvas.width = settings.width;
-    canvas.height = settings.height;
-    const ctx = canvas.getContext("2d")!;
-
-    const decoder = new VideoDecoder({
-      error: console.error,
-      output: (frame) => {
-        ctx.drawImage(frame, 0, 0);
-        frame.close();
-      },
-    });
-    decoder.configure(config);
-
-    const stream = canvas.captureStream();
-    const recorder = new MediaRecorder(stream, { mimeType });
-    recorder.addEventListener("dataavailable", (evt) => {
-      const src = URL.createObjectURL(evt.data);
-      resolve(src);
-    });
-
-    recorder.start();
-    let i = 0;
-    const interval = setInterval(() => {
-      onProgress(i / chunks.length);
-      decoder.decode(chunks[i]);
-      i++;
-      if (i === chunks.length - 1) {
-        recorder.stop();
-        clearInterval(interval);
-      }
-    }, 1000 / FPS);
+) => {
+  const source = new VideoSampleSource({ codec: "avc", bitrate: QUALITY_HIGH });
+  const output = new Output({
+    format: new Mp4OutputFormat(),
+    target: new BufferTarget(),
   });
+  output.addVideoTrack(source);
+  let i = 0;
+  const decoder = new VideoDecoder({
+    error: console.error,
+    output: (frame) => {
+      console.log(i);
+      const sample = new VideoSample(frame, { timestamp: i / FPS });
+      source.add(sample);
+      sample.close();
+      i++;
+    },
+  });
+  decoder.configure(config);
+  await output.start();
+
+  for (let j = 0; j < chunks.length; j++) {
+    decoder.decode(chunks[j]);
+    onProgress(j / chunks.length);
+  }
+
+  await decoder.flush();
+  await output.finalize();
+  const blob = new Blob([output.target.buffer!], {
+    type: output.format.mimeType,
+  });
+  return URL.createObjectURL(blob);
+};
