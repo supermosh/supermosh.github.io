@@ -30,6 +30,14 @@ export const Timeline = ({
             <p>No segments defined</p>
           ) : (
             <div className="segments">
+              <span>File</span>
+              <span>Start</span>
+              <span>End</span>
+              <span>Repeat</span>
+              <span></span>
+              <span></span>
+              <span></span>
+
               {segments.map((s, i) => {
                 const getVid = () => vids.find((vid) => vid.name === s.name)!;
                 const swap = (j: number, k: number) => {

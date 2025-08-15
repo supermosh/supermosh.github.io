@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
 
 import { Section } from "./components/Section";
-import { record } from "./lib";
+import { FPS, record } from "./lib";
 import { NumberInput } from "./NumberInput";
 import { Segment, Settings, Vid } from "./types";
 
@@ -24,9 +24,17 @@ export const Rendering = ({
   const [src, setSrc] = useState("");
   const [downloadName, setDownloadName] = useState("");
 
+  const chunks = segments.flatMap((s) =>
+    Array(s.repeat)
+      .fill(null)
+      .flatMap(() =>
+        vids.find((vid) => vid.name === s.name)!.chunks.slice(s.from, s.to)
+      )
+  );
+
   return (
     <Section name="Rendering">
-      <p>
+      <p style={{ display: "flex", gap: "0.5em", alignItems: "center" }}>
         <NumberInput
           value={settings.width}
           onChange={(width) => setSettings({ ...settings, width })}
@@ -71,21 +79,11 @@ export const Rendering = ({
           files
         </p>
       ) : (
-        <div>
+        <div style={{ display: "flex", gap: "0.5em", alignItems: "center" }}>
           <button
             onClick={async () => {
               setRendering(true);
               setSrc("");
-
-              const chunks = segments.flatMap((s) =>
-                Array(s.repeat)
-                  .fill(null)
-                  .flatMap(() =>
-                    vids
-                      .find((vid) => vid.name === s.name)!
-                      .chunks.slice(s.from, s.to)
-                  )
-              );
               const newSrc = await record(chunks, config);
               setSrc(newSrc);
               setDownloadName(
@@ -100,6 +98,9 @@ export const Rendering = ({
           >
             render
           </button>
+          <span>
+            {(chunks.length / FPS).toFixed(2)}s, {chunks.length} frames
+          </span>
         </div>
       )}
       {src && (
