@@ -10,8 +10,6 @@ import {
 } from "mediabunny";
 import { createFile, DataStream, MP4ArrayBuffer, MP4File } from "mp4box";
 
-import { Settings } from "./types";
-
 export const FPS = 30;
 
 const computeDescription = (file: MP4File, trackId: number) => {
@@ -86,10 +84,7 @@ export const computeChunks = (
 
 export const record = async (
   chunks: EncodedVideoChunk[],
-  config: VideoDecoderConfig,
-  mimeType: string,
-  settings: Settings,
-  onProgress: (progress: number) => unknown
+  config: VideoDecoderConfig
 ) => {
   const source = new VideoSampleSource({ codec: "avc", bitrate: QUALITY_HIGH });
   const output = new Output({
@@ -97,23 +92,20 @@ export const record = async (
     target: new BufferTarget(),
   });
   output.addVideoTrack(source);
-  let i = 0;
+  let t = 0;
   const decoder = new VideoDecoder({
     error: console.error,
     output: (frame) => {
-      console.log(i);
-      const sample = new VideoSample(frame, { timestamp: i / FPS });
+      const sample = new VideoSample(frame, { timestamp: t / FPS });
       source.add(sample);
-      sample.close();
-      i++;
+      t++;
     },
   });
   decoder.configure(config);
   await output.start();
 
-  for (let j = 0; j < chunks.length; j++) {
-    decoder.decode(chunks[j]);
-    onProgress(j / chunks.length);
+  for (const chunk of chunks) {
+    decoder.decode(chunk);
   }
 
   await decoder.flush();

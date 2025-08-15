@@ -21,7 +21,6 @@ export const Rendering = ({
   preprocessSettings: Settings;
 }) => {
   const [rendering, setRendering] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [src, setSrc] = useState("");
   const [downloadName, setDownloadName] = useState("");
 
@@ -87,24 +86,13 @@ export const Rendering = ({
                       .chunks.slice(s.from, s.to)
                   )
               );
-              const mimeType = MediaRecorder.isTypeSupported("video/mp4")
-                ? "video/mp4"
-                : "video/webm";
-              const newSrc = await record(
-                chunks,
-                config,
-                mimeType,
-                settings,
-                setProgress
-              );
+              const newSrc = await record(chunks, config);
               setSrc(newSrc);
               setDownloadName(
                 `Supermosh_${new Date()
                   .toISOString()
                   .substring(0, 19)
-                  .replaceAll(":", "-")}.${
-                  mimeType === "video/mp4" ? "mp4" : "webm"
-                }`
+                  .replaceAll(":", "-")}.mp4`
               );
               setRendering(false);
             }}
@@ -112,7 +100,6 @@ export const Rendering = ({
           >
             render
           </button>
-          {rendering && <progress value={progress} />}
         </div>
       )}
       {src && (
