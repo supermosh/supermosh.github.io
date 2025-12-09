@@ -7,7 +7,7 @@ import { Settings, Vid } from "./types";
 
 const initialProgress = {
   processed: 0,
-  total: 0
+  total: 0,
 };
 
 export const FilesEditor = ({
@@ -55,7 +55,10 @@ export const FilesEditor = ({
           onChange={async (evt) => {
             setLoading(true);
             if (evt.target.files) {
-              setFilesProgress({ processed: 0, total: evt.target.files.length });
+              setFilesProgress({
+                processed: 0,
+                total: evt.target.files.length,
+              });
               for (const file of evt.target.files) {
                 const src = URL.createObjectURL(file);
                 const withoutSpaces = file.name.replace(/\s/g, "_");
@@ -73,8 +76,14 @@ export const FilesEditor = ({
                   settings.height,
                   onConfig
                 );
-                setVids(prevVids => [...prevVids, { file, name, chunks, src }]);
-                setFilesProgress(prev => ({ ...prev, processed: prev.processed + 1 }));
+                setVids((prevVids) => [
+                  ...prevVids,
+                  { file, name, chunks, src },
+                ]);
+                setFilesProgress((prev) => ({
+                  ...prev,
+                  processed: prev.processed + 1,
+                }));
               }
             }
             evt.target.value = "";
@@ -102,7 +111,10 @@ export const FilesEditor = ({
                     settings.height,
                     onConfig
                   );
-                  setFilesProgress(prev => ({ ...prev, processed: prev.processed + 1 }));
+                  setFilesProgress((prev) => ({
+                    ...prev,
+                    processed: prev.processed + 1,
+                  }));
                 }
                 setVids([...vids]);
                 setPreprocessSettings(settings);
@@ -116,7 +128,9 @@ export const FilesEditor = ({
         )}
       {loading && (
         <p>
-          <span>Processed {filesProgress.processed} of {filesProgress.total} files</span>
+          <span>
+            Processed {filesProgress.processed} of {filesProgress.total} files
+          </span>
           <br />
           <progress value={progress} />
         </p>
