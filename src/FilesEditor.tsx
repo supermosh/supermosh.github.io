@@ -5,6 +5,11 @@ import { Section } from "./components/Section";
 import { computeChunks, FPS } from "./lib";
 import { Settings, Vid } from "./types";
 
+const initialProgress = {
+  processed: 0,
+  total: 0
+};
+
 export const FilesEditor = ({
   vids,
   setVids,
@@ -25,6 +30,7 @@ export const FilesEditor = ({
   setPreprocessSettings: Dispatch<SetStateAction<Settings>>;
 }) => {
   const [loading, setLoading] = useState(false);
+  const [filesProgress, setFilesProgress] = useState(initialProgress);
 
   return (
     <Section name="Files">
@@ -45,29 +51,36 @@ export const FilesEditor = ({
         <input
           type="file"
           accept="video/*,image/*"
+          multiple
           onChange={async (evt) => {
             setLoading(true);
-            const file = evt.target.files![0];
-            const src = URL.createObjectURL(file);
-            const withoutSpaces = file.name.replace(/\s/g, "_");
-            let name = withoutSpaces;
-            let i = 0;
-            while (vids.map((vid) => vid.name).includes(name)) {
-              name = `${withoutSpaces}_${i}`;
-              i++;
+            if (evt.target.files) {
+              setFilesProgress({ processed: 0, total: evt.target.files.length });
+              for (const file of evt.target.files) {
+                const src = URL.createObjectURL(file);
+                const withoutSpaces = file.name.replace(/\s/g, "_");
+                let name = withoutSpaces;
+                let i = 0;
+                while (vids.map((vid) => vid.name).includes(name)) {
+                  name = `${withoutSpaces}_${i}`;
+                  i++;
+                }
+                const chunks = await computeChunks(
+                  ffmpeg,
+                  file,
+                  name,
+                  settings.width,
+                  settings.height,
+                  onConfig
+                );
+                setVids(prevVids => [...prevVids, { file, name, chunks, src }]);
+                setFilesProgress(prev => ({ ...prev, processed: prev.processed + 1 }));
+              }
             }
-            const chunks = await computeChunks(
-              ffmpeg,
-              file,
-              name,
-              settings.width,
-              settings.height,
-              onConfig
-            );
-            setVids([...vids, { file, name, chunks, src }]);
             evt.target.value = "";
             setLoading(false);
             setPreprocessSettings(settings);
+            setFilesProgress(initialProgress);
           }}
           disabled={loading}
         />
@@ -79,6 +92,7 @@ export const FilesEditor = ({
               disabled={loading}
               onClick={async () => {
                 setLoading(true);
+                setFilesProgress({ processed: 0, total: vids.length });
                 for (const vid of vids) {
                   vid.chunks = await computeChunks(
                     ffmpeg,
@@ -88,10 +102,12 @@ export const FilesEditor = ({
                     settings.height,
                     onConfig
                   );
+                  setFilesProgress(prev => ({ ...prev, processed: prev.processed + 1 }));
                 }
                 setVids([...vids]);
                 setPreprocessSettings(settings);
                 setLoading(false);
+                setFilesProgress(initialProgress);
               }}
             >
               Reprocess files
@@ -100,6 +116,8 @@ export const FilesEditor = ({
         )}
       {loading && (
         <p>
+          <span>Processed {filesProgress.processed} of {filesProgress.total} files</span>
+          <br />
           <progress value={progress} />
         </p>
       )}
