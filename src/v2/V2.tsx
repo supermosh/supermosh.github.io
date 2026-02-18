@@ -7,7 +7,7 @@ import { Rendering } from "./Rendering";
 import { Timeline } from "./Timeline";
 import { Segment, Vid } from "./types";
 
-export const Studio = () => {
+export const V2 = () => {
   const [loadingFfmpeg, setLoadingFfmpeg] = useState(true);
   const ffmpegRef = useRef(new FFmpeg());
   const [vids, setVids] = useState<Vid[]>([]);
