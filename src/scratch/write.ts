@@ -1,3 +1,5 @@
+import "../index.css";
+
 import {
   ALL_FORMATS,
   BufferTarget,
@@ -7,16 +9,8 @@ import {
   Input,
   Mp4OutputFormat,
   Output,
-  QUALITY_VERY_HIGH,
   UrlSource,
-  VideoSample,
-  VideoSampleSource,
 } from "mediabunny";
-import "../index.css";
-
-// forest 2711092-hd_1280_720_24fps.mp4
-// waves  2873679-hd_1920_1080_25fps.mp4
-// dance  2873755-hd_1280_720_25fps.mp4
 
 const width = 1280;
 const height = 720;
@@ -24,7 +18,7 @@ const height = 720;
 // extract encoded packets
 const input = new Input({
   formats: ALL_FORMATS,
-  source: new UrlSource("/samples/2711092-hd_1280_720_24fps.baseline.mp4"),
+  source: new UrlSource("/samples/baseline/6616342-hd_1920_1080_25fps.mp4"),
 });
 const track = await input.getPrimaryVideoTrack();
 if (!track) throw new Error("no track");
@@ -38,11 +32,21 @@ for await (const pkt of sink.packets()) {
 
 // possibly duplicate or reorder packets to mosh
 const repkts = [
-  ...pkts,
-  ...Array(150)
+  ...pkts.slice(0, 50),
+  ...Array(50)
     .fill(null)
-    .map(() => pkts.slice(-1)[0]),
-];
+    .map(() => pkts[50]),
+  ...pkts.slice(50, 100),
+]
+  .filter((pkt, i) => i == 0 || pkt.type == "delta")
+  .map((pkt, i) => {
+    return new EncodedPacket(
+      pkt.data,
+      pkt.type,
+      i * pkt.duration,
+      pkt.duration,
+    );
+  });
 
 // write to mp4
 console.log(decoderConfig.codec); // wrong codec?...
@@ -53,40 +57,15 @@ const output = new Output({
 });
 output.addVideoTrack(source);
 output.start();
-
-// setup rendering
-const canvas = document.createElement("canvas");
-canvas.width = width;
-canvas.height = height;
-canvas.style.width = "100vw";
-canvas.style.height = "100vh";
-canvas.style.objectFit = "contain";
-document.body.append(canvas);
-const ctx = canvas.getContext("2d")!;
-const decoder = new VideoDecoder({
-  output: (frame) => {
-    ctx.drawImage(frame, 0, 0);
-    frame.close();
-  },
-  error: console.error,
-});
-decoder.configure(decoderConfig);
-
-// render asap
 let i = 0;
 while (i < repkts.length) {
   const pkt = repkts[i];
-  // const chunk = new EncodedVideoChunk({
-  //   type: pkt.type,
-  //   timestamp: pkt.timestamp * 1_000_000,
-  //   duration: pkt.duration * 1_000_000,
-  //   data: pkt.data,
-  // });
-  // decoder.decode(chunk);
-  source.add(pkt, { decoderConfig });
+  await source.add(pkt, { decoderConfig });
   i++;
-  // await new Promise((r) => requestAnimationFrame(r));
 }
-console.log("done");
+await output.finalize();
 
-// TODO show video and save
+const video = document.createElement("video");
+video.controls = true;
+video.src = URL.createObjectURL(new Blob([output.target.buffer!]));
+document.body.append(video);
