@@ -13,6 +13,7 @@
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/types": "^0.12.4",
     "@ffmpeg/util": "^0.12.2",
+    "mediabunny": "^1.34.4",
     "mp4box": "^0.5.4",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
