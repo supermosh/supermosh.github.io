@@ -1,15 +1,43 @@
+import { ALL_FORMATS, BlobSource, Input, VideoSampleSink } from "mediabunny";
 import { useState } from "react";
 
 type Vid = {
-  name: string; // unique
+  file: File;
+  /** Unique identifier and UI label */
+  name: string;
+  /**
+   * URL of first video frame
+   * TODO optimize image size
+   */
+  poster: string;
 };
 
 type Clip = {
   id: number;
-  vid: string;
+  vid: Vid;
 };
 
-const mkClip = (vid: string): Clip => ({ id: Math.random(), vid });
+const mkClip = (vid: Vid): Clip => ({ id: Math.random(), vid });
+
+const getPoster = async (file: File) => {
+  const input = new Input({
+    formats: ALL_FORMATS,
+    source: new BlobSource(file),
+  });
+  const track = await input.getPrimaryVideoTrack();
+  if (!track) throw new Error("No video track");
+  const decodable = await track.canDecode();
+  if (!decodable) throw new Error("Can't decode");
+  const sink = new VideoSampleSink(track);
+  const sample = x(await sink.getSample(0));
+
+  const canvas = new OffscreenCanvas(sample.codedWidth, sample.codedHeight);
+  const ctx = x(canvas.getContext("2d"));
+  sample.draw(ctx, 0, 0);
+  sample.close();
+  const blob = await canvas.convertToBlob();
+  return URL.createObjectURL(blob);
+};
 
 const x = <T,>(value: T | null | undefined): T => {
   if (value == null) throw new Error("Should not be nullish");
@@ -33,7 +61,6 @@ export const V3 = () => {
             }}
             style={{ cursor: "grab" }}
           >
-            {vid.name}
             <button
               onClick={() => {
                 setVids([...vids.filter((v) => v != vid)]);
@@ -41,6 +68,8 @@ export const V3 = () => {
             >
               delete
             </button>
+            <img src={vid.poster} style={{ height: 50 }} />
+            <span>{vid.name}</span>
           </li>
         ))}
         <li>
@@ -48,7 +77,7 @@ export const V3 = () => {
             type="file"
             accept="image/*,video/*"
             multiple
-            onChange={(evt) => {
+            onChange={async (evt) => {
               for (const file of x(evt.target.files)) {
                 let name = file.name;
                 let i = 0;
@@ -56,9 +85,10 @@ export const V3 = () => {
                   name = `${name}_${i}`;
                   i++;
                 }
-                vids.push({ name });
+                const poster = await getPoster(file);
+                vids.push({ name, file, poster });
+                setVids([...vids]);
               }
-              setVids([...vids]);
               evt.target.value = "";
             }}
           />
@@ -83,7 +113,9 @@ export const V3 = () => {
           const name = e.dataTransfer.getData("text/plain");
           if (!name) return;
           // Drop on empty space -> append at end
-          setClips((prev) => [...prev, mkClip(name)]);
+          const vid = vids.find((v) => v.name === name);
+          if (!vid) return;
+          setClips((prev) => [...prev, mkClip(vid)]);
         }}
         style={{
           display: "flex",
@@ -125,10 +157,12 @@ export const V3 = () => {
               }
               const dropName = e.dataTransfer.getData("text/plain");
               if (!dropName) return;
+              const vid = vids.find((v) => v.name === dropName);
+              if (!vid) return;
               // Insert new clip before this one
               setClips((prev) => {
                 const next = [...prev];
-                next.splice(i, 0, mkClip(dropName));
+                next.splice(i, 0, mkClip(vid));
                 return next;
               });
             }}
@@ -137,12 +171,14 @@ export const V3 = () => {
               minWidth: 200,
               height: 100,
               flexShrink: 0,
-              background: "#444",
               cursor: "grab",
+              backgroundImage: `url(${clip.vid.poster})`,
+              backgroundSize: "contain",
+              backgroundRepeat: "repeat-x",
             }}
-            title={clip.vid}
           >
-            <div>{clip.vid}</div>
+            <div>{clip.vid.name}</div>
+            <a href={clip.vid.poster}>poster</a>
             <button
               onClick={() => {
                 setClips(clips.filter((c) => c.id !== clip.id));
