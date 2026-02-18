@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 BL_Proxy
+
+/public/samples
