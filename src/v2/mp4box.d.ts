@@ -93,7 +93,7 @@ declare module "mp4box" {
     setExtractionOptions(
       trackId: number,
       user?: any,
-      options?: { nbSamples?: number; rapAlignment?: number }
+      options?: { nbSamples?: number; rapAlignment?: number },
     ): void;
     getTrackById(trackId: number);
   }
@@ -113,9 +113,9 @@ declare module "mp4box" {
     constructor(
       arrayBuffer: ArrayBuffer | undefined,
       byteOffset: number | undefined,
-      endianness: boolean | undefined
+      endianness: boolean | undefined,
     );
   }
 
-  export {};
+  export { };
 }

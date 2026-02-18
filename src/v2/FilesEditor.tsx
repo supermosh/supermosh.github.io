@@ -1,7 +1,7 @@
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { Dispatch, SetStateAction, useState } from "react";
 
-import { Section } from "./components/Section";
+import { Section } from "../components/Section";
 import { computeChunks, FPS } from "./lib";
 import { Settings, Vid } from "./types";
 
@@ -74,7 +74,7 @@ export const FilesEditor = ({
                   name,
                   settings.width,
                   settings.height,
-                  onConfig
+                  onConfig,
                 );
                 setVids((prevVids) => [
                   ...prevVids,
@@ -109,7 +109,7 @@ export const FilesEditor = ({
                     vid.name,
                     settings.width,
                     settings.height,
-                    onConfig
+                    onConfig,
                   );
                   setFilesProgress((prev) => ({
                     ...prev,

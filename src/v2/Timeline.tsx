@@ -1,7 +1,6 @@
-import React, { Dispatch, SetStateAction } from "react";
-import { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 
-import { Section } from "./components/Section";
+import { Section } from "../components/Section";
 import { NumberInput } from "./NumberInput";
 import { RangePreview } from "./RangePreview";
 import { SelectInput } from "./SelectInput";

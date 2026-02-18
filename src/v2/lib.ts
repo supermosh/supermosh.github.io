@@ -25,7 +25,7 @@ export const computeChunks = (
   name: string,
   width: number,
   height: number,
-  onConfig: (config: VideoDecoderConfig) => unknown
+  onConfig: (config: VideoDecoderConfig) => unknown,
 ) =>
   new Promise<EncodedVideoChunk[]>(async (resolve, reject) => {
     try {
@@ -36,8 +36,8 @@ export const computeChunks = (
       await ffmpeg.writeFile(inputName, await fetchFile(inputFile));
       await ffmpeg.exec(
         `-i ${inputName} -vf scale=${width}:${height} -vcodec libx264 -g 99999999 -bf 0 -flags:v +cgop -pix_fmt yuv420p -movflags faststart -crf 15 ${outputName}`.split(
-          " "
-        )
+          " ",
+        ),
       );
       const data = (await ffmpeg.readFile(outputName)) as Uint8Array;
 
@@ -62,7 +62,7 @@ export const computeChunks = (
               timestamp: (1e6 * sample.cts) / sample.timescale,
               duration: (1e6 * sample.duration) / sample.timescale,
               data: sample.data,
-            })
+            }),
         );
 
         resolve(chunks);
@@ -81,7 +81,7 @@ export const record = async (
   config: VideoDecoderConfig,
   mimeType: string,
   settings: Settings,
-  onProgress: (progress: number) => unknown
+  onProgress: (progress: number) => unknown,
 ) =>
   new Promise<string>((resolve) => {
     const canvas = document.createElement("canvas");

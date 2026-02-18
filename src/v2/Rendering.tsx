@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useState } from "react";
 
-import { Section } from "./components/Section";
+import { Section } from "../components/Section";
 import { record } from "./lib";
 import { NumberInput } from "./NumberInput";
 import { Segment, Settings, Vid } from "./types";
@@ -84,8 +84,8 @@ export const Rendering = ({
                   .flatMap(() =>
                     vids
                       .find((vid) => vid.name === s.name)!
-                      .chunks.slice(s.from, s.to)
-                  )
+                      .chunks.slice(s.from, s.to),
+                  ),
               );
               const mimeType = MediaRecorder.isTypeSupported("video/mp4")
                 ? "video/mp4"
@@ -95,7 +95,7 @@ export const Rendering = ({
                 config,
                 mimeType,
                 settings,
-                setProgress
+                setProgress,
               );
               setSrc(newSrc);
               setDownloadName(
@@ -104,7 +104,7 @@ export const Rendering = ({
                   .substring(0, 19)
                   .replaceAll(":", "-")}.${
                   mimeType === "video/mp4" ? "mp4" : "webm"
-                }`
+                }`,
               );
               setRendering(false);
             }}

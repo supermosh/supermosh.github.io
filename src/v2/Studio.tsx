@@ -29,11 +29,11 @@ export const Studio = () => {
       await ffmpegRef.current.load({
         coreURL: await toBlobURL(
           `${baseURL}/ffmpeg-core.js`,
-          "text/javascript"
+          "text/javascript",
         ),
         wasmURL: await toBlobURL(
           `${baseURL}/ffmpeg-core.wasm`,
-          "application/wasm"
+          "application/wasm",
         ),
       });
       setLoadingFfmpeg(false);

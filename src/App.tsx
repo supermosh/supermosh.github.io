@@ -2,7 +2,7 @@ import { Link, Route, Routes, useMatch } from "react-router-dom";
 
 import { Icon } from "./components/Icon";
 import { Home } from "./Home";
-import { Studio } from "./Studio";
+import { Studio } from "./v2/Studio";
 
 export const App = () => {
   const match = useMatch("/studio");
