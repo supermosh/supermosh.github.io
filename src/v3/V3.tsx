@@ -1,5 +1,5 @@
 import { ALL_FORMATS, BlobSource, Input, VideoSampleSink } from "mediabunny";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Vid = {
   file: File;
@@ -15,9 +15,16 @@ type Vid = {
 type Clip = {
   id: number;
   vid: Vid;
+  from: number;
+  to: number;
 };
 
-const mkClip = (vid: Vid): Clip => ({ id: Math.random(), vid });
+const mkClip = (vid: Vid): Clip => ({
+  id: Math.random(),
+  vid,
+  from: 0,
+  to: 200,
+});
 
 const getPoster = async (file: File) => {
   const input = new Input({
@@ -47,6 +54,22 @@ const x = <T,>(value: T | null | undefined): T => {
 export const V3 = () => {
   const [vids, setVids] = useState([] as Vid[]);
   const [clips, setClips] = useState([] as Clip[]);
+  const [zoom, setZoom] = useState(1); // pixels per frame
+  const timelineRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = timelineRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const factor = e.deltaY > 0 ? 0.9 : 1.1;
+      setZoom((prev) => Math.max(0.05, Math.min(20, prev * factor)));
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
 
   return (
     <>
@@ -96,6 +119,7 @@ export const V3 = () => {
       </ul>
       <h1>Timeline</h1>
       <div
+        ref={timelineRef}
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
@@ -167,8 +191,8 @@ export const V3 = () => {
               });
             }}
             style={{
-              width: 200,
-              minWidth: 200,
+              width: zoom * (clip.to - clip.from),
+              minWidth: zoom * (clip.to - clip.from),
               height: 100,
               flexShrink: 0,
               cursor: "grab",
@@ -177,6 +201,7 @@ export const V3 = () => {
               backgroundRepeat: "repeat-x",
             }}
           >
+            {/* only debug infos for now */}
             <div>{clip.vid.name}</div>
             <a href={clip.vid.poster}>poster</a>
             <button
@@ -189,6 +214,8 @@ export const V3 = () => {
           </div>
         ))}
       </div>
+      <h1>Edit</h1>
+      <p>TODO</p>
       <h1>Render</h1>
       <p>TODO</p>
     </>
