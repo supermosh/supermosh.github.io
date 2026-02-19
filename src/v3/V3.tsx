@@ -19,11 +19,13 @@ type Clip = {
   to: number;
 };
 
+const TMP_DURATION = 200;
+
 const mkClip = (vid: Vid): Clip => ({
   id: Math.random(),
   vid,
   from: 0,
-  to: 200,
+  to: TMP_DURATION,
 });
 
 const getPoster = async (file: File) => {
@@ -199,6 +201,8 @@ export const V3 = () => {
               backgroundImage: `url(${clip.vid.poster})`,
               backgroundSize: "contain",
               backgroundRepeat: "repeat-x",
+              position: "relative",
+              overflow: "hidden",
             }}
           >
             {/* only debug infos for now */}
@@ -211,6 +215,85 @@ export const V3 = () => {
             >
               delete
             </button>
+            {/* Left trim handle */}
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                width: 8,
+                height: "100%",
+                cursor: "ew-resize",
+                background: "rgba(255,255,255,0.3)",
+              }}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                const startX = e.clientX;
+                const startFrom = clip.from;
+                const onMouseMove = (ev: MouseEvent) => {
+                  const dx = ev.clientX - startX;
+                  const dFrames = dx / zoom;
+                  const newFrom = Math.max(
+                    0,
+                    Math.min(clip.to - 1, Math.round(startFrom + dFrames)),
+                  );
+                  setClips((prev) =>
+                    prev.map((c) =>
+                      c.id === clip.id ? { ...c, from: newFrom } : c,
+                    ),
+                  );
+                };
+                const onMouseUp = () => {
+                  document.removeEventListener("mousemove", onMouseMove);
+                  document.removeEventListener("mouseup", onMouseUp);
+                };
+                document.addEventListener("mousemove", onMouseMove);
+                document.addEventListener("mouseup", onMouseUp);
+              }}
+              draggable
+              onDragStart={(e) => e.preventDefault()}
+            />
+            {/* Right trim handle */}
+            <div
+              style={{
+                position: "absolute",
+                right: 0,
+                top: 0,
+                width: 8,
+                height: "100%",
+                cursor: "ew-resize",
+                background: "rgba(255,255,255,0.3)",
+              }}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                const startX = e.clientX;
+                const startTo = clip.to;
+                const onMouseMove = (ev: MouseEvent) => {
+                  const dx = ev.clientX - startX;
+                  const dFrames = dx / zoom;
+                  const newTo = Math.min(
+                    TMP_DURATION,
+                    Math.max(clip.from + 1, Math.round(startTo + dFrames)),
+                  );
+                  setClips((prev) =>
+                    prev.map((c) =>
+                      c.id === clip.id ? { ...c, to: newTo } : c,
+                    ),
+                  );
+                };
+                const onMouseUp = () => {
+                  document.removeEventListener("mousemove", onMouseMove);
+                  document.removeEventListener("mouseup", onMouseUp);
+                };
+                document.addEventListener("mousemove", onMouseMove);
+                document.addEventListener("mouseup", onMouseUp);
+              }}
+              // Prevent this handle from initiating a clip drag
+              draggable
+              onDragStart={(e) => e.preventDefault()}
+            />
           </div>
         ))}
       </div>
