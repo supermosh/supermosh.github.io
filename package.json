@@ -13,27 +13,27 @@
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/types": "^0.12.4",
     "@ffmpeg/util": "^0.12.2",
-    "mediabunny": "^1.34.4",
+    "mediabunny": "^1.39.2",
     "mp4box": "^0.5.4",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.0",
+    "react-router-dom": "^7.13.1",
     "vite": "^6.4.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
+    "@eslint/js": "^9.39.4",
     "@types/dom-mediacapture-transform": "^0.1.11",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react-swc": "^3.11.0",
-    "eslint": "^9.39.2",
+    "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.26",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.4.1",
     "globals": "^16.5.0",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.56.0"
+    "typescript-eslint": "^8.57.1"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
