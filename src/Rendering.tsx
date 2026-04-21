@@ -66,6 +66,13 @@ export const Rendering = ({
 
       {segments.length === 0 || config === null ? (
         <p>Please add segments in the timeline</p>
+      ) : segments.every(
+          (s) => vids.find((v) => v.name === s.name)!.chunks.length == 1,
+        ) ? (
+        <p>
+          Can't render when all segments are of length 1, as that would mean
+          rendering a sequence of images, which would not produce any glitch
+        </p>
       ) : JSON.stringify(preprocessSettings) !== JSON.stringify(settings) ? (
         <p>
           Rendering settings differ from files settings, please reprocess the
@@ -84,8 +91,8 @@ export const Rendering = ({
                   .flatMap(() =>
                     vids
                       .find((vid) => vid.name === s.name)!
-                      .chunks.slice(s.from, s.to)
-                  )
+                      .chunks.slice(s.from, s.to),
+                  ),
               );
               const mimeType = MediaRecorder.isTypeSupported("video/mp4")
                 ? "video/mp4"
@@ -95,7 +102,7 @@ export const Rendering = ({
                 config,
                 mimeType,
                 settings,
-                setProgress
+                setProgress,
               );
               setSrc(newSrc);
               setDownloadName(
@@ -104,7 +111,7 @@ export const Rendering = ({
                   .substring(0, 19)
                   .replaceAll(":", "-")}.${
                   mimeType === "video/mp4" ? "mp4" : "webm"
-                }`
+                }`,
               );
               setRendering(false);
             }}
