@@ -20,6 +20,14 @@ export const Timeline = ({
   vids: Vid[];
 }) => {
   const [preview, setPreview] = useState<null | { vid: Vid; i: number }>(null);
+
+  const fixFroms = () => {
+    segments.forEach((s, i) => {
+      if (i == 0) s.from = 0;
+      if (i > 0 && s.from == 0) s.from = 1;
+    });
+  };
+
   return (
     <Section name="Timeline">
       {vids.length === 0 ? (
@@ -34,7 +42,7 @@ export const Timeline = ({
                 const getVid = () => vids.find((vid) => vid.name === s.name)!;
                 const swap = (j: number, k: number) => {
                   [segments[j], segments[k]] = [segments[k], segments[j]];
-                  segments[0].from = 0;
+                  fixFroms();
                   setSegments([...segments]);
                 };
 
@@ -46,6 +54,7 @@ export const Timeline = ({
                         s.name = name;
                         s.to = clamp(s.to, -Infinity, getVid().chunks.length);
                         s.from = clamp(s.from, 0, s.to - 1);
+                        fixFroms();
                         setSegments([...segments]);
                       }}
                       options={vids.map((vid) => vid.name)}
@@ -54,6 +63,7 @@ export const Timeline = ({
                       value={s.from}
                       onChange={(from) => {
                         s.from = from;
+                        fixFroms();
                         setSegments([...segments]);
                         setPreview({ vid: getVid(), i: from });
                       }}
@@ -94,7 +104,9 @@ export const Timeline = ({
                     </button>
                     <button
                       onClick={() => {
-                        setSegments(segments.filter((_, j) => i !== j));
+                        const newSegments = segments.filter((_, j) => i !== j);
+                        if (newSegments.length) newSegments[0].from = 0;
+                        setSegments(newSegments);
                       }}
                     >
                       delete
@@ -110,7 +122,7 @@ export const Timeline = ({
                 ...segments,
                 {
                   name: vids[0]!.name,
-                  from: 0,
+                  from: segments.length ? 1 : 0,
                   to: vids[0].chunks.length,
                   repeat: 1,
                 },
