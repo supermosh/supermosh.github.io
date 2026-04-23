@@ -42,6 +42,7 @@ export default tseslint.config(
       ],
       "no-async-promise-executor": "off",
       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/ban-ts-comment": "off",
     },
   },
 );

@@ -1,3 +1,5 @@
+import "../index.css";
+
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { fetchFile, toBlobURL } from "@ffmpeg/util";
 import {
@@ -7,7 +9,7 @@ import {
   EncodedPacketSink,
   Input,
 } from "mediabunny";
-import "../index.css";
+
 import { clipIndices } from "./mosh_timers";
 
 // convert using ffmpeg.wasm
