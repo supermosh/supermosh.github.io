@@ -20,7 +20,7 @@ let decoderConfig: VideoDecoderConfig;
 const extractPkts = async (name: string) => {
   const input = new Input({
     formats: ALL_FORMATS,
-    source: new UrlSource(`/samples/baseline/${name}`),
+    source: new UrlSource(`/samples/hd/${name}`),
   });
   const track = await input.getPrimaryVideoTrack();
   if (!track) throw new Error("no track");
@@ -36,10 +36,15 @@ const extractPkts = async (name: string) => {
 
 console.log("Extracting packets...");
 
-const mediaNames = ["IMG_5432.mp4"] as const;
-type MediaName = (typeof mediaNames)[number];
+const names = [
+  // "substance.mp4",
+  // "15687070_2160_3840_50fps.mp4",
+  // "2711092-hd_1280_720_24fps.mp4",
+  "8724218-uhd_4096_2160_25fps.mp4",
+] as const;
+type MediaName = (typeof names)[number];
 const pktss = {} as Record<MediaName, EncodedPacket[]>;
-for (const name of mediaNames) {
+for (const name of names) {
   const pkts = await extractPkts(name);
   pktss[name as MediaName] = pkts;
   const keyIndices = pkts
@@ -52,7 +57,7 @@ for (const name of mediaNames) {
   );
 
   const video = document.createElement("video");
-  video.src = `/samples/baseline/${name}`;
+  video.src = `/samples/hd/${name}`;
   video.controls = true;
   document.body.append(video);
   video.addEventListener("timeupdate", () => {
@@ -80,7 +85,24 @@ const retimers = {
 };
 type Timeline = { name: MediaName; indices: number[] }[];
 const timeline: Timeline = [
-  { name: "IMG_5432.mp4", indices: retimers.stretch(0, 59, 0.25) },
+  // {
+  //   name: "8724218-uhd_4096_2160_25fps.mp4",
+  //   indices: retimers.stretch(
+  //     0,
+  //     pktss["8724218-uhd_4096_2160_25fps.mp4"].length,
+  //     0.5,
+  //   ),
+  // },
+  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: retimers.copy(0, 30) },
+  {
+    name: "8724218-uhd_4096_2160_25fps.mp4",
+    indices: retimers.stretch(243, 260, 0.15),
+  },
+  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: retimers.copy(18, 30) },
+  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: retimers.copy(18, 30) },
+  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: retimers.copy(18, 30) },
+  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: retimers.copy(18, 30) },
+  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: retimers.copy(18, 200) },
 ];
 console.log(timeline);
 const repkts = timeline
@@ -121,6 +143,7 @@ video.loop = true;
 video.muted = true;
 video.autoplay = true;
 video.src = URL.createObjectURL(new Blob([output.target.buffer!]));
+// video.playbackRate = 4;
 document.body.append(video);
 
 console.log("Done");
