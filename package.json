@@ -14,32 +14,26 @@
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/types": "^0.12.4",
     "@ffmpeg/util": "^0.12.2",
-    "mediabunny": "^1.40.1",
+    "mediabunny": "^1.45.3",
     "mp4box": "^2.3.0",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5",
-    "react-router-dom": "^7.14.2",
-    "vite": "^8.0.10"
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-router-dom": "^7.15.1",
+    "vite": "^8.0.14"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/dom-mediacapture-transform": "^0.1.11",
-    "@types/react": "^19.2.14",
+    "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
-    "eslint": "^10.2.1",
+    "@vitejs/plugin-react": "^6.0.2",
+    "eslint": "^10.4.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "eslint-plugin-simple-import-sort": "^13.0.0",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "globals": "^17.5.0",
+    "globals": "^17.6.0",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.59.0"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@swc/core",
-      "esbuild"
-    ]
+    "typescript-eslint": "^8.59.4"
   }
 }
