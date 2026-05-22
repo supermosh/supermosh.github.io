@@ -15,9 +15,8 @@ import { useState } from "react";
 
 import { retimers, x } from "../scratch/lib";
 
-const width = 960;
-const height = 540;
-let decoderConfig: VideoDecoderConfig;
+const width = 1920;
+const height = 1080;
 
 type Media = {
   name: string;
@@ -39,6 +38,9 @@ export const V3 = () => {
   const [medias, setMedias] = useState<Media[]>([]);
   const [isConverting, setIsConverting] = useState(false);
   const [conversionProgress, setConversionProgress] = useState(0);
+  const [decoderConfig, setDecoderConfig] = useState<VideoDecoderConfig | null>(
+    null,
+  );
   const onUpload = async (
     evt: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
   ) => {
@@ -77,7 +79,11 @@ export const V3 = () => {
         forceTranscode: true,
         codec: "avc",
         // Only works for a custom build of mediabunny, else is ignored and we hope for the best
-        fullCodecString: "avc1.42c01f",
+        // avc1 = h264
+        // 42 = baseline profile
+        // c0 = constrained baseline
+        // 2a = level 4.2 (max 522.240MBs, supports 60FPS HD)
+        fullCodecString: "avc1.42c02a",
       },
     });
     if (!conversion.isValid) throw new Error("conv is not valid");
@@ -89,7 +95,7 @@ export const V3 = () => {
       source: new BufferSource(x(convOutput.target.buffer)),
     });
     const track = x(await moshInput.getPrimaryVideoTrack());
-    decoderConfig = x(await track.getDecoderConfig());
+    setDecoderConfig(x(await track.getDecoderConfig()));
     const sink = new EncodedPacketSink(track);
     const pkts: EncodedPacket[] = [];
     for await (const pkt of sink.packets()) {
@@ -104,6 +110,8 @@ export const V3 = () => {
   const [timeline, setTimeline] = useState<Clip[]>([]);
 
   const render = async () => {
+    if (!decoderConfig) return;
+
     const pktsByName = {} as Record<string, EncodedPacket[]>;
     for (const media of medias) {
       pktsByName[media.name] = media.pkts;
@@ -327,7 +335,16 @@ export const V3 = () => {
       <h1>Render</h1>
       {!!timeline.length && <button onClick={render}>Render</button>}
 
-      {videoSrc && <video src={videoSrc} controls autoPlay muted loop></video>}
+      {videoSrc && (
+        <video
+          src={videoSrc}
+          controls
+          autoPlay
+          muted
+          loop
+          style={{ maxWidth: "100%" }}
+        ></video>
+      )}
     </>
   );
 };
