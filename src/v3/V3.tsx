@@ -15,9 +15,21 @@ import { useState } from "react";
 
 import { x } from "../scratch/lib";
 
+const width = 960;
+const height = 540;
+
 type Media = {
   name: string;
-  output: Output<Mp4OutputFormat, BufferTarget>;
+  pkts: EncodedPacket[];
+};
+
+type Clip = {
+  id: number;
+  name: string;
+  effect:
+    | { kind: "copy"; from: number; to: number }
+    | { kind: "glide"; at: number; duration: number }
+    | { kind: "stretch"; from: number; to: number; rate: number };
 };
 
 export const V3 = () => {
@@ -131,8 +143,6 @@ export const V3 = () => {
     }
 
     // convert
-    const width = 960;
-    const height = 540;
     const convInput = new Input({
       formats: ALL_FORMATS,
       source: new BlobSource(file),
@@ -158,10 +168,25 @@ export const V3 = () => {
     conversion.onProgress = setConversionProgress;
     await conversion.execute();
 
+    const moshInput = new Input({
+      formats: ALL_FORMATS,
+      source: new BufferSource(x(convOutput.target.buffer)),
+    });
+    const track = x(await moshInput.getPrimaryVideoTrack());
+    const decoderConfig = x(await track.getDecoderConfig());
+    console.log(decoderConfig);
+    const sink = new EncodedPacketSink(track);
+    const pkts: EncodedPacket[] = [];
+    for await (const pkt of sink.packets()) {
+      pkts.push(pkt);
+    }
+
     evt.target.value = "";
-    setMedias([...medias, { name: newName, output: convOutput }]);
+    setMedias([...medias, { name: newName, pkts }]);
     setIsConverting(false);
   };
+
+  const [timeline, setTimeline] = useState<Clip[]>([]);
 
   return (
     <>
@@ -181,6 +206,147 @@ export const V3 = () => {
             `Converting... (${Math.floor(100 * conversionProgress)}%)`}
         </li>
       </ul>
+
+      <h1>Timeline</h1>
+      <ol>
+        {timeline.map((clip) => (
+          <li key={clip.id}>
+            <select
+              value={clip.name}
+              onChange={(evt) => {
+                clip.name = evt.target.value;
+                setTimeline([...timeline]);
+              }}
+            >
+              {medias.map((media) => (
+                <option value={media.name}>{media.name}</option>
+              ))}
+            </select>
+            <select
+              value={clip.effect.kind}
+              onChange={(evt) => {
+                switch (evt.target.value) {
+                  case "copy":
+                    clip.effect = { kind: "copy", from: 0, to: 1 };
+                    break;
+                  case "glide":
+                    clip.effect = { kind: "glide", at: 0, duration: 1 };
+                    break;
+                  case "stretch":
+                    clip.effect = { kind: "stretch", from: 0, to: 1, rate: 1 };
+                    break;
+                }
+                setTimeline([...timeline]);
+              }}
+            >
+              <option value={"copy"}>copy</option>
+              <option value={"glide"}>glide</option>
+              <option value={"stretch"}>stretch</option>
+            </select>
+
+            {clip.effect.kind === "copy" && (
+              <>
+                <input
+                  type="number"
+                  value={clip.effect.from}
+                  onChange={(evt) => {
+                    // @ts-expect-error
+                    clip.effect.from = evt.target.valueAsNumber;
+                    setTimeline([...timeline]);
+                  }}
+                  title="from"
+                />
+                <input
+                  type="number"
+                  value={clip.effect.to}
+                  onChange={(evt) => {
+                    // @ts-expect-error
+                    clip.effect.to = evt.target.valueAsNumber;
+                    setTimeline([...timeline]);
+                  }}
+                  title="to"
+                />
+              </>
+            )}
+            {clip.effect.kind === "glide" && (
+              <>
+                <input
+                  type="number"
+                  value={clip.effect.at}
+                  onChange={(evt) => {
+                    // @ts-expect-error
+                    clip.effect.at = evt.target.valueAsNumber;
+                    setTimeline([...timeline]);
+                  }}
+                  title="at"
+                />
+                <input
+                  type="number"
+                  value={clip.effect.duration}
+                  onChange={(evt) => {
+                    // @ts-expect-error
+                    clip.effect.duration = evt.target.valueAsNumber;
+                    setTimeline([...timeline]);
+                  }}
+                  title="duration"
+                />
+              </>
+            )}
+            {clip.effect.kind === "stretch" && (
+              <>
+                <input
+                  type="number"
+                  value={clip.effect.from}
+                  onChange={(evt) => {
+                    // @ts-expect-error
+                    clip.effect.from = evt.target.valueAsNumber;
+                    setTimeline([...timeline]);
+                  }}
+                  title="from"
+                />
+                <input
+                  type="number"
+                  value={clip.effect.to}
+                  onChange={(evt) => {
+                    // @ts-expect-error
+                    clip.effect.to = evt.target.valueAsNumber;
+                    setTimeline([...timeline]);
+                  }}
+                  title="to"
+                />
+                <input
+                  type="number"
+                  value={clip.effect.rate}
+                  onChange={(evt) => {
+                    // @ts-expect-error
+                    clip.effect.rate = evt.target.valueAsNumber;
+                    setTimeline([...timeline]);
+                  }}
+                  title="rate"
+                />
+              </>
+            )}
+
+            {JSON.stringify(clip)}
+          </li>
+        ))}
+        <li>
+          <button
+            onClick={() => {
+              setTimeline([
+                ...timeline,
+                {
+                  id: Math.random(),
+                  name: medias[0].name,
+                  effect: { kind: "copy", from: 0, to: medias[0].pkts.length },
+                },
+              ]);
+            }}
+          >
+            add
+          </button>
+        </li>
+      </ol>
 
       {videoSrc && <video src={videoSrc} controls autoPlay muted loop></video>}
     </>
