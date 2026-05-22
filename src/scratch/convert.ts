@@ -1,3 +1,5 @@
+import "../index.css";
+
 import {
   ALL_FORMATS,
   BufferSource,
@@ -10,12 +12,15 @@ import {
   Output,
   UrlSource,
 } from "mediabunny";
-import "../index.css";
+
+// import { buildVideoCodecString } from "../../../mediabunny/dist/modules/src/codec";
 import { x } from "./lib";
 
 console.log("start");
+// const fullCodecString = buildVideoCodecString("avc", 1920, 1080, 1e6);
+// console.log({ fullCodecString });
 
-// baseline codec is avc1.42c01f, but conversion converts to vp9 or av. There is no known option to circumvent this.
+// Firefox: baseline codec is avc1.42c01f, but conversion converts to vp9 or av. There is no known option to circumvent this.
 
 // scale and convert
 const width = 1280 / 2;
@@ -31,10 +36,18 @@ const convOutput = new Output({
 const conversion = await Conversion.init({
   input: convInput,
   output: convOutput,
-  video: { width, height, fit: "cover", forceTranscode: true },
+  video: {
+    width,
+    height,
+    fit: "cover",
+    forceTranscode: true,
+    codec: "avc",
+    // Only works for a custom build of mediabunny, else is ignored and we hope for the best
+    fullCodecString: "avc1.42c01f",
+  },
 });
 if (!conversion.isValid) throw new Error("conv is not valid");
-conversion.onProgress = (n) => console.log(`conv progress ${~~(100 * n)}%`);
+// conversion.onProgress = (n) => console.log(`conv progress ${~~(100 * n)}%`);
 await conversion.execute();
 
 // add download link
