@@ -10,16 +10,27 @@ import {
   Input,
   Mp4OutputFormat,
   Output,
+  VideoSampleSink,
 } from "mediabunny";
 import { useState } from "react";
 
 import { retimers, x } from "../scratch/lib";
+
+/*
+TODO
+configurable width/height
+clips drag and drop
+clips delete
+download link
+better UI
+*/
 
 const width = 1920;
 const height = 1080;
 
 type Media = {
   name: string;
+  poster: string;
   pkts: EncodedPacket[];
 };
 
@@ -32,15 +43,36 @@ type Clip = {
     | { kind: "stretch"; from: number; to: number; rate: number };
 };
 
-export const V3 = () => {
-  const [videoSrc, setVideoSrc] = useState("");
+const getPoster = async (file: File) => {
+  const input = new Input({
+    formats: ALL_FORMATS,
+    source: new BlobSource(file),
+  });
+  const track = await input.getPrimaryVideoTrack();
+  if (!track) throw new Error("No video track");
+  const decodable = await track.canDecode();
+  if (!decodable) throw new Error("Can't decode");
+  const sink = new VideoSampleSink(track);
+  const sample = x(await sink.getSample(0));
 
+  const canvas = new OffscreenCanvas(sample.codedWidth, sample.codedHeight);
+  const ctx = x(canvas.getContext("2d"));
+  sample.draw(ctx, 0, 0);
+  sample.close();
+  const blob = await canvas.convertToBlob();
+  return URL.createObjectURL(blob);
+};
+
+export const V3 = () => {
   const [medias, setMedias] = useState<Media[]>([]);
   const [isConverting, setIsConverting] = useState(false);
   const [conversionProgress, setConversionProgress] = useState(0);
   const [decoderConfig, setDecoderConfig] = useState<VideoDecoderConfig | null>(
     null,
   );
+  const [timeline, setTimeline] = useState<Clip[]>([]);
+  const [videoSrc, setVideoSrc] = useState("");
+
   const onUpload = async (
     evt: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
   ) => {
@@ -102,12 +134,12 @@ export const V3 = () => {
       pkts.push(pkt);
     }
 
+    const poster = await getPoster(file);
+
     evt.target.value = "";
-    setMedias([...medias, { name: newName, pkts }]);
+    setMedias([...medias, { name: newName, pkts, poster }]);
     setIsConverting(false);
   };
-
-  const [timeline, setTimeline] = useState<Clip[]>([]);
 
   const render = async () => {
     if (!decoderConfig) return;
@@ -171,7 +203,13 @@ export const V3 = () => {
       <h1>Files</h1>
       <ul>
         {medias.map((upload) => (
-          <li key={upload.name}>{upload.name}</li>
+          <li key={upload.name}>
+            <img src={upload.poster} style={{ width: "100px" }}></img>
+            <span>
+              {upload.name} ({upload.pkts.length} frames,{" "}
+              {(upload.pkts.length * upload.pkts[0].duration).toFixed(2)}s)
+            </span>
+          </li>
         ))}
         <li>
           <input
