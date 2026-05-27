@@ -18,15 +18,12 @@ import { retimers, x } from "../scratch/lib";
 
 /*
 TODO
-configurable width/height
-clips drag and drop
-clips delete
+extract files
+timeline
+extract timeline
 download link
 better UI
 */
-
-const width = 1920;
-const height = 1080;
 
 type Media = {
   name: string;
@@ -35,6 +32,8 @@ type Media = {
   pkts: EncodedPacket[];
   isConverting: boolean;
   conversionProgress: number;
+  width: number;
+  height: number;
 };
 
 type Clip = {
@@ -67,6 +66,9 @@ const getPoster = async (file: File) => {
 };
 
 export const V3 = () => {
+  const [width, setWidth] = useState(1920);
+  const [height, setHeight] = useState(1080);
+
   const [medias, setMedias] = useState<Media[]>([]);
   const [decoderConfig, setDecoderConfig] = useState<VideoDecoderConfig | null>(
     null,
@@ -75,6 +77,10 @@ export const V3 = () => {
   const [videoSrc, setVideoSrc] = useState("");
 
   const convert = async (media: Media) => {
+    media.isConverting = true;
+    media.conversionProgress = 0;
+    setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
+
     const convInput = new Input({
       formats: ALL_FORMATS,
       source: new BlobSource(media.file),
@@ -119,7 +125,12 @@ export const V3 = () => {
       pkts.push(pkt);
     }
 
-    return pkts;
+    media.conversionProgress = 1;
+    media.isConverting = false;
+    media.pkts = pkts;
+    media.width = width;
+    media.height = height;
+    setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
   };
 
   const onUpload = async (
@@ -146,15 +157,13 @@ export const V3 = () => {
       pkts: [],
       isConverting: true,
       conversionProgress: 0,
+      width,
+      height,
     };
     medias.push(media);
     setMedias([...medias]);
 
-    const pkts = await convert(media);
-    media.conversionProgress = 1;
-    media.isConverting = false;
-    media.pkts = pkts;
-    setMedias(medias.map((m) => (m.name === name ? { ...media } : m)));
+    await convert(media);
 
     evt.target.value = "";
   };
@@ -217,21 +226,50 @@ export const V3 = () => {
     setVideoSrc(URL.createObjectURL(new Blob([output.target.buffer!])));
   };
 
+  const resize = async () => {
+    for (const media of medias) {
+      if (media.width === width && media.height === height) continue;
+      await convert(media);
+    }
+  };
+
   return (
     <>
       <h1>Files</h1>
+
+      <div>
+        <input
+          type="number"
+          value={width}
+          onChange={(evt) => setWidth(evt.target.valueAsNumber)}
+        />
+        x
+        <input
+          type="number"
+          value={height}
+          onChange={(evt) => setHeight(evt.target.valueAsNumber)}
+        />
+        <button onClick={resize}>resize</button>
+      </div>
       <ul>
         {medias.map((media) => (
-          <li key={media.name}>
+          <li key={media.name} style={{ display: "flex", gap: "8px" }}>
             <img src={media.poster} style={{ width: "100px" }}></img>
             <span>{media.name}</span>
-            {media.isConverting ? (
-              <>
-                <progress value={media.conversionProgress} />
-              </>
-            ) : (
-              <>{media.pkts.length}</>
-            )}
+            <span>
+              {media.isConverting ? (
+                <>
+                  <progress value={media.conversionProgress} />
+                </>
+              ) : (
+                <>{media.pkts.length}</>
+              )}
+            </span>
+            <span>
+              {!(media.width === width && media.height == height) && (
+                <>invalid</>
+              )}
+            </span>
           </li>
         ))}
         <li>
@@ -392,6 +430,7 @@ export const V3 = () => {
       </ol>
 
       <h1>Render</h1>
+
       {!!timeline.length && <button onClick={render}>Render</button>}
 
       {videoSrc && (
