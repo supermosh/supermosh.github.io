@@ -74,39 +74,10 @@ export const V3 = () => {
   const [timeline, setTimeline] = useState<Clip[]>([]);
   const [videoSrc, setVideoSrc] = useState("");
 
-  const onUpload = async (
-    evt: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
-  ) => {
-    const [file] = evt.target.files ?? [];
-    if (!file) {
-      console.warn("Should upload at least one file");
-      return;
-    }
-
-    let name = file.name;
-    let newNameSuffix = 1;
-    while (medias.some((upload) => upload.name === name)) {
-      name = `${file.name}_${newNameSuffix}`;
-      newNameSuffix++;
-    }
-
-    const poster = await getPoster(file);
-
-    const media: Media = {
-      name,
-      file,
-      poster,
-      pkts: [],
-      isConverting: true,
-      conversionProgress: 0,
-    };
-    medias.push(media);
-    setMedias([...medias]);
-
-    // convert
+  const convert = async (media: Media) => {
     const convInput = new Input({
       formats: ALL_FORMATS,
-      source: new BlobSource(file),
+      source: new BlobSource(media.file),
     });
     const convOutput = new Output({
       format: new Mp4OutputFormat(),
@@ -132,7 +103,7 @@ export const V3 = () => {
     if (!conversion.isValid) throw new Error("conv is not valid");
     conversion.onProgress = (progress: number) => {
       media.conversionProgress = progress;
-      setMedias(medias.map((m) => (m.name === name ? { ...media } : m)));
+      setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
     };
     await conversion.execute();
 
@@ -148,10 +119,43 @@ export const V3 = () => {
       pkts.push(pkt);
     }
 
+    return pkts;
+  };
+
+  const onUpload = async (
+    evt: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
+  ) => {
+    const [file] = evt.target.files ?? [];
+    if (!file) {
+      console.warn("Should upload at least one file");
+      return;
+    }
+
+    let name = file.name;
+    let newNameSuffix = 1;
+    while (medias.some((upload) => upload.name === name)) {
+      name = `${file.name}_${newNameSuffix}`;
+      newNameSuffix++;
+    }
+
+    const poster = await getPoster(file);
+    const media: Media = {
+      name,
+      file,
+      poster,
+      pkts: [],
+      isConverting: true,
+      conversionProgress: 0,
+    };
+    medias.push(media);
+    setMedias([...medias]);
+
+    const pkts = await convert(media);
     media.conversionProgress = 1;
     media.isConverting = false;
     media.pkts = pkts;
     setMedias(medias.map((m) => (m.name === name ? { ...media } : m)));
+
     evt.target.value = "";
   };
 
