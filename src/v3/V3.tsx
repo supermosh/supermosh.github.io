@@ -30,8 +30,11 @@ const height = 1080;
 
 type Media = {
   name: string;
+  file: File;
   poster: string;
   pkts: EncodedPacket[];
+  isConverting: boolean;
+  conversionProgress: number;
 };
 
 type Clip = {
@@ -65,8 +68,6 @@ const getPoster = async (file: File) => {
 
 export const V3 = () => {
   const [medias, setMedias] = useState<Media[]>([]);
-  const [isConverting, setIsConverting] = useState(false);
-  const [conversionProgress, setConversionProgress] = useState(0);
   const [decoderConfig, setDecoderConfig] = useState<VideoDecoderConfig | null>(
     null,
   );
@@ -82,15 +83,25 @@ export const V3 = () => {
       return;
     }
 
-    setIsConverting(true);
-    setConversionProgress(0);
-
-    let newName = file.name;
+    let name = file.name;
     let newNameSuffix = 1;
-    while (medias.some((upload) => upload.name === newName)) {
-      newName = `${file.name}_${newNameSuffix}`;
+    while (medias.some((upload) => upload.name === name)) {
+      name = `${file.name}_${newNameSuffix}`;
       newNameSuffix++;
     }
+
+    const poster = await getPoster(file);
+
+    const media: Media = {
+      name,
+      file,
+      poster,
+      pkts: [],
+      isConverting: true,
+      conversionProgress: 0,
+    };
+    medias.push(media);
+    setMedias([...medias]);
 
     // convert
     const convInput = new Input({
@@ -119,7 +130,10 @@ export const V3 = () => {
       },
     });
     if (!conversion.isValid) throw new Error("conv is not valid");
-    conversion.onProgress = setConversionProgress;
+    conversion.onProgress = (progress: number) => {
+      media.conversionProgress = progress;
+      setMedias(medias.map((m) => (m.name === name ? { ...media } : m)));
+    };
     await conversion.execute();
 
     const moshInput = new Input({
@@ -134,15 +148,16 @@ export const V3 = () => {
       pkts.push(pkt);
     }
 
-    const poster = await getPoster(file);
-
+    media.conversionProgress = 1;
+    media.isConverting = false;
+    media.pkts = pkts;
+    setMedias(medias.map((m) => (m.name === name ? { ...media } : m)));
     evt.target.value = "";
-    setMedias([...medias, { name: newName, pkts, poster }]);
-    setIsConverting(false);
   };
 
   const render = async () => {
     if (!decoderConfig) return;
+    setVideoSrc("");
 
     const pktsByName = {} as Record<string, EncodedPacket[]>;
     for (const media of medias) {
@@ -202,13 +217,17 @@ export const V3 = () => {
     <>
       <h1>Files</h1>
       <ul>
-        {medias.map((upload) => (
-          <li key={upload.name}>
-            <img src={upload.poster} style={{ width: "100px" }}></img>
-            <span>
-              {upload.name} ({upload.pkts.length} frames,{" "}
-              {(upload.pkts.length * upload.pkts[0].duration).toFixed(2)}s)
-            </span>
+        {medias.map((media) => (
+          <li key={media.name}>
+            <img src={media.poster} style={{ width: "100px" }}></img>
+            <span>{media.name}</span>
+            {media.isConverting ? (
+              <>
+                <progress value={media.conversionProgress} />
+              </>
+            ) : (
+              <>{media.pkts.length}</>
+            )}
           </li>
         ))}
         <li>
@@ -216,10 +235,8 @@ export const V3 = () => {
             type="file"
             accept="video/*"
             onChange={onUpload}
-            disabled={isConverting}
+            disabled={medias.some((media) => media.isConverting)}
           />
-          {isConverting &&
-            `Converting... (${Math.floor(100 * conversionProgress)}%)`}
         </li>
       </ul>
 
