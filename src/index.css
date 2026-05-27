@@ -2,6 +2,9 @@
   color-scheme: dark;
   font-family: monospace;
   background-color: black;
+  --success: lime;
+  --warning: orange;
+  --error: red;
 }
 button {
   cursor: pointer;
@@ -99,4 +102,11 @@ header {
   width: 100%;
   max-height: 30vh;
   object-fit: contain;
+}
+
+/* V3 */
+.inline-space {
+  display: flex;
+  gap: 1ch;
+  align-items: end;
 }

@@ -237,7 +237,8 @@ export const V3 = () => {
     <>
       <h1>Files</h1>
 
-      <div>
+      <div className="inline-space">
+        <span>Dimensions:</span>
         <input
           type="number"
           value={width}
@@ -249,45 +250,118 @@ export const V3 = () => {
           value={height}
           onChange={(evt) => setHeight(evt.target.valueAsNumber)}
         />
+        <button
+          disabled={width === 640 && height === 480}
+          onClick={() => {
+            setWidth(640);
+            setHeight(480);
+          }}
+        >
+          480p
+        </button>
+        <button
+          disabled={width === 1920 && height === 1080}
+          onClick={() => {
+            setWidth(1920);
+            setHeight(1080);
+          }}
+        >
+          1080p
+        </button>
+        <button
+          disabled={width === 3840 && height === 2160}
+          onClick={() => {
+            setWidth(3840);
+            setHeight(2160);
+          }}
+        >
+          4K
+        </button>
+        <button
+          onClick={() => {
+            setWidth(height);
+            setHeight(width);
+          }}
+        >
+          flip
+        </button>
+      </div>
+
+      <div className="inline-space">
+        <span>Re-process all videos to match resolution: </span>
         <button onClick={resize}>resize</button>
       </div>
-      <ul>
+
+      <div className="inline-space">
+        <span>Add video:</span>
+        <input
+          type="file"
+          accept="video/*"
+          onChange={onUpload}
+          disabled={medias.some((media) => media.isConverting)}
+        />
+      </div>
+
+      <div>
         {medias.map((media) => (
-          <li key={media.name} style={{ display: "flex", gap: "8px" }}>
+          <div
+            key={media.name}
+            style={{
+              display: "flex",
+              gap: "8px",
+              borderWidth: "1px",
+              borderStyle: "solid",
+              borderColor:
+                media.isConverting ||
+                media.width !== width ||
+                media.height !== height
+                  ? "var(--warning)"
+                  : "white",
+              padding: "8px",
+              margin: "8px",
+            }}
+          >
             <img
               src={media.poster}
               style={{
-                width: "100px",
-                aspectRatio: width / height,
+                height: "4lh",
+                aspectRatio: media.width / media.height,
                 objectFit: "cover",
               }}
-            ></img>
-            <span>{media.name}</span>
-            <span>
+            />
+            <div>
+              <div>{media.name}</div>
               {media.isConverting ? (
-                <>
+                <div style={{ display: "flex", gap: "8px" }}>
                   <progress value={media.conversionProgress} />
-                </>
+                  <span>
+                    Extracting frames... (
+                    {(media.conversionProgress * 100).toFixed(0)}%)
+                  </span>
+                </div>
               ) : (
-                <>{media.pkts.length}</>
+                <>
+                  <div>{`${media.pkts.length} frames (${(media.pkts.length * (media.pkts[0]?.duration ?? 0)).toFixed(2)}s)`}</div>
+                  <div>{`keyframes at ${media.pkts
+                    .map((pkt, i) => ({ pkt, i }))
+                    .filter(({ pkt }) => pkt.type === "key")
+                    .map(({ i }) => i)}`}</div>
+                  <div style={{ display: "flex", gap: "1ch" }}>
+                    <span>{`Dimensions ${media.width}x${media.height}`}</span>
+                    {media.width === width && media.height == height ? (
+                      <span style={{ color: "var(--success)" }}>ok</span>
+                    ) : (
+                      <span style={{ color: "var(--warning)" }}>
+                        needs resize
+                      </span>
+                    )}
+                  </div>
+                </>
               )}
-            </span>
-            <span>
-              {!(media.width === width && media.height == height) && (
-                <>invalid</>
-              )}
-            </span>
-          </li>
+            </div>
+          </div>
         ))}
-        <li>
-          <input
-            type="file"
-            accept="video/*"
-            onChange={onUpload}
-            disabled={medias.some((media) => media.isConverting)}
-          />
-        </li>
-      </ul>
+      </div>
 
       <h1>Timeline</h1>
       <ol>
