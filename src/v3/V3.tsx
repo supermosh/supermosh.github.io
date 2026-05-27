@@ -254,7 +254,14 @@ export const V3 = () => {
       <ul>
         {medias.map((media) => (
           <li key={media.name} style={{ display: "flex", gap: "8px" }}>
-            <img src={media.poster} style={{ width: "100px" }}></img>
+            <img
+              src={media.poster}
+              style={{
+                width: "100px",
+                aspectRatio: width / height,
+                objectFit: "cover",
+              }}
+            ></img>
             <span>{media.name}</span>
             <span>
               {media.isConverting ? (
