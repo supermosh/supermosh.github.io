@@ -18,10 +18,10 @@ import { retimers, x } from "../scratch/lib";
 
 /*
 TODO
+empty msgs
 frame selector
 iframe warnings
 frame autoselect
-timeline up/down
 better UI
 */
 
@@ -362,7 +362,7 @@ export const V3 = () => {
 
       <h1>Timeline</h1>
       <div>
-        {timeline.map((clip) => {
+        {timeline.map((clip, clipIndex) => {
           const media = medias.find((media) => media.name === clip.name)!;
 
           return (
@@ -497,6 +497,44 @@ export const V3 = () => {
                     </>
                   )}
                 </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <button
+                  onClick={() => {
+                    timeline.splice(
+                      clipIndex - 1,
+                      2,
+                      timeline[clipIndex],
+                      timeline[clipIndex - 1],
+                    );
+                    setTimeline([...timeline]);
+                  }}
+                  disabled={clipIndex === 0}
+                >
+                  move up
+                </button>
+                <button
+                  onClick={() => {
+                    timeline.splice(clipIndex, 1);
+                    setTimeline([...timeline]);
+                  }}
+                >
+                  delete
+                </button>
+                <button
+                  onClick={() => {
+                    timeline.splice(
+                      clipIndex,
+                      2,
+                      timeline[clipIndex + 1],
+                      timeline[clipIndex],
+                    );
+                    setTimeline([...timeline]);
+                  }}
+                  disabled={clipIndex === timeline.length - 1}
+                >
+                  move down
+                </button>
               </div>
             </div>
           );
