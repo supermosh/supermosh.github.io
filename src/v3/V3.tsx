@@ -18,10 +18,10 @@ import { retimers, x } from "../scratch/lib";
 
 /*
 TODO
-extract files
-timeline
-extract timeline
-download link
+frame selector
+iframe warnings
+frame autoselect
+timeline up/down
 better UI
 */
 
@@ -39,10 +39,11 @@ type Media = {
 type Clip = {
   id: number;
   name: string;
-  effect:
-    | { kind: "copy"; from: number; to: number }
-    | { kind: "glide"; at: number; duration: number }
-    | { kind: "stretch"; from: number; to: number; rate: number };
+  effect: "copy" | "glide" | "stretch";
+  from: number;
+  to: number;
+  rate: number;
+  duration: number;
 };
 
 const getPoster = async (file: File) => {
@@ -179,19 +180,15 @@ export const V3 = () => {
     const repkts = timeline
       .map((clip) => {
         let indices = [] as number[];
-        switch (clip.effect.kind) {
+        switch (clip.effect) {
           case "copy":
-            indices = retimers.copy(clip.effect.from, clip.effect.to);
+            indices = retimers.copy(clip.from, clip.to);
             break;
           case "glide":
-            indices = retimers.glide(clip.effect.at, clip.effect.duration);
+            indices = retimers.glide(clip.from, clip.duration);
             break;
           case "stretch":
-            indices = retimers.stretch(
-              clip.effect.from,
-              clip.effect.to,
-              clip.effect.rate,
-            );
+            indices = retimers.stretch(clip.from, clip.to, clip.rate);
             break;
         }
         return { name: clip.name, indices };
@@ -409,24 +406,9 @@ export const V3 = () => {
                 <div className="inline-space">
                   <span>Effect:</span>
                   <select
-                    value={clip.effect.kind}
+                    value={clip.effect}
                     onChange={(evt) => {
-                      switch (evt.target.value) {
-                        case "copy":
-                          clip.effect = { kind: "copy", from: 0, to: 1 };
-                          break;
-                        case "glide":
-                          clip.effect = { kind: "glide", at: 0, duration: 1 };
-                          break;
-                        case "stretch":
-                          clip.effect = {
-                            kind: "stretch",
-                            from: 0,
-                            to: 1,
-                            rate: 1,
-                          };
-                          break;
-                      }
+                      clip.effect = evt.target.value as Clip["effect"];
                       setTimeline([...timeline]);
                     }}
                   >
@@ -435,122 +417,113 @@ export const V3 = () => {
                     <option value={"stretch"}>stretch</option>
                   </select>
                 </div>
+                <div className="inline-space">
+                  {clip.effect === "copy" && (
+                    <>
+                      <span>From frame</span>
+                      <input
+                        type="number"
+                        value={clip.from}
+                        onChange={(evt) => {
+                          clip.from = evt.target.valueAsNumber;
+                          setTimeline([...timeline]);
+                        }}
+                      />
+                      <span>to frame</span>
+                      <input
+                        type="number"
+                        value={clip.to}
+                        onChange={(evt) => {
+                          clip.to = evt.target.valueAsNumber;
+                          setTimeline([...timeline]);
+                        }}
+                      />
+                    </>
+                  )}
+                  {clip.effect === "glide" && (
+                    <>
+                      <span>Frame</span>
+                      <input
+                        type="number"
+                        value={clip.from}
+                        onChange={(evt) => {
+                          clip.from = evt.target.valueAsNumber;
+                          setTimeline([...timeline]);
+                        }}
+                      />
+                      <span>repeats</span>
+                      <input
+                        type="number"
+                        value={clip.duration}
+                        onChange={(evt) => {
+                          clip.duration = evt.target.valueAsNumber;
+                          setTimeline([...timeline]);
+                        }}
+                      />
+                      <span>times</span>
+                    </>
+                  )}
+                  {clip.effect === "stretch" && (
+                    <>
+                      <span>From frame</span>
+                      <input
+                        type="number"
+                        value={clip.from}
+                        onChange={(evt) => {
+                          clip.from = evt.target.valueAsNumber;
+                          setTimeline([...timeline]);
+                        }}
+                      />
+                      <span>to frame</span>
+                      <input
+                        type="number"
+                        value={clip.to}
+                        onChange={(evt) => {
+                          clip.to = evt.target.valueAsNumber;
+                          setTimeline([...timeline]);
+                        }}
+                      />
+                      <span>sped up by</span>
+                      <input
+                        type="number"
+                        value={clip.rate}
+                        onChange={(evt) => {
+                          clip.rate = evt.target.valueAsNumber;
+                          setTimeline([...timeline]);
+                        }}
+                        step={0.1}
+                        min={1 / 1000}
+                      />
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           );
         })}
       </div>
-
-      <ol>
-        {timeline.map((clip) => (
-          <li key={clip.id}>
-            {clip.effect.kind === "copy" && (
-              <>
-                <input
-                  type="number"
-                  value={clip.effect.from}
-                  onChange={(evt) => {
-                    // @ts-expect-error
-                    clip.effect.from = evt.target.valueAsNumber;
-                    setTimeline([...timeline]);
-                  }}
-                  title="from"
-                />
-                <input
-                  type="number"
-                  value={clip.effect.to}
-                  onChange={(evt) => {
-                    // @ts-expect-error
-                    clip.effect.to = evt.target.valueAsNumber;
-                    setTimeline([...timeline]);
-                  }}
-                  title="to"
-                />
-              </>
-            )}
-            {clip.effect.kind === "glide" && (
-              <>
-                <input
-                  type="number"
-                  value={clip.effect.at}
-                  onChange={(evt) => {
-                    // @ts-expect-error
-                    clip.effect.at = evt.target.valueAsNumber;
-                    setTimeline([...timeline]);
-                  }}
-                  title="at"
-                />
-                <input
-                  type="number"
-                  value={clip.effect.duration}
-                  onChange={(evt) => {
-                    // @ts-expect-error
-                    clip.effect.duration = evt.target.valueAsNumber;
-                    setTimeline([...timeline]);
-                  }}
-                  title="duration"
-                />
-              </>
-            )}
-            {clip.effect.kind === "stretch" && (
-              <>
-                <input
-                  type="number"
-                  value={clip.effect.from}
-                  onChange={(evt) => {
-                    // @ts-expect-error
-                    clip.effect.from = evt.target.valueAsNumber;
-                    setTimeline([...timeline]);
-                  }}
-                  title="from"
-                />
-                <input
-                  type="number"
-                  value={clip.effect.to}
-                  onChange={(evt) => {
-                    // @ts-expect-error
-                    clip.effect.to = evt.target.valueAsNumber;
-                    setTimeline([...timeline]);
-                  }}
-                  title="to"
-                />
-                <input
-                  type="number"
-                  value={clip.effect.rate}
-                  onChange={(evt) => {
-                    // @ts-expect-error
-                    clip.effect.rate = evt.target.valueAsNumber;
-                    setTimeline([...timeline]);
-                  }}
-                  title="rate"
-                />
-              </>
-            )}
-          </li>
-        ))}
-        <li>
-          {medias[0] && (
-            <button
-              onClick={() => {
-                setTimeline([
-                  ...timeline,
-                  {
-                    id: Math.random(),
-                    name: medias[0].name,
-                    effect: {
-                      kind: "copy",
-                      from: 0,
-                      to: medias[0].pkts.length,
-                    },
-                  },
-                ]);
-              }}
-            >
-              add
-            </button>
-          )}
-        </li>
-      </ol>
+      <div>
+        {medias[0] && (
+          <button
+            onClick={() => {
+              setTimeline([
+                ...timeline,
+                {
+                  id: Math.random(),
+                  name: medias[0].name,
+                  effect: "copy",
+                  from: 0,
+                  to: medias[0].pkts.length,
+                  rate: 1,
+                  duration: 100,
+                },
+              ]);
+            }}
+          >
+            add
+          </button>
+        )}
+      </div>
 
       <h1>Render</h1>
 
