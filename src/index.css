@@ -108,5 +108,5 @@ header {
 .inline-space {
   display: flex;
   gap: 1ch;
-  align-items: end;
+  align-items: center;
 }

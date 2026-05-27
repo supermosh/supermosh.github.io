@@ -364,44 +364,86 @@ export const V3 = () => {
       </div>
 
       <h1>Timeline</h1>
+      <div>
+        {timeline.map((clip) => {
+          const media = medias.find((media) => media.name === clip.name)!;
+
+          return (
+            <div
+              key={clip.id}
+              style={{
+                display: "flex",
+                gap: "8px",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderColor: "white",
+                padding: "8px",
+                margin: "8px",
+              }}
+            >
+              <img
+                src={media.poster}
+                style={{
+                  aspectRatio: width / height,
+                  height: "4lh",
+                  objectFit: "cover",
+                }}
+              />
+              <div>
+                <div className="inline-space">
+                  <span>File:</span>
+                  <select
+                    value={clip.name}
+                    onChange={(evt) => {
+                      clip.name = evt.target.value;
+                      setTimeline([...timeline]);
+                    }}
+                  >
+                    {medias.map((media) => (
+                      <option key={media.name} value={media.name}>
+                        {media.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="inline-space">
+                  <span>Effect:</span>
+                  <select
+                    value={clip.effect.kind}
+                    onChange={(evt) => {
+                      switch (evt.target.value) {
+                        case "copy":
+                          clip.effect = { kind: "copy", from: 0, to: 1 };
+                          break;
+                        case "glide":
+                          clip.effect = { kind: "glide", at: 0, duration: 1 };
+                          break;
+                        case "stretch":
+                          clip.effect = {
+                            kind: "stretch",
+                            from: 0,
+                            to: 1,
+                            rate: 1,
+                          };
+                          break;
+                      }
+                      setTimeline([...timeline]);
+                    }}
+                  >
+                    <option value={"copy"}>copy</option>
+                    <option value={"glide"}>glide</option>
+                    <option value={"stretch"}>stretch</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       <ol>
         {timeline.map((clip) => (
           <li key={clip.id}>
-            <select
-              value={clip.name}
-              onChange={(evt) => {
-                clip.name = evt.target.value;
-                setTimeline([...timeline]);
-              }}
-            >
-              {medias.map((media) => (
-                <option key={media.name} value={media.name}>
-                  {media.name}
-                </option>
-              ))}
-            </select>
-            <select
-              value={clip.effect.kind}
-              onChange={(evt) => {
-                switch (evt.target.value) {
-                  case "copy":
-                    clip.effect = { kind: "copy", from: 0, to: 1 };
-                    break;
-                  case "glide":
-                    clip.effect = { kind: "glide", at: 0, duration: 1 };
-                    break;
-                  case "stretch":
-                    clip.effect = { kind: "stretch", from: 0, to: 1, rate: 1 };
-                    break;
-                }
-                setTimeline([...timeline]);
-              }}
-            >
-              <option value={"copy"}>copy</option>
-              <option value={"glide"}>glide</option>
-              <option value={"stretch"}>stretch</option>
-            </select>
-
             {clip.effect.kind === "copy" && (
               <>
                 <input
