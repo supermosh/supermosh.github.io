@@ -23,6 +23,9 @@ frame selector
 iframe warnings
 frame autoselect
 better UI
+cancellable conversions
+removable files
+render at specific rate
 */
 
 type Media = {
@@ -76,6 +79,8 @@ export const V3 = () => {
   );
   const [timeline, setTimeline] = useState<Clip[]>([]);
   const [videoSrc, setVideoSrc] = useState("");
+  const [isRendering, setIsRendering] = useState(false);
+  const [renderProgress, setRenderProgress] = useState(0);
 
   const convert = async (media: Media) => {
     media.isConverting = true;
@@ -171,6 +176,8 @@ export const V3 = () => {
 
   const render = async () => {
     if (!decoderConfig) return;
+    setIsRendering(true);
+    setRenderProgress(0);
     setVideoSrc("");
 
     const pktsByName = {} as Record<string, EncodedPacket[]>;
@@ -199,8 +206,8 @@ export const V3 = () => {
         return new EncodedPacket(
           pkt.data,
           pkt.type,
-          i * pkt.duration,
-          pkt.duration,
+          i * pkt.duration, // TODO add rate here
+          pkt.duration, // TODO add rate here
         );
       });
 
@@ -217,9 +224,16 @@ export const V3 = () => {
     while (i < repkts.length) {
       const pkt = repkts[i];
       await source.add(pkt, { decoderConfig });
+      setRenderProgress(i / repkts.length);
+      if (i % 100 == 0) {
+        await new Promise((r) => requestAnimationFrame(r));
+      }
+      console.log("yo");
       i++;
     }
     await output.finalize();
+
+    setIsRendering(false);
     setVideoSrc(URL.createObjectURL(new Blob([output.target.buffer!])));
   };
 
@@ -564,8 +578,25 @@ export const V3 = () => {
       </div>
 
       <h1>Render</h1>
-
-      {!!timeline.length && <button onClick={render}>Render</button>}
+      {timeline.length ? (
+        <div className="inline-space">
+          <button onClick={render} disabled={isRendering}>
+            Render
+          </button>
+          {isRendering && (
+            <>
+              <progress value={renderProgress} />
+              <span>Rendering... ({(renderProgress * 100).toFixed(0)}%)</span>
+            </>
+          )}
+        </div>
+      ) : (
+        <>
+          <span style={{ color: "var(--warning)" }}>
+            Please add clips in the timeline to render
+          </span>
+        </>
+      )}
 
       {videoSrc && (
         <video
