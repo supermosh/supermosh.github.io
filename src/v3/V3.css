@@ -1,0 +1,47 @@
+.inline-space {
+  display: flex;
+  gap: 1ch;
+  align-items: center;
+}
+
+.section-heading {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 8px;
+  margin: 0;
+}
+
+.section-body {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card {
+  display: flex;
+  gap: 8px;
+  border-width: 1px;
+  border-style: solid;
+  padding: 8px;
+}
+
+.poster {
+  height: 4lh;
+  object-fit: cover;
+}
+
+.text-info {
+  color: var(--info);
+}
+
+.text-warning {
+  color: var(--warning);
+}
+
+.text-error {
+  color: var(--error);
+}
+
+.text-success {
+  color: var(--success);
+}

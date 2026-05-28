@@ -1,3 +1,5 @@
+import "./V3.css";
+
 import {
   ALL_FORMATS,
   BlobSource,
@@ -325,23 +327,8 @@ export const V3 = () => {
 
   return (
     <>
-      <h1
-        style={{
-          backgroundColor: "rgba(255,255,255,0.2)",
-          padding: "8px",
-          margin: 0,
-        }}
-      >
-        Files
-      </h1>
-      <div
-        style={{
-          padding: "8px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px",
-        }}
-      >
+      <h1 className="section-heading">Files</h1>
+      <div className="section-body">
         <div className="inline-space">
           <span>Dimensions:</span>
           <input
@@ -412,7 +399,7 @@ export const V3 = () => {
         </div>
 
         {medias.length == 0 && (
-          <div style={{ color: "var(--info)" }}>No videos uploaded yet</div>
+          <div className="text-info">No videos uploaded yet</div>
         )}
       </div>
 
@@ -420,11 +407,8 @@ export const V3 = () => {
         {medias.map((media) => (
           <div
             key={media.name}
+            className="card"
             style={{
-              display: "flex",
-              gap: "8px",
-              borderWidth: "1px",
-              borderStyle: "solid",
               borderColor: media.isConverting
                 ? "var(--info)"
                 : media.width !== width ||
@@ -432,16 +416,14 @@ export const V3 = () => {
                     media.pkts.length === 0
                   ? "var(--warning)"
                   : "white",
-              padding: "8px",
               margin: "8px",
             }}
           >
             <img
               src={media.poster}
+              className="poster"
               style={{
-                height: "4lh",
                 aspectRatio: media.width / media.height,
-                objectFit: "cover",
               }}
             />
             <div>
@@ -467,9 +449,7 @@ export const V3 = () => {
                 </>
               ) : media.pkts.length === 0 ? (
                 <>
-                  <div style={{ color: "var(--warning)" }}>
-                    Packets not extracted yet
-                  </div>
+                  <div className="text-warning">Packets not extracted yet</div>
                   <div>
                     <button
                       onClick={async () => {
@@ -483,15 +463,13 @@ export const V3 = () => {
               ) : (
                 <>
                   <div>{`${media.pkts.length} frames (${(media.pkts.length * (media.pkts[0]?.duration ?? 0)).toFixed(2)}s)`}</div>
-                  <div>{`Keyframes at ${keyframesAt(media.pkts)}`}</div>
-                  <div style={{ display: "flex", gap: "1ch" }}>
+                  <div>{`Keyframes at ${keyframesAt(media.pkts).join(", ")}`}</div>
+                  <div className="inline-space">
                     <span>{`Dimensions ${media.width}x${media.height}`}</span>
                     {media.width === width && media.height == height ? (
-                      <span style={{ color: "var(--success)" }}>ok</span>
+                      <span className="text-success">ok</span>
                     ) : (
-                      <span style={{ color: "var(--warning)" }}>
-                        needs resize
-                      </span>
+                      <span className="text-warning">needs resize</span>
                     )}
                   </div>
                 </>
@@ -501,39 +479,23 @@ export const V3 = () => {
         ))}
       </div>
 
-      <h1
-        style={{
-          backgroundColor: "rgba(255,255,255,0.2)",
-          padding: "8px",
-          margin: 0,
-        }}
-      >
-        Timeline
-      </h1>
+      <h1 className="section-heading">Timeline</h1>
 
-      <div
-        style={{
-          padding: "8px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px",
-        }}
-      >
+      <div className="section-body">
         {medias.length === 0 && (
-          <div style={{ color: "var(--info)" }}>
+          <div className="text-info">
             Please add videos to create a timeline
           </div>
         )}
         {timeline.length === 0 && (
-          <div style={{ color: "var(--info)" }}>
-            No clips added yet to the timeline
-          </div>
+          <div className="text-info">No clips added yet to the timeline</div>
         )}
         {timeline.length > 0 && (
           <div
             style={{
               display: "flex",
               flexDirection: "column",
+              gap: "8px",
             }}
           >
             {timeline.map((clip, clipIndex) => {
@@ -542,21 +504,16 @@ export const V3 = () => {
               return (
                 <div
                   key={clip.id}
+                  className="card"
                   style={{
-                    display: "flex",
-                    gap: "8px",
-                    borderWidth: "1px",
-                    borderStyle: "solid",
                     borderColor: clip.warning ? "var(--warning)" : "white",
-                    padding: "8px",
                   }}
                 >
                   <img
                     src={media.poster}
+                    className="poster"
                     style={{
                       aspectRatio: width / height,
-                      height: "4lh",
-                      objectFit: "cover",
                     }}
                   />
                   <div>
@@ -670,9 +627,7 @@ export const V3 = () => {
                         </>
                       )}
                     </div>
-                    <div style={{ color: "var(--warning)" }}>
-                      {clip.warning}
-                    </div>
+                    <div className="text-warning">{clip.warning}</div>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     <button
@@ -742,24 +697,9 @@ export const V3 = () => {
         </div>
       </div>
 
-      <h1
-        style={{
-          backgroundColor: "rgba(255,255,255,0.2)",
-          padding: "8px",
-          margin: 0,
-        }}
-      >
-        Render
-      </h1>
+      <h1 className="section-heading">Render</h1>
 
-      <div
-        style={{
-          padding: "8px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px",
-        }}
-      >
+      <div className="section-body">
         {timeline.length ? (
           <div className="inline-space">
             <button onClick={render} disabled={isRendering}>
@@ -774,7 +714,7 @@ export const V3 = () => {
           </div>
         ) : (
           <>
-            <span style={{ color: "var(--info)" }}>
+            <span className="text-info">
               Please add clips in the timeline to render
             </span>
           </>
@@ -801,9 +741,7 @@ export const V3 = () => {
           </>
         )}
 
-        {renderError && (
-          <div style={{ color: "var(--error)" }}>{renderError}</div>
-        )}
+        {renderError && <div className="text-error">{renderError}</div>}
       </div>
     </>
   );

@@ -104,10 +104,3 @@ header {
   max-height: 30vh;
   object-fit: contain;
 }
-
-/* V3 */
-.inline-space {
-  display: flex;
-  gap: 1ch;
-  align-items: center;
-}
