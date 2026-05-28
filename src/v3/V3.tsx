@@ -19,7 +19,6 @@ import { x } from "../scratch/lib";
 /*
 TODO
 frame selector
-iframe warnings
 better UI
 removable files
 render at specific rate
@@ -45,6 +44,7 @@ type Clip = {
   to: number;
   rate: number;
   duration: number;
+  warning: string;
 };
 
 const retimers = {
@@ -97,6 +97,13 @@ export const V3 = () => {
   const [isRendering, setIsRendering] = useState(false);
   const [renderProgress, setRenderProgress] = useState(0);
   const pendingConversionCancels = useRef<Set<string>>(new Set());
+  const [renderError, setRenderError] = useState("");
+
+  const keyframesAt = (pkts: EncodedPacket[]) =>
+    pkts
+      .map((pkt, i) => ({ pkt, i }))
+      .filter(({ pkt }) => pkt.type === "key")
+      .map(({ i }) => i);
 
   const convert = async (media: Media) => {
     media.isConverting = true;
@@ -217,62 +224,80 @@ export const V3 = () => {
     setIsRendering(true);
     setRenderProgress(0);
     setVideoSrc("");
+    setRenderError("");
 
-    const pktsByName = {} as Record<string, EncodedPacket[]>;
-    for (const media of medias) {
-      pktsByName[media.name] = media.pkts;
-    }
-    const repkts = timeline
-      .map((clip) => {
-        let indices = [] as number[];
-        switch (clip.effect) {
-          case "copy":
-            indices = retimers.copy(clip.from, clip.to);
-            break;
-          case "glide":
-            indices = retimers.glide(clip.from, clip.duration);
-            break;
-          case "stretch":
-            indices = retimers.stretch(clip.from, clip.to, clip.rate);
-            break;
-        }
-        return { name: clip.name, indices };
-      })
-      .flatMap(({ name, indices }) => indices.map((i) => pktsByName[name][i]))
-      .filter((pkt, i) => i == 0 || pkt.type == "delta")
-      .map((pkt, i) => {
-        return new EncodedPacket(
-          pkt.data,
-          pkt.type,
-          i * pkt.duration, // TODO add rate here
-          pkt.duration, // TODO add rate here
-        );
-      });
-
-    console.log("displaying...");
-    console.log(decoderConfig.codec); // wrong codec?...
-    const source = new EncodedVideoPacketSource("avc");
-    const output = new Output({
-      target: new BufferTarget(),
-      format: new Mp4OutputFormat(),
-    });
-    output.addVideoTrack(source);
-    output.start();
-    let i = 0;
-    while (i < repkts.length) {
-      const pkt = repkts[i];
-      await source.add(pkt, { decoderConfig });
-      setRenderProgress(i / repkts.length);
-      if (i % 100 == 0) {
-        await new Promise((r) => requestAnimationFrame(r));
+    try {
+      const pktsByName = {} as Record<string, EncodedPacket[]>;
+      for (const media of medias) {
+        pktsByName[media.name] = media.pkts;
       }
-      console.log("yo");
-      i++;
-    }
-    await output.finalize();
+      const repkts = timeline
+        .map((clip, i) => {
+          let indices = [] as number[];
+          switch (clip.effect) {
+            case "copy":
+              indices = retimers.copy(clip.from, clip.to);
+              break;
+            case "glide":
+              indices = retimers.glide(clip.from, clip.duration);
+              break;
+            case "stretch":
+              indices = retimers.stretch(clip.from, clip.to, clip.rate);
+              break;
+          }
 
-    setIsRendering(false);
-    setVideoSrc(URL.createObjectURL(new Blob([output.target.buffer!])));
+          // First clip should start on a keyframe. If not the case, add the closest one.
+          if (i == 0) {
+            const kfis = keyframesAt(pktsByName[clip.name]);
+            if (!kfis.includes(indices[0])) {
+              const kfi = kfis.filter((i) => i < indices[0]).slice(-1)[0] ?? 0;
+              indices.unshift(kfi);
+            }
+          }
+          return { name: clip.name, indices };
+        })
+        .flatMap(({ name, indices }) => indices.map((i) => pktsByName[name][i]))
+        .filter((pkt, i) => i == 0 || pkt.type == "delta")
+        .map((pkt, i) => {
+          return new EncodedPacket(
+            pkt.data,
+            pkt.type,
+            i * pkt.duration, // TODO add rate here
+            pkt.duration, // TODO add rate here
+          );
+        });
+
+      console.log("displaying...");
+      console.log(decoderConfig.codec); // wrong codec?...
+      const source = new EncodedVideoPacketSource("avc");
+      const output = new Output({
+        target: new BufferTarget(),
+        format: new Mp4OutputFormat(),
+      });
+      output.addVideoTrack(source);
+      output.start();
+      let i = 0;
+      while (i < repkts.length) {
+        const pkt = repkts[i];
+        await source.add(pkt, { decoderConfig });
+        setRenderProgress(i / repkts.length);
+        if (i % 100 == 0) {
+          await new Promise((r) => requestAnimationFrame(r));
+        }
+        console.log("yo");
+        i++;
+      }
+      await output.finalize();
+
+      setIsRendering(false);
+      setVideoSrc(URL.createObjectURL(new Blob([output.target.buffer!])));
+    } catch (e) {
+      console.error(e);
+      setRenderError(`${e}`);
+      setIsRendering(false);
+      setRenderProgress(0);
+      setVideoSrc("");
+    }
   };
 
   const resize = async () => {
@@ -280,6 +305,22 @@ export const V3 = () => {
       if (media.width === width && media.height === height) continue;
       await convert(media);
     }
+  };
+
+  const updateTimeline = () => {
+    timeline.forEach((clip, i) => {
+      const media = x(medias.find((m) => m.name === clip.name));
+      clip.from = Math.max(clip.from, 0);
+      if (clip.effect === "copy" || clip.effect === "stretch")
+        clip.to = Math.min(clip.to, media.pkts.length);
+
+      clip.warning = "";
+      if (i == 0 && media.pkts[clip.from]?.type !== "key") {
+        clip.warning =
+          "Clip does not start on a keyframe. The closest one will be added for you.";
+      }
+    });
+    setTimeline(timeline.map((clip) => ({ ...clip })));
   };
 
   return (
@@ -442,10 +483,7 @@ export const V3 = () => {
               ) : (
                 <>
                   <div>{`${media.pkts.length} frames (${(media.pkts.length * (media.pkts[0]?.duration ?? 0)).toFixed(2)}s)`}</div>
-                  <div>{`keyframes at ${media.pkts
-                    .map((pkt, i) => ({ pkt, i }))
-                    .filter(({ pkt }) => pkt.type === "key")
-                    .map(({ i }) => i)}`}</div>
+                  <div>{`Keyframes at ${keyframesAt(media.pkts)}`}</div>
                   <div style={{ display: "flex", gap: "1ch" }}>
                     <span>{`Dimensions ${media.width}x${media.height}`}</span>
                     {media.width === width && media.height == height ? (
@@ -509,7 +547,7 @@ export const V3 = () => {
                     gap: "8px",
                     borderWidth: "1px",
                     borderStyle: "solid",
-                    borderColor: "white",
+                    borderColor: clip.warning ? "var(--warning)" : "white",
                     padding: "8px",
                   }}
                 >
@@ -528,7 +566,7 @@ export const V3 = () => {
                         value={clip.name}
                         onChange={(evt) => {
                           clip.name = evt.target.value;
-                          setTimeline([...timeline]);
+                          updateTimeline();
                         }}
                       >
                         {medias.map((media) => (
@@ -544,7 +582,7 @@ export const V3 = () => {
                         value={clip.effect}
                         onChange={(evt) => {
                           clip.effect = evt.target.value as Clip["effect"];
-                          setTimeline([...timeline]);
+                          updateTimeline();
                         }}
                       >
                         <option value={"copy"}>copy</option>
@@ -561,7 +599,7 @@ export const V3 = () => {
                             value={clip.from}
                             onChange={(evt) => {
                               clip.from = evt.target.valueAsNumber;
-                              setTimeline([...timeline]);
+                              updateTimeline();
                             }}
                           />
                           <span>to frame</span>
@@ -570,7 +608,7 @@ export const V3 = () => {
                             value={clip.to}
                             onChange={(evt) => {
                               clip.to = evt.target.valueAsNumber;
-                              setTimeline([...timeline]);
+                              updateTimeline();
                             }}
                           />
                         </>
@@ -583,7 +621,7 @@ export const V3 = () => {
                             value={clip.from}
                             onChange={(evt) => {
                               clip.from = evt.target.valueAsNumber;
-                              setTimeline([...timeline]);
+                              updateTimeline();
                             }}
                           />
                           <span>repeats</span>
@@ -592,7 +630,7 @@ export const V3 = () => {
                             value={clip.duration}
                             onChange={(evt) => {
                               clip.duration = evt.target.valueAsNumber;
-                              setTimeline([...timeline]);
+                              updateTimeline();
                             }}
                           />
                           <span>times</span>
@@ -606,7 +644,7 @@ export const V3 = () => {
                             value={clip.from}
                             onChange={(evt) => {
                               clip.from = evt.target.valueAsNumber;
-                              setTimeline([...timeline]);
+                              updateTimeline();
                             }}
                           />
                           <span>to frame</span>
@@ -615,7 +653,7 @@ export const V3 = () => {
                             value={clip.to}
                             onChange={(evt) => {
                               clip.to = evt.target.valueAsNumber;
-                              setTimeline([...timeline]);
+                              updateTimeline();
                             }}
                           />
                           <span>sped up by</span>
@@ -624,13 +662,16 @@ export const V3 = () => {
                             value={clip.rate}
                             onChange={(evt) => {
                               clip.rate = evt.target.valueAsNumber;
-                              setTimeline([...timeline]);
+                              updateTimeline();
                             }}
                             step={0.1}
                             min={1 / 1000}
                           />
                         </>
                       )}
+                    </div>
+                    <div style={{ color: "var(--warning)" }}>
+                      {clip.warning}
                     </div>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column" }}>
@@ -642,7 +683,7 @@ export const V3 = () => {
                           timeline[clipIndex],
                           timeline[clipIndex - 1],
                         );
-                        setTimeline([...timeline]);
+                        updateTimeline();
                       }}
                       disabled={clipIndex === 0}
                     >
@@ -651,7 +692,7 @@ export const V3 = () => {
                     <button
                       onClick={() => {
                         timeline.splice(clipIndex, 1);
-                        setTimeline([...timeline]);
+                        updateTimeline();
                       }}
                     >
                       delete
@@ -664,7 +705,7 @@ export const V3 = () => {
                           timeline[clipIndex + 1],
                           timeline[clipIndex],
                         );
-                        setTimeline([...timeline]);
+                        updateTimeline();
                       }}
                       disabled={clipIndex === timeline.length - 1}
                     >
@@ -690,6 +731,7 @@ export const V3 = () => {
                     to: medias[0].pkts.length,
                     rate: 0.5,
                     duration: 100,
+                    warning: "",
                   },
                 ]);
               }}
@@ -757,6 +799,10 @@ export const V3 = () => {
               style={{ maxWidth: "100%" }}
             />
           </>
+        )}
+
+        {renderError && (
+          <div style={{ color: "var(--error)" }}>{renderError}</div>
         )}
       </div>
     </>
