@@ -6,6 +6,7 @@ import {
   BufferSource,
   BufferTarget,
   Conversion,
+  ConversionCanceledError,
   EncodedPacket,
   EncodedPacketSink,
   EncodedVideoPacketSource,
@@ -20,11 +21,9 @@ import { x } from "../scratch/lib";
 
 /*
 TODO
-frame selector
-better UI
-removable files
-render at specific rate
-responsive design
+Preview section
+Render at specific rate
+Test and fix UI on all platforms
 */
 
 type Media = {
@@ -116,6 +115,7 @@ export const V3 = () => {
       media.isConverting = false;
       media.conversionProgress = 0;
       setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
+      pendingConversionCancels.current.delete(media.name);
     };
 
     const convInput = new Input({
@@ -149,16 +149,18 @@ export const V3 = () => {
       setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
 
       if (pendingConversionCancels.current.has(media.name)) {
-        pendingConversionCancels.current.delete(media.name);
         await conversion.cancel();
-        cancel();
       }
     };
-    await conversion.execute();
-    if (pendingConversionCancels.current.has(media.name)) {
-      pendingConversionCancels.current.delete(media.name);
-      cancel();
-      return;
+    try {
+      await conversion.execute();
+    } catch (e) {
+      if (e instanceof ConversionCanceledError) {
+        cancel();
+        return;
+      } else {
+        throw e;
+      }
     }
 
     const moshInput = new Input({
@@ -172,7 +174,6 @@ export const V3 = () => {
     for await (const pkt of sink.packets()) {
       pkts.push(pkt);
       if (pendingConversionCancels.current.has(media.name)) {
-        pendingConversionCancels.current.delete(media.name);
         cancel();
         return;
       }
@@ -476,7 +477,17 @@ export const V3 = () => {
               )}
             </div>
             <div>
-              <button>Delete</button>
+              <button
+                onClick={() => {
+                  setTimeline(
+                    timeline.filter((clip) => clip.name !== media.name),
+                  );
+                  setMedias(medias.filter((m) => m.name !== media.name));
+                }}
+                disabled={media.isConverting}
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))}
