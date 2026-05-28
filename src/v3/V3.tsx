@@ -12,7 +12,7 @@ import {
   Output,
   VideoSampleSink,
 } from "mediabunny";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { x } from "../scratch/lib";
 
@@ -20,9 +20,7 @@ import { x } from "../scratch/lib";
 TODO
 frame selector
 iframe warnings
-frame autoselect
 better UI
-cancellable conversions
 removable files
 render at specific rate
 responsive design
@@ -98,11 +96,18 @@ export const V3 = () => {
   const [videoSrc, setVideoSrc] = useState("");
   const [isRendering, setIsRendering] = useState(false);
   const [renderProgress, setRenderProgress] = useState(0);
+  const pendingConversionCancels = useRef<Set<string>>(new Set());
 
   const convert = async (media: Media) => {
     media.isConverting = true;
     media.conversionProgress = 0;
     setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
+
+    const cancel = () => {
+      media.isConverting = false;
+      media.conversionProgress = 0;
+      setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
+    };
 
     const convInput = new Input({
       formats: ALL_FORMATS,
@@ -130,11 +135,22 @@ export const V3 = () => {
       },
     });
     if (!conversion.isValid) throw new Error("conv is not valid");
-    conversion.onProgress = (progress: number) => {
+    conversion.onProgress = async (progress: number) => {
       media.conversionProgress = progress;
       setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
+
+      if (pendingConversionCancels.current.has(media.name)) {
+        pendingConversionCancels.current.delete(media.name);
+        await conversion.cancel();
+        cancel();
+      }
     };
     await conversion.execute();
+    if (pendingConversionCancels.current.has(media.name)) {
+      pendingConversionCancels.current.delete(media.name);
+      cancel();
+      return;
+    }
 
     const moshInput = new Input({
       formats: ALL_FORMATS,
@@ -146,6 +162,11 @@ export const V3 = () => {
     const pkts: EncodedPacket[] = [];
     for await (const pkt of sink.packets()) {
       pkts.push(pkt);
+      if (pendingConversionCancels.current.has(media.name)) {
+        pendingConversionCancels.current.delete(media.name);
+        cancel();
+        return;
+      }
     }
 
     media.conversionProgress = 1;
@@ -365,7 +386,9 @@ export const V3 = () => {
               borderStyle: "solid",
               borderColor: media.isConverting
                 ? "var(--info)"
-                : media.width !== width || media.height !== height
+                : media.width !== width ||
+                    media.height !== height ||
+                    media.pkts.length === 0
                   ? "var(--warning)"
                   : "white",
               padding: "8px",
@@ -383,13 +406,39 @@ export const V3 = () => {
             <div>
               <div>{media.name}</div>
               {media.isConverting ? (
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <progress value={media.conversionProgress} />
-                  <span>
-                    Extracting frames... (
-                    {(media.conversionProgress * 100).toFixed(0)}%)
-                  </span>
-                </div>
+                <>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <progress value={media.conversionProgress} />
+                    <span>
+                      Extracting frames... (
+                      {(media.conversionProgress * 100).toFixed(0)}%)
+                    </span>
+                  </div>
+                  <div>
+                    <button
+                      onClick={() => {
+                        pendingConversionCancels.current.add(media.name);
+                      }}
+                    >
+                      Cancel extraction
+                    </button>
+                  </div>
+                </>
+              ) : media.pkts.length === 0 ? (
+                <>
+                  <div style={{ color: "var(--warning)" }}>
+                    Packets not extracted yet
+                  </div>
+                  <div>
+                    <button
+                      onClick={async () => {
+                        await convert(media);
+                      }}
+                    >
+                      Extract packets
+                    </button>
+                  </div>
+                </>
               ) : (
                 <>
                   <div>{`${media.pkts.length} frames (${(media.pkts.length * (media.pkts[0]?.duration ?? 0)).toFixed(2)}s)`}</div>
