@@ -475,6 +475,9 @@ export const V3 = () => {
                 </>
               )}
             </div>
+            <div>
+              <button>Delete</button>
+            </div>
           </div>
         ))}
       </div>

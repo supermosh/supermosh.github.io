@@ -25,6 +25,10 @@
   padding: 8px;
 }
 
+.card > :nth-child(2) {
+  flex: 1;
+}
+
 .poster {
   height: 4lh;
   object-fit: cover;
