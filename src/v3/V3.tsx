@@ -380,14 +380,19 @@ export const V3 = () => {
           </button>
         </div>
 
-        {medias.some(
-          (media) => media.width !== width || media.height !== height,
-        ) && (
-          <div className="inline-space">
-            <span>Re-process all videos to match resolution: </span>
-            <button onClick={resize}>resize</button>
-          </div>
-        )}
+        <div className="inline-space">
+          <span>Re-process all videos to match resolution: </span>
+          <button
+            onClick={resize}
+            disabled={
+              !medias.some(
+                (media) => media.width !== width || media.height !== height,
+              )
+            }
+          >
+            Resize
+          </button>
+        </div>
 
         <div className="inline-space">
           <span>Add video:</span>
@@ -656,7 +661,7 @@ export const V3 = () => {
                       }}
                       disabled={clipIndex === 0}
                     >
-                      move up
+                      Move up
                     </button>
                     <button
                       onClick={() => {
@@ -664,7 +669,7 @@ export const V3 = () => {
                         updateTimeline();
                       }}
                     >
-                      delete
+                      Delete
                     </button>
                     <button
                       onClick={() => {
@@ -678,7 +683,7 @@ export const V3 = () => {
                       }}
                       disabled={clipIndex === timeline.length - 1}
                     >
-                      move down
+                      Move down
                     </button>
                   </div>
                 </div>
@@ -714,25 +719,32 @@ export const V3 = () => {
       <h1 className="section-heading">Render</h1>
 
       <div className="section-body">
-        {timeline.length ? (
-          <div className="inline-space">
-            <button onClick={render} disabled={isRendering}>
-              Render
-            </button>
-            {isRendering && (
-              <>
-                <progress value={renderProgress} />
-                <span>Rendering... ({(renderProgress * 100).toFixed(0)}%)</span>
-              </>
-            )}
-          </div>
-        ) : (
-          <>
-            <span className="text-info">
-              Please add clips in the timeline to render
+        <div className="inline-space">
+          <button
+            onClick={render}
+            disabled={
+              isRendering ||
+              timeline.length === 0 ||
+              medias.some((m) => m.width !== width || m.height !== height)
+            }
+          >
+            Render
+          </button>
+          {timeline.length === 0 && (
+            <span className="text-info">No clips in timeline</span>
+          )}
+          {medias.some((m) => m.width !== width || m.height !== height) && (
+            <span className="text-warning">
+              Not all media are of the desired render resolution
             </span>
-          </>
-        )}
+          )}
+          {isRendering && (
+            <>
+              <progress value={renderProgress} />
+              <span>Rendering... ({(renderProgress * 100).toFixed(0)}%)</span>
+            </>
+          )}
+        </div>
 
         {videoSrc && (
           <>
