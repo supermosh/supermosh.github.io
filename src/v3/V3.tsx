@@ -18,7 +18,6 @@ import { retimers, x } from "../scratch/lib";
 
 /*
 TODO
-empty msgs
 frame selector
 iframe warnings
 frame autoselect
@@ -26,6 +25,7 @@ better UI
 cancellable conversions
 removable files
 render at specific rate
+responsive design
 */
 
 type Media = {
@@ -246,71 +246,80 @@ export const V3 = () => {
 
   return (
     <>
-      <h1>Files</h1>
+      <h1
+        style={{
+          backgroundColor: "rgba(255,255,255,0.2)",
+          padding: "8px",
+          margin: 0,
+        }}
+      >
+        Files
+      </h1>
+      <div style={{ padding: "8px" }}>
+        <div className="inline-space">
+          <span>Dimensions:</span>
+          <input
+            type="number"
+            value={width}
+            onChange={(evt) => setWidth(evt.target.valueAsNumber)}
+          />
+          x
+          <input
+            type="number"
+            value={height}
+            onChange={(evt) => setHeight(evt.target.valueAsNumber)}
+          />
+          <button
+            disabled={width === 640 && height === 480}
+            onClick={() => {
+              setWidth(640);
+              setHeight(480);
+            }}
+          >
+            480p
+          </button>
+          <button
+            disabled={width === 1920 && height === 1080}
+            onClick={() => {
+              setWidth(1920);
+              setHeight(1080);
+            }}
+          >
+            1080p
+          </button>
+          <button
+            disabled={width === 3840 && height === 2160}
+            onClick={() => {
+              setWidth(3840);
+              setHeight(2160);
+            }}
+          >
+            4K
+          </button>
+          <button
+            onClick={() => {
+              setWidth(height);
+              setHeight(width);
+            }}
+          >
+            flip
+          </button>
+        </div>
 
-      <div className="inline-space">
-        <span>Dimensions:</span>
-        <input
-          type="number"
-          value={width}
-          onChange={(evt) => setWidth(evt.target.valueAsNumber)}
-        />
-        x
-        <input
-          type="number"
-          value={height}
-          onChange={(evt) => setHeight(evt.target.valueAsNumber)}
-        />
-        <button
-          disabled={width === 640 && height === 480}
-          onClick={() => {
-            setWidth(640);
-            setHeight(480);
-          }}
-        >
-          480p
-        </button>
-        <button
-          disabled={width === 1920 && height === 1080}
-          onClick={() => {
-            setWidth(1920);
-            setHeight(1080);
-          }}
-        >
-          1080p
-        </button>
-        <button
-          disabled={width === 3840 && height === 2160}
-          onClick={() => {
-            setWidth(3840);
-            setHeight(2160);
-          }}
-        >
-          4K
-        </button>
-        <button
-          onClick={() => {
-            setWidth(height);
-            setHeight(width);
-          }}
-        >
-          flip
-        </button>
-      </div>
+        <div className="inline-space">
+          <span>Re-process all videos to match resolution: </span>
+          <button onClick={resize}>resize</button>
+        </div>
 
-      <div className="inline-space">
-        <span>Re-process all videos to match resolution: </span>
-        <button onClick={resize}>resize</button>
-      </div>
-
-      <div className="inline-space">
-        <span>Add video:</span>
-        <input
-          type="file"
-          accept="video/*"
-          onChange={onUpload}
-          disabled={medias.some((media) => media.isConverting)}
-        />
+        <div className="inline-space">
+          <span>Add video:</span>
+          <input
+            type="file"
+            accept="video/*"
+            onChange={onUpload}
+            disabled={medias.some((media) => media.isConverting)}
+          />
+        </div>
       </div>
 
       <div>
@@ -322,10 +331,9 @@ export const V3 = () => {
               gap: "8px",
               borderWidth: "1px",
               borderStyle: "solid",
-              borderColor:
-                media.isConverting ||
-                media.width !== width ||
-                media.height !== height
+              borderColor: media.isConverting
+                ? "var(--info)"
+                : media.width !== width || media.height !== height
                   ? "var(--warning)"
                   : "white",
               padding: "8px",
@@ -374,240 +382,291 @@ export const V3 = () => {
         ))}
       </div>
 
-      <h1>Timeline</h1>
-      <div>
-        {timeline.map((clip, clipIndex) => {
-          const media = medias.find((media) => media.name === clip.name)!;
+      <h1
+        style={{
+          backgroundColor: "rgba(255,255,255,0.2)",
+          padding: "8px",
+          margin: 0,
+        }}
+      >
+        Timeline
+      </h1>
 
-          return (
-            <div
-              key={clip.id}
-              style={{
-                display: "flex",
-                gap: "8px",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "white",
-                padding: "8px",
-                margin: "8px",
+      <div style={{ padding: "8px" }}>
+        {medias.length === 0 && (
+          <div style={{ color: "var(--info)" }}>
+            Please add videos to create a timeline
+          </div>
+        )}
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            marginBottom: "8px",
+          }}
+        >
+          {timeline.map((clip, clipIndex) => {
+            const media = medias.find((media) => media.name === clip.name)!;
+
+            return (
+              <div
+                key={clip.id}
+                style={{
+                  display: "flex",
+                  gap: "8px",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderColor: "white",
+                  padding: "8px",
+                }}
+              >
+                <img
+                  src={media.poster}
+                  style={{
+                    aspectRatio: width / height,
+                    height: "4lh",
+                    objectFit: "cover",
+                  }}
+                />
+                <div>
+                  <div className="inline-space">
+                    <span>File:</span>
+                    <select
+                      value={clip.name}
+                      onChange={(evt) => {
+                        clip.name = evt.target.value;
+                        setTimeline([...timeline]);
+                      }}
+                    >
+                      {medias.map((media) => (
+                        <option key={media.name} value={media.name}>
+                          {media.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="inline-space">
+                    <span>Effect:</span>
+                    <select
+                      value={clip.effect}
+                      onChange={(evt) => {
+                        clip.effect = evt.target.value as Clip["effect"];
+                        setTimeline([...timeline]);
+                      }}
+                    >
+                      <option value={"copy"}>copy</option>
+                      <option value={"glide"}>glide</option>
+                      <option value={"stretch"}>stretch</option>
+                    </select>
+                  </div>
+                  <div className="inline-space">
+                    {clip.effect === "copy" && (
+                      <>
+                        <span>From frame</span>
+                        <input
+                          type="number"
+                          value={clip.from}
+                          onChange={(evt) => {
+                            clip.from = evt.target.valueAsNumber;
+                            setTimeline([...timeline]);
+                          }}
+                        />
+                        <span>to frame</span>
+                        <input
+                          type="number"
+                          value={clip.to}
+                          onChange={(evt) => {
+                            clip.to = evt.target.valueAsNumber;
+                            setTimeline([...timeline]);
+                          }}
+                        />
+                      </>
+                    )}
+                    {clip.effect === "glide" && (
+                      <>
+                        <span>Frame</span>
+                        <input
+                          type="number"
+                          value={clip.from}
+                          onChange={(evt) => {
+                            clip.from = evt.target.valueAsNumber;
+                            setTimeline([...timeline]);
+                          }}
+                        />
+                        <span>repeats</span>
+                        <input
+                          type="number"
+                          value={clip.duration}
+                          onChange={(evt) => {
+                            clip.duration = evt.target.valueAsNumber;
+                            setTimeline([...timeline]);
+                          }}
+                        />
+                        <span>times</span>
+                      </>
+                    )}
+                    {clip.effect === "stretch" && (
+                      <>
+                        <span>From frame</span>
+                        <input
+                          type="number"
+                          value={clip.from}
+                          onChange={(evt) => {
+                            clip.from = evt.target.valueAsNumber;
+                            setTimeline([...timeline]);
+                          }}
+                        />
+                        <span>to frame</span>
+                        <input
+                          type="number"
+                          value={clip.to}
+                          onChange={(evt) => {
+                            clip.to = evt.target.valueAsNumber;
+                            setTimeline([...timeline]);
+                          }}
+                        />
+                        <span>sped up by</span>
+                        <input
+                          type="number"
+                          value={clip.rate}
+                          onChange={(evt) => {
+                            clip.rate = evt.target.valueAsNumber;
+                            setTimeline([...timeline]);
+                          }}
+                          step={0.1}
+                          min={1 / 1000}
+                        />
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <button
+                    onClick={() => {
+                      timeline.splice(
+                        clipIndex - 1,
+                        2,
+                        timeline[clipIndex],
+                        timeline[clipIndex - 1],
+                      );
+                      setTimeline([...timeline]);
+                    }}
+                    disabled={clipIndex === 0}
+                  >
+                    move up
+                  </button>
+                  <button
+                    onClick={() => {
+                      timeline.splice(clipIndex, 1);
+                      setTimeline([...timeline]);
+                    }}
+                  >
+                    delete
+                  </button>
+                  <button
+                    onClick={() => {
+                      timeline.splice(
+                        clipIndex,
+                        2,
+                        timeline[clipIndex + 1],
+                        timeline[clipIndex],
+                      );
+                      setTimeline([...timeline]);
+                    }}
+                    disabled={clipIndex === timeline.length - 1}
+                  >
+                    move down
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div>
+          {medias[0] && (
+            <button
+              onClick={() => {
+                setTimeline([
+                  ...timeline,
+                  {
+                    id: Math.random(),
+                    name: medias[0].name,
+                    effect: "copy",
+                    from: 0,
+                    to: medias[0].pkts.length,
+                    rate: 1,
+                    duration: 100,
+                  },
+                ]);
               }}
             >
-              <img
-                src={media.poster}
-                style={{
-                  aspectRatio: width / height,
-                  height: "4lh",
-                  objectFit: "cover",
-                }}
-              />
-              <div>
-                <div className="inline-space">
-                  <span>File:</span>
-                  <select
-                    value={clip.name}
-                    onChange={(evt) => {
-                      clip.name = evt.target.value;
-                      setTimeline([...timeline]);
-                    }}
-                  >
-                    {medias.map((media) => (
-                      <option key={media.name} value={media.name}>
-                        {media.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="inline-space">
-                  <span>Effect:</span>
-                  <select
-                    value={clip.effect}
-                    onChange={(evt) => {
-                      clip.effect = evt.target.value as Clip["effect"];
-                      setTimeline([...timeline]);
-                    }}
-                  >
-                    <option value={"copy"}>copy</option>
-                    <option value={"glide"}>glide</option>
-                    <option value={"stretch"}>stretch</option>
-                  </select>
-                </div>
-                <div className="inline-space">
-                  {clip.effect === "copy" && (
-                    <>
-                      <span>From frame</span>
-                      <input
-                        type="number"
-                        value={clip.from}
-                        onChange={(evt) => {
-                          clip.from = evt.target.valueAsNumber;
-                          setTimeline([...timeline]);
-                        }}
-                      />
-                      <span>to frame</span>
-                      <input
-                        type="number"
-                        value={clip.to}
-                        onChange={(evt) => {
-                          clip.to = evt.target.valueAsNumber;
-                          setTimeline([...timeline]);
-                        }}
-                      />
-                    </>
-                  )}
-                  {clip.effect === "glide" && (
-                    <>
-                      <span>Frame</span>
-                      <input
-                        type="number"
-                        value={clip.from}
-                        onChange={(evt) => {
-                          clip.from = evt.target.valueAsNumber;
-                          setTimeline([...timeline]);
-                        }}
-                      />
-                      <span>repeats</span>
-                      <input
-                        type="number"
-                        value={clip.duration}
-                        onChange={(evt) => {
-                          clip.duration = evt.target.valueAsNumber;
-                          setTimeline([...timeline]);
-                        }}
-                      />
-                      <span>times</span>
-                    </>
-                  )}
-                  {clip.effect === "stretch" && (
-                    <>
-                      <span>From frame</span>
-                      <input
-                        type="number"
-                        value={clip.from}
-                        onChange={(evt) => {
-                          clip.from = evt.target.valueAsNumber;
-                          setTimeline([...timeline]);
-                        }}
-                      />
-                      <span>to frame</span>
-                      <input
-                        type="number"
-                        value={clip.to}
-                        onChange={(evt) => {
-                          clip.to = evt.target.valueAsNumber;
-                          setTimeline([...timeline]);
-                        }}
-                      />
-                      <span>sped up by</span>
-                      <input
-                        type="number"
-                        value={clip.rate}
-                        onChange={(evt) => {
-                          clip.rate = evt.target.valueAsNumber;
-                          setTimeline([...timeline]);
-                        }}
-                        step={0.1}
-                        min={1 / 1000}
-                      />
-                    </>
-                  )}
-                </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <button
-                  onClick={() => {
-                    timeline.splice(
-                      clipIndex - 1,
-                      2,
-                      timeline[clipIndex],
-                      timeline[clipIndex - 1],
-                    );
-                    setTimeline([...timeline]);
-                  }}
-                  disabled={clipIndex === 0}
-                >
-                  move up
-                </button>
-                <button
-                  onClick={() => {
-                    timeline.splice(clipIndex, 1);
-                    setTimeline([...timeline]);
-                  }}
-                >
-                  delete
-                </button>
-                <button
-                  onClick={() => {
-                    timeline.splice(
-                      clipIndex,
-                      2,
-                      timeline[clipIndex + 1],
-                      timeline[clipIndex],
-                    );
-                    setTimeline([...timeline]);
-                  }}
-                  disabled={clipIndex === timeline.length - 1}
-                >
-                  move down
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <div>
-        {medias[0] && (
-          <button
-            onClick={() => {
-              setTimeline([
-                ...timeline,
-                {
-                  id: Math.random(),
-                  name: medias[0].name,
-                  effect: "copy",
-                  from: 0,
-                  to: medias[0].pkts.length,
-                  rate: 1,
-                  duration: 100,
-                },
-              ]);
-            }}
-          >
-            add
-          </button>
-        )}
-      </div>
-
-      <h1>Render</h1>
-      {timeline.length ? (
-        <div className="inline-space">
-          <button onClick={render} disabled={isRendering}>
-            Render
-          </button>
-          {isRendering && (
-            <>
-              <progress value={renderProgress} />
-              <span>Rendering... ({(renderProgress * 100).toFixed(0)}%)</span>
-            </>
+              Add clip
+            </button>
           )}
         </div>
-      ) : (
-        <>
-          <span style={{ color: "var(--warning)" }}>
-            Please add clips in the timeline to render
-          </span>
-        </>
-      )}
+      </div>
 
-      {videoSrc && (
-        <video
-          src={videoSrc}
-          controls
-          autoPlay
-          muted
-          loop
-          style={{ maxWidth: "100%" }}
-        ></video>
-      )}
+      <h1
+        style={{
+          backgroundColor: "rgba(255,255,255,0.2)",
+          padding: "8px",
+          margin: 0,
+        }}
+      >
+        Render
+      </h1>
+
+      <div
+        style={{
+          padding: "8px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+        }}
+      >
+        {timeline.length ? (
+          <div className="inline-space">
+            <button onClick={render} disabled={isRendering}>
+              Render
+            </button>
+            {isRendering && (
+              <>
+                <progress value={renderProgress} />
+                <span>Rendering... ({(renderProgress * 100).toFixed(0)}%)</span>
+              </>
+            )}
+          </div>
+        ) : (
+          <>
+            <span style={{ color: "var(--info)" }}>
+              Please add clips in the timeline to render
+            </span>
+          </>
+        )}
+
+        {videoSrc && (
+          <>
+            <div>
+              <a
+                href={videoSrc}
+                download={`Supermosh_${new Date().toLocaleDateString("sv")}_${new Date().toLocaleTimeString("sv").replaceAll(":", "-")}.mp4`}
+              >
+                Download
+              </a>
+            </div>
+            <video
+              src={videoSrc}
+              controls
+              autoPlay
+              muted
+              loop
+              style={{ maxWidth: "100%" }}
+            />
+          </>
+        )}
+      </div>
     </>
   );
 };

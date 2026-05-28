@@ -5,6 +5,7 @@
   --success: lime;
   --warning: orange;
   --error: red;
+  --info: skyblue;
 }
 button {
   cursor: pointer;
