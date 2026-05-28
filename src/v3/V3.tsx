@@ -14,7 +14,7 @@ import {
 } from "mediabunny";
 import { useState } from "react";
 
-import { retimers, x } from "../scratch/lib";
+import { x } from "../scratch/lib";
 
 /*
 TODO
@@ -47,6 +47,23 @@ type Clip = {
   to: number;
   rate: number;
   duration: number;
+};
+
+const retimers = {
+  copy: (from: number, to: number) =>
+    Array(to - from)
+      .fill(null)
+      .map((_, i) => from + i),
+  glide: (at: number, duration: number) =>
+    Array(duration)
+      .fill(null)
+      .map(() => at),
+  stretch: (from: number, to: number, rate: number) => {
+    const length = Math.floor((to - from) / rate);
+    return Array(length)
+      .fill(null)
+      .map((_, i) => Math.floor(from + i * rate));
+  },
 };
 
 const getPoster = async (file: File) => {
