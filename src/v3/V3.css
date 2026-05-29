@@ -31,6 +31,16 @@
     align-items: start;
   }
 }
+.clip-video {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+@media screen and (max-width: 900px) {
+  .clip-video {
+    width: 100%;
+  }
+}
 
 .card > :nth-child(2) {
   flex: 1;

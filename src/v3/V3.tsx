@@ -15,7 +15,7 @@ import {
   Output,
   VideoSampleSink,
 } from "mediabunny";
-import { useRef, useState } from "react";
+import { useRef, useState, VideoHTMLAttributes } from "react";
 
 import { x } from "../scratch/lib";
 
@@ -48,6 +48,7 @@ type Clip = {
   rate: number;
   duration: number;
   warning: string;
+  previewFrame: number;
 };
 
 const moshers = {
@@ -95,6 +96,15 @@ const getPoster = async (file: File) => {
   sample.close();
   const blob = await canvas.convertToBlob();
   return URL.createObjectURL(blob);
+};
+
+const TimedVideo = ({
+  time,
+  ...props
+}: VideoHTMLAttributes<HTMLVideoElement> & { time: number }) => {
+  const [elt, setElt] = useState(null as HTMLVideoElement | null);
+  if (elt && !isNaN(time)) elt.currentTime = time;
+  return <video {...props} ref={setElt} />;
 };
 
 export const V3 = () => {
@@ -564,19 +574,21 @@ export const V3 = () => {
                     borderColor: clip.warning ? "var(--warning)" : "white",
                   }}
                 >
-                  <div
-                    style={{
-                      width: "300px",
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <video src={media.url} />
+                  <div className="clip-video">
+                    <TimedVideo
+                      src={media.url}
+                      time={clip.previewFrame * media.pkts[0].duration}
+                      style={{
+                        aspectRatio: width / height,
+                        objectFit: "cover",
+                      }}
+                    />
                     <input
                       type="range"
                       value={clip.from}
                       onChange={(evt) => {
                         clip.from = evt.target.valueAsNumber;
+                        clip.previewFrame = clip.from;
                         updateTimeline();
                       }}
                       min={0}
@@ -588,6 +600,7 @@ export const V3 = () => {
                         value={clip.to}
                         onChange={(evt) => {
                           clip.to = evt.target.valueAsNumber;
+                          clip.previewFrame = clip.to;
                           updateTimeline();
                         }}
                         min={0}
@@ -635,6 +648,7 @@ export const V3 = () => {
                             value={clip.from}
                             onChange={(evt) => {
                               clip.from = evt.target.valueAsNumber;
+                              clip.previewFrame = clip.from;
                               updateTimeline();
                             }}
                           />
@@ -644,6 +658,7 @@ export const V3 = () => {
                             value={clip.to}
                             onChange={(evt) => {
                               clip.to = evt.target.valueAsNumber;
+                              clip.previewFrame = clip.to;
                               updateTimeline();
                             }}
                           />
@@ -657,6 +672,7 @@ export const V3 = () => {
                             value={clip.from}
                             onChange={(evt) => {
                               clip.from = evt.target.valueAsNumber;
+                              clip.previewFrame = clip.from;
                               updateTimeline();
                             }}
                           />
@@ -680,6 +696,7 @@ export const V3 = () => {
                             value={clip.from}
                             onChange={(evt) => {
                               clip.from = evt.target.valueAsNumber;
+                              clip.previewFrame = clip.from;
                               updateTimeline();
                             }}
                           />
@@ -689,6 +706,7 @@ export const V3 = () => {
                             value={clip.to}
                             onChange={(evt) => {
                               clip.to = evt.target.valueAsNumber;
+                              clip.previewFrame = clip.to;
                               updateTimeline();
                             }}
                           />
@@ -766,6 +784,7 @@ export const V3 = () => {
                     rate: 0.5,
                     duration: 100,
                     warning: "",
+                    previewFrame: 0,
                   },
                 ]);
               }}
