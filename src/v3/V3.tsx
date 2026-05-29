@@ -24,7 +24,6 @@ TODO
 Preview section
 Render at specific rate
 Test and fix UI on all platforms
-Explicit error on conversion fail
 */
 
 type Media = {
@@ -34,6 +33,7 @@ type Media = {
   pkts: EncodedPacket[];
   isConverting: boolean;
   conversionProgress: number;
+  conversionError: string;
   width: number;
   height: number;
 };
@@ -120,82 +120,97 @@ export const V3 = () => {
   const convert = async (media: Media) => {
     media.isConverting = true;
     media.conversionProgress = 0;
+    media.conversionError = "";
     setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
 
     const cancel = () => {
       media.isConverting = false;
       media.conversionProgress = 0;
+      media.conversionError = "";
       setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
       pendingConversionCancels.current.delete(media.name);
     };
 
-    const convInput = new Input({
-      formats: ALL_FORMATS,
-      source: new BlobSource(media.file),
-    });
-    const convOutput = new Output({
-      format: new Mp4OutputFormat(),
-      target: new BufferTarget(),
-    });
-    const conversion = await Conversion.init({
-      input: convInput,
-      output: convOutput,
-      video: {
-        width,
-        height,
-        fit: "cover",
-        forceTranscode: true,
-        codec: "avc",
-        // Only works for a custom build of mediabunny, else is ignored and we hope for the best
-        // avc1 = h264
-        // 42 = baseline profile
-        // c0 = constrained baseline
-        // 2a = level 4.2 (max 522.240MBs, supports 60FPS HD)
-        fullCodecString: "avc1.42c02a",
-      },
-    });
-    if (!conversion.isValid) throw new Error("conv is not valid");
-    conversion.onProgress = async (progress: number) => {
-      media.conversionProgress = progress;
-      setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
-
-      if (pendingConversionCancels.current.has(media.name)) {
-        await conversion.cancel();
-      }
-    };
     try {
-      await conversion.execute();
+      const convInput = new Input({
+        formats: ALL_FORMATS,
+        source: new BlobSource(media.file),
+      });
+      const convOutput = new Output({
+        format: new Mp4OutputFormat(),
+        target: new BufferTarget(),
+      });
+      const conversion = await Conversion.init({
+        input: convInput,
+        output: convOutput,
+        video: {
+          width,
+          height,
+          fit: "cover",
+          forceTranscode: true,
+          codec: "avc",
+          // Only works for a custom build of mediabunny, else is ignored and we hope for the best
+          // avc1 = h264
+          // 42 = baseline profile
+          // c0 = constrained baseline
+          // 2a = level 4.2 (max 522.240MBs, supports 60FPS HD)
+          fullCodecString: "avc1.42c02a",
+        },
+      });
+      if (!conversion.isValid)
+        throw new Error(
+          "Conversion to baseline h264 (avc1.42c02a) is not supported on this browser",
+        );
+      conversion.onProgress = async (progress: number) => {
+        media.conversionProgress = progress;
+        setMedias(
+          medias.map((m) => (m.name === media.name ? { ...media } : m)),
+        );
+
+        if (pendingConversionCancels.current.has(media.name)) {
+          await conversion.cancel();
+        }
+      };
+      try {
+        await conversion.execute();
+      } catch (e) {
+        if (e instanceof ConversionCanceledError) {
+          cancel();
+          return;
+        } else {
+          throw e;
+        }
+      }
+
+      const moshInput = new Input({
+        formats: ALL_FORMATS,
+        source: new BufferSource(x(convOutput.target.buffer)),
+      });
+      const track = x(await moshInput.getPrimaryVideoTrack());
+      setDecoderConfig(x(await track.getDecoderConfig()));
+      const sink = new EncodedPacketSink(track);
+      const pkts: EncodedPacket[] = [];
+      for await (const pkt of sink.packets()) {
+        pkts.push(pkt);
+        if (pendingConversionCancels.current.has(media.name)) {
+          cancel();
+          return;
+        }
+      }
+
+      media.conversionProgress = 1;
+      media.isConverting = false;
+      media.pkts = pkts;
+      media.width = width;
+      media.height = height;
+      setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
     } catch (e) {
-      if (e instanceof ConversionCanceledError) {
-        cancel();
-        return;
-      } else {
-        throw e;
-      }
+      console.log(e);
+      media.isConverting = false;
+      media.conversionError = `${e}`;
+      media.conversionProgress = 0;
+      setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
     }
-
-    const moshInput = new Input({
-      formats: ALL_FORMATS,
-      source: new BufferSource(x(convOutput.target.buffer)),
-    });
-    const track = x(await moshInput.getPrimaryVideoTrack());
-    setDecoderConfig(x(await track.getDecoderConfig()));
-    const sink = new EncodedPacketSink(track);
-    const pkts: EncodedPacket[] = [];
-    for await (const pkt of sink.packets()) {
-      pkts.push(pkt);
-      if (pendingConversionCancels.current.has(media.name)) {
-        cancel();
-        return;
-      }
-    }
-
-    media.conversionProgress = 1;
-    media.isConverting = false;
-    media.pkts = pkts;
-    media.width = width;
-    media.height = height;
-    setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
   };
 
   const onUpload = async (
@@ -222,6 +237,7 @@ export const V3 = () => {
       pkts: [],
       isConverting: true,
       conversionProgress: 0,
+      conversionError: "",
       width,
       height,
     };
@@ -428,11 +444,13 @@ export const V3 = () => {
             style={{
               borderColor: media.isConverting
                 ? "var(--info)"
-                : media.width !== width ||
-                    media.height !== height ||
-                    media.pkts.length === 0
-                  ? "var(--warning)"
-                  : "white",
+                : media.conversionError
+                  ? "var(--error)"
+                  : media.width !== width ||
+                      media.height !== height ||
+                      media.pkts.length === 0
+                    ? "var(--warning)"
+                    : "white",
               margin: "8px",
             }}
           >
@@ -464,6 +482,8 @@ export const V3 = () => {
                     </button>
                   </div>
                 </>
+              ) : media.conversionError ? (
+                <div className="text-error">{media.conversionError}</div>
               ) : media.pkts.length === 0 ? (
                 <>
                   <div className="text-warning">Packets not extracted yet</div>
