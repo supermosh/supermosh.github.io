@@ -24,6 +24,7 @@ TODO
 Preview section
 Render at specific rate
 Test and fix UI on all platforms
+Explicit error on conversion fail
 */
 
 type Media = {
@@ -75,7 +76,17 @@ const getPoster = async (file: File) => {
   const decodable = await track.canDecode();
   if (!decodable) throw new Error("Can't decode");
   const sink = new VideoSampleSink(track);
-  const sample = x(await sink.getSample(0));
+  const samples = sink.samples();
+
+  let sample = await sink.getSample(0);
+  // some videos don't start with a 0 timestamp
+  if (!sample) {
+    for await (const s of samples) {
+      sample = s;
+      continue;
+    }
+  }
+  sample = x(sample);
 
   const canvas = new OffscreenCanvas(sample.codedWidth, sample.codedHeight);
   const ctx = x(canvas.getContext("2d"));
