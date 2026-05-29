@@ -29,6 +29,7 @@ Test and fix UI on all platforms
 type Media = {
   name: string;
   file: File;
+  url: string;
   poster: string;
   pkts: EncodedPacket[];
   isConverting: boolean;
@@ -49,7 +50,7 @@ type Clip = {
   warning: string;
 };
 
-const retimers = {
+const moshers = {
   copy: (from: number, to: number) =>
     Array(to - from)
       .fill(null)
@@ -233,6 +234,7 @@ export const V3 = () => {
     const media: Media = {
       name,
       file,
+      url: URL.createObjectURL(file),
       poster,
       pkts: [],
       isConverting: true,
@@ -266,13 +268,13 @@ export const V3 = () => {
           let indices = [] as number[];
           switch (clip.effect) {
             case "copy":
-              indices = retimers.copy(clip.from, clip.to);
+              indices = moshers.copy(clip.from, clip.to);
               break;
             case "glide":
-              indices = retimers.glide(clip.from, clip.duration);
+              indices = moshers.glide(clip.from, clip.duration);
               break;
             case "stretch":
-              indices = retimers.stretch(clip.from, clip.to, clip.rate);
+              indices = moshers.stretch(clip.from, clip.to, clip.rate);
               break;
           }
 
@@ -338,11 +340,15 @@ export const V3 = () => {
   };
 
   const updateTimeline = () => {
+    // fuck it. update everythang in place, but rebuild timeline on change time. also check for bounds and stuff.
     timeline.forEach((clip, i) => {
       const media = x(medias.find((m) => m.name === clip.name));
       clip.from = Math.max(clip.from, 0);
-      if (clip.effect === "copy" || clip.effect === "stretch")
+      if (clip.effect === "copy" || clip.effect === "stretch") {
+        clip.from = Math.min(clip.from, media.pkts.length - 1);
         clip.to = Math.min(clip.to, media.pkts.length);
+        clip.to = Math.max(clip.to, clip.from + 1);
+      }
 
       clip.warning = "";
       if (i == 0 && media.pkts[clip.from]?.type !== "key") {
@@ -530,7 +536,6 @@ export const V3 = () => {
       </div>
 
       <h1 className="section-heading">Timeline</h1>
-
       <div className="section-body">
         {medias.length === 0 && (
           <div className="text-info">
@@ -559,13 +564,37 @@ export const V3 = () => {
                     borderColor: clip.warning ? "var(--warning)" : "white",
                   }}
                 >
-                  <img
-                    src={media.poster}
-                    className="poster"
+                  <div
                     style={{
-                      aspectRatio: width / height,
+                      width: "300px",
+                      display: "flex",
+                      flexDirection: "column",
                     }}
-                  />
+                  >
+                    <video src={media.url} />
+                    <input
+                      type="range"
+                      value={clip.from}
+                      onChange={(evt) => {
+                        clip.from = evt.target.valueAsNumber;
+                        updateTimeline();
+                      }}
+                      min={0}
+                      max={media.pkts.length - 1}
+                    />
+                    {(clip.effect === "copy" || clip.effect === "stretch") && (
+                      <input
+                        type="range"
+                        value={clip.to}
+                        onChange={(evt) => {
+                          clip.to = evt.target.valueAsNumber;
+                          updateTimeline();
+                        }}
+                        min={0}
+                        max={media.pkts.length - 1}
+                      />
+                    )}
+                  </div>
                   <div>
                     <div className="inline-space">
                       <span>File:</span>
