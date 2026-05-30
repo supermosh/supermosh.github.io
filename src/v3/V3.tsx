@@ -23,7 +23,8 @@ import { x } from "../scratch/lib";
 TODO
 Render at specific rate
 Test and fix UI on all platforms
-Repeat
+Timeline preview
+Sounds
 */
 
 type Media = {
@@ -49,6 +50,7 @@ type Clip = {
   duration: number;
   warning: string;
   previewFrame: number;
+  repeat: number;
 };
 
 const moshers = {
@@ -170,7 +172,7 @@ export const V3 = () => {
       });
       if (!conversion.isValid)
         throw new Error(
-          "Conversion to baseline h264 (avc1.42c02a) is not supported on this browser",
+          "Conversion to baseline h264 (avc1.42c02a) failed. Try with another video or on another browser.",
         );
       conversion.onProgress = async (progress: number) => {
         media.conversionProgress = progress;
@@ -281,6 +283,11 @@ export const V3 = () => {
         pktsByName[media.name] = media.pkts;
       }
       const repkts = timeline
+        .flatMap((clip) =>
+          Array(clip.repeat)
+            .fill(null)
+            .map(() => clip),
+        )
         .map((clip, i) => {
           let indices = [] as number[];
           switch (clip.effect) {
@@ -731,6 +738,20 @@ export const V3 = () => {
                         </>
                       )}
                     </div>
+                    <div className="inline-space">
+                      <span>Repeat clip</span>
+                      <input
+                        type="number"
+                        value={clip.repeat}
+                        onChange={(evt) => {
+                          clip.repeat = evt.target.valueAsNumber;
+                          updateTimeline();
+                        }}
+                        min={1}
+                        step={1}
+                      />
+                      <span>times</span>
+                    </div>
                     <div className="text-warning">{clip.warning}</div>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column" }}>
@@ -792,6 +813,7 @@ export const V3 = () => {
                     duration: 100,
                     warning: "",
                     previewFrame: 0,
+                    repeat: 1,
                   },
                 ]);
               }}
@@ -804,7 +826,7 @@ export const V3 = () => {
 
       <h1 className="section-heading">Render</h1>
 
-      <div className="section-body">
+      <div className="section-body" style={{ marginBottom: "10lh" }}>
         <div className="inline-space">
           <button
             onClick={render}
@@ -834,28 +856,13 @@ export const V3 = () => {
 
         {videoSrc && (
           <>
-            <div>
-              <button
-                onClick={async () => {
-                  const filename = `Supermosh_${new Date().toLocaleDateString("sv")}_${new Date().toLocaleTimeString("sv").replaceAll(":", "-")}.mp4`;
-                  if (navigator.canShare) {
-                    const blob = await fetch(videoSrc).then((r) => r.blob());
-                    const file = new File([blob], filename, {
-                      type: "video/mp4",
-                    });
-                    if (navigator.canShare({ files: [file] })) {
-                      await navigator.share({ files: [file], title: filename });
-                      return;
-                    }
-                  }
-                  const a = document.createElement("a");
-                  a.href = videoSrc;
-                  a.download = filename;
-                  a.click();
-                }}
+            <div className="inline-space">
+              <a
+                href={videoSrc}
+                download={`Supermosh_${new Date().toLocaleDateString("sv")}_${new Date().toLocaleTimeString("sv").replaceAll(":", "-")}.mp4`}
               >
                 Download
-              </button>
+              </a>
             </div>
             <video
               src={videoSrc}
@@ -863,7 +870,7 @@ export const V3 = () => {
               autoPlay
               muted
               loop
-              style={{ maxWidth: "100%" }}
+              style={{ maxWidth: "100%", maxHeight: "80vh" }}
             />
           </>
         )}
