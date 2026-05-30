@@ -21,9 +21,9 @@ import { x } from "../scratch/lib";
 
 /*
 TODO
-Preview section
 Render at specific rate
 Test and fix UI on all platforms
+Repeat
 */
 
 type Media = {
@@ -240,12 +240,13 @@ export const V3 = () => {
       newNameSuffix++;
     }
 
-    const poster = await getPoster(file);
     const media: Media = {
       name,
       file,
       url: URL.createObjectURL(file),
-      poster,
+      // 1x1 pink png
+      poster:
+        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2P4z/D/PwAG/gL+kr3ExQAAABBkZUJHRDI1N0RGRDMwMTRDOTQyNjg5W1gAAAAASUVORK5CYII=",
       pkts: [],
       isConverting: true,
       conversionProgress: 0,
@@ -256,6 +257,12 @@ export const V3 = () => {
     medias.push(media);
     setMedias([...medias]);
 
+    try {
+      media.poster = await getPoster(file);
+    } catch (e) {
+      media.conversionError = `${e}`;
+    }
+    setMedias(medias.map((m) => ({ ...m })));
     await convert(media);
 
     evt.target.value = "";
@@ -828,12 +835,27 @@ export const V3 = () => {
         {videoSrc && (
           <>
             <div>
-              <a
-                href={videoSrc}
-                download={`Supermosh_${new Date().toLocaleDateString("sv")}_${new Date().toLocaleTimeString("sv").replaceAll(":", "-")}.mp4`}
+              <button
+                onClick={async () => {
+                  const filename = `Supermosh_${new Date().toLocaleDateString("sv")}_${new Date().toLocaleTimeString("sv").replaceAll(":", "-")}.mp4`;
+                  if (navigator.canShare) {
+                    const blob = await fetch(videoSrc).then((r) => r.blob());
+                    const file = new File([blob], filename, {
+                      type: "video/mp4",
+                    });
+                    if (navigator.canShare({ files: [file] })) {
+                      await navigator.share({ files: [file], title: filename });
+                      return;
+                    }
+                  }
+                  const a = document.createElement("a");
+                  a.href = videoSrc;
+                  a.download = filename;
+                  a.click();
+                }}
               >
                 Download
-              </a>
+              </button>
             </div>
             <video
               src={videoSrc}
