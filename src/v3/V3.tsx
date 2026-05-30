@@ -171,9 +171,7 @@ export const V3 = () => {
         },
       });
       if (!conversion.isValid)
-        throw new Error(
-          "Conversion to baseline h264 (avc1.42c02a) failed. Try with another video or on another browser.",
-        );
+        throw new Error("Failed to convert to baseline h264 (avc1.42c02a).");
       conversion.onProgress = async (progress: number) => {
         media.conversionProgress = progress;
         setMedias(
@@ -220,7 +218,7 @@ export const V3 = () => {
     } catch (e) {
       console.log(e);
       media.isConverting = false;
-      media.conversionError = `${e}`;
+      media.conversionError = `${e} | Conversion failed, try using another video or another browser`;
       media.conversionProgress = 0;
       setMedias(medias.map((m) => (m.name === media.name ? { ...media } : m)));
     }
@@ -382,6 +380,12 @@ export const V3 = () => {
     });
     setTimeline(timeline.map((clip) => ({ ...clip })));
   };
+
+  const isMediaValid = (media: Media) =>
+    !media.conversionError &&
+    media.pkts.length &&
+    media.width === width &&
+    media.height === height;
 
   return (
     <>
@@ -632,7 +636,7 @@ export const V3 = () => {
                           updateTimeline();
                         }}
                       >
-                        {medias.map((media) => (
+                        {medias.filter(isMediaValid).map((media) => (
                           <option key={media.name} value={media.name}>
                             {media.name}
                           </option>
