@@ -80,11 +80,11 @@ const getPoster = async (file: File) => {
   const decodable = await track.canDecode();
   if (!decodable) throw new Error("Can't decode");
   const sink = new VideoSampleSink(track);
-  const samples = sink.samples();
 
   let sample = await sink.getSample(0);
   // some videos don't start with a 0 timestamp
   if (!sample) {
+    const samples = sink.samples();
     for await (const s of samples) {
       sample = s;
       continue;
