@@ -23,7 +23,7 @@ export const Home = () => (
         web-based editor, allowing anyone to glitch their images and videos.
       </p>
       <p className="button-row">
-        <Link to="/studio" className="link-button">
+        <Link to="/v3" className="link-button">
           <Icon name="movie" /> Start glitching
         </Link>
         <a href="https://youtu.be/M1OCjF-aJyo" className="link-button">
@@ -87,15 +87,17 @@ export const Home = () => (
       <div className="q">
         <h1>How does Supermosh even works?</h1>
         <p>
-          It uses{" "}
-          <a href="https://ffmpegwasm.netlify.app/">the web assembly port</a> of{" "}
-          <a href="https://www.ffmpeg.org/">ffmpeg</a> to pre-process videos
-          (resize, remove key frames), then uses{" "}
+          It uses <a href="https://mediabunny.dev/">Mediabunny</a> and{" "}
           <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebCodecs_API">
             web codecs
           </a>{" "}
-          to reconstruct a video based on the timeline defined by the user in
-          the Supermosh Studio.
+          to convert videos into baseline h264 - a particular type of mp4 that
+          supports the most moshing, then reorders the frames based on effects
+          and timings the user defines in <Link to="/v3">the Studio</Link>.
+        </p>
+        <p>
+          Code samples are available on the github repo to produce datamosh
+          directly in javascript, without using the Supermosh GUI.
         </p>
       </div>
       <video
