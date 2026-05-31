@@ -802,7 +802,7 @@ export const V3 = () => {
           </div>
         )}
         <div>
-          {medias[0] && (
+          {medias.length > 0 && medias.every(isMediaValid) && (
             <button
               onClick={() => {
                 setTimeline([
