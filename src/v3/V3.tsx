@@ -344,7 +344,11 @@ export const V3 = () => {
       await output.finalize();
 
       setIsRendering(false);
-      setVideoSrc(URL.createObjectURL(new Blob([output.target.buffer!])));
+      setVideoSrc(
+        URL.createObjectURL(
+          new Blob([output.target.buffer!], { type: "video/mp4" }),
+        ),
+      );
     } catch (e) {
       console.error(e);
       setRenderError(`${e}`);
