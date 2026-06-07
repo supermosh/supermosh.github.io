@@ -820,7 +820,7 @@ export const V3 = () => {
                     {
                       id: Math.random(),
                       name: medias[0].name,
-                      effect: "copy",
+                      effect: "stretch",
                       from: 0,
                       to: medias[0].pkts.length,
                       rate: 0.5,

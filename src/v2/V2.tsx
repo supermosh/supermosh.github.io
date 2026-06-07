@@ -64,6 +64,7 @@ export const V2 = () => {
             vids={vids}
             setVids={setVids}
             progress={progress}
+            // eslint-disable-next-line react-hooks/refs
             ffmpeg={ffmpegRef.current}
             onConfig={setConfig}
             settings={settings}
