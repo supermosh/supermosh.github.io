@@ -12,9 +12,6 @@ import {
   UrlSource,
 } from "mediabunny";
 
-const width = 1280;
-const height = 720;
-
 // extract encoded packets
 const input = new Input({
   formats: ALL_FORMATS,

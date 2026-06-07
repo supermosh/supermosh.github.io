@@ -13,7 +13,7 @@ import {
   UrlSource,
 } from "mediabunny";
 
-import { retimers, x } from "./lib";
+import { moshers, x } from "./lib";
 
 let decoderConfig: VideoDecoderConfig;
 
@@ -76,16 +76,16 @@ const timeline: Timeline = [
   //     0.5,
   //   ),
   // },
-  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: retimers.copy(0, 30) },
+  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: moshers.copy(0, 30) },
   {
     name: "8724218-uhd_4096_2160_25fps.mp4",
-    indices: retimers.stretch(243, 260, 0.15),
+    indices: moshers.stretch(243, 260, 0.15),
   },
-  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: retimers.copy(18, 30) },
-  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: retimers.copy(18, 30) },
-  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: retimers.copy(18, 30) },
-  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: retimers.copy(18, 30) },
-  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: retimers.copy(18, 200) },
+  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: moshers.copy(18, 30) },
+  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: moshers.copy(18, 30) },
+  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: moshers.copy(18, 30) },
+  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: moshers.copy(18, 30) },
+  { name: "8724218-uhd_4096_2160_25fps.mp4", indices: moshers.copy(18, 200) },
 ];
 console.log(timeline);
 const repkts = timeline

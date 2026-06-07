@@ -1,6 +1,7 @@
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { toBlobURL } from "@ffmpeg/util";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 import { FilesEditor } from "./FilesEditor";
 import { Rendering } from "./Rendering";
@@ -41,29 +42,45 @@ export const V2 = () => {
     })();
   }, []);
 
-  return loadingFfmpeg ? (
-    <>Loading...</>
-  ) : (
-    <main className="Studio">
-      <FilesEditor
-        vids={vids}
-        setVids={setVids}
-        progress={progress}
-        ffmpeg={ffmpegRef.current}
-        onConfig={setConfig}
-        settings={settings}
-        preprocessSettings={preprocessSettings}
-        setPreprocessSettings={setPreprocessSettings}
-      />
-      <Timeline vids={vids} segments={segments} setSegments={setSegments} />
-      <Rendering
-        vids={vids}
-        segments={segments}
-        config={config}
-        settings={settings}
-        setSettings={setSettings}
-        preprocessSettings={preprocessSettings}
-      />
-    </main>
+  return (
+    <>
+      <div
+        style={{
+          border: "1px solid orange",
+          color: "orange",
+          margin: "8px",
+          padding: "8px",
+        }}
+      >
+        You are using the deprecated V2 version of the Supermosh Studio, kept
+        while Studio V3 is still in beta, but you are encouraged to try out the
+        (much!) faster <Link to="/v3">Studio V3</Link>
+      </div>
+      {loadingFfmpeg ? (
+        <div>Loading...</div>
+      ) : (
+        <main className="Studio">
+          <FilesEditor
+            vids={vids}
+            setVids={setVids}
+            progress={progress}
+            ffmpeg={ffmpegRef.current}
+            onConfig={setConfig}
+            settings={settings}
+            preprocessSettings={preprocessSettings}
+            setPreprocessSettings={setPreprocessSettings}
+          />
+          <Timeline vids={vids} segments={segments} setSegments={setSegments} />
+          <Rendering
+            vids={vids}
+            segments={segments}
+            config={config}
+            settings={settings}
+            setSettings={setSettings}
+            preprocessSettings={preprocessSettings}
+          />
+        </main>
+      )}
+    </>
   );
 };
