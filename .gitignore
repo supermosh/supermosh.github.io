@@ -27,3 +27,5 @@ BL_Proxy
 
 /public/samples
 /public/mel
+# Local Netlify folder
+.netlify
