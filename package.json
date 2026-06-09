@@ -14,6 +14,7 @@
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/types": "^0.12.4",
     "@ffmpeg/util": "^0.12.2",
+    "birdview": "link:..\\birdview",
     "mediabunny": "link:..\\mediabunny",
     "mp4box": "^2.3.0",
     "react": "^19.2.7",

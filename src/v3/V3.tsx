@@ -1,5 +1,6 @@
 import "./V3.css";
 
+import { checkFile } from "birdview";
 import {
   ALL_FORMATS,
   BlobSource,
@@ -232,6 +233,8 @@ export const V3 = () => {
       console.warn("Should upload at least one file");
       return;
     }
+
+    checkFile(file);
 
     let name = file.name;
     let newNameSuffix = 1;

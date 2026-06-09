@@ -20,6 +20,9 @@ importers:
       '@ffmpeg/util':
         specifier: ^0.12.2
         version: 0.12.2
+      birdview:
+        specifier: link:..\birdview
+        version: link:../birdview
       mediabunny:
         specifier: link:..\mediabunny
         version: link:../mediabunny
