@@ -84,6 +84,22 @@ export const record = async (
   onProgress: (progress: number) => unknown
 ) =>
   new Promise<string>((resolve) => {
+    // The chunks are concatenated across segments and repeats, so their
+    // original per-file timestamps reset backwards at every boundary. A
+    // non-monotonic timestamp makes VideoDecoder error out and close the
+    // codec, after which every further decode() throws InvalidStateError.
+    // Rewrite the timestamps into one strictly increasing sequence.
+    chunks = chunks.map((chunk, i) => {
+      const data = new Uint8Array(chunk.byteLength);
+      chunk.copyTo(data);
+      return new EncodedVideoChunk({
+        type: chunk.type,
+        timestamp: (i * 1e6) / FPS,
+        duration: 1e6 / FPS,
+        data,
+      });
+    });
+
     const canvas = document.createElement("canvas");
     canvas.width = settings.width;
     canvas.height = settings.height;
