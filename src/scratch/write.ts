@@ -15,7 +15,7 @@ import {
 // extract encoded packets
 const input = new Input({
   formats: ALL_FORMATS,
-  source: new UrlSource("/samples/baseline/6616342-hd_1920_1080_25fps.mp4"),
+  source: new UrlSource("/samples/baseline/10251379-uhd_4096_2160_25fps.mp4"),
 });
 const track = await input.getPrimaryVideoTrack();
 if (!track) throw new Error("no track");
@@ -29,11 +29,9 @@ for await (const pkt of sink.packets()) {
 
 // possibly duplicate or reorder packets to mosh
 const repkts = [
-  ...pkts.slice(0, 50),
-  ...Array(50)
-    .fill(null)
-    .map(() => pkts[50]),
-  ...pkts.slice(50, 100),
+  ...pkts.slice(0, 100).flatMap((pkt) => [pkt, pkt]),
+  ...pkts.slice(100, 300),
+  ...pkts.slice(300, pkts.length).flatMap((pkt) => [pkt, pkt]),
 ]
   .filter((pkt, i) => i == 0 || pkt.type == "delta")
   .map((pkt, i) => {
@@ -65,4 +63,10 @@ await output.finalize();
 const video = document.createElement("video");
 video.controls = true;
 video.src = URL.createObjectURL(new Blob([output.target.buffer!]));
+video.muted = true;
+video.autoplay = true;
+video.loop = true;
+video.style.maxWidth = "100vw";
+video.style.maxHeight = "100vh";
+video.style.objectFit = "contain";
 document.body.append(video);

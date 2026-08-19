@@ -17,7 +17,7 @@ const height = 720;
 // extract encoded packets
 const input = new Input({
   formats: ALL_FORMATS,
-  source: new UrlSource("/samples/2711092-hd_1280_720_24fps.baseline.mp4"),
+  source: new UrlSource("/samples/baseline/emma.mp4"),
 });
 const track = await input.getPrimaryVideoTrack();
 if (!track) throw new Error("no track");
