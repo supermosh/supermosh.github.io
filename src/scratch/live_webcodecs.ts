@@ -14,6 +14,19 @@ canvas.height = video.videoHeight;
 canvas.style.transform = "scaleX(-1)";
 const ctx = canvas.getContext("2d")!;
 
+let isGliding = false;
+let lastChunk: EncodedVideoChunk | null = null;
+addEventListener("keydown", (evt) => {
+  if (evt.key === "g") {
+    isGliding = true;
+  }
+});
+addEventListener("keyup", (evt) => {
+  if (evt.key === "g") {
+    isGliding = false;
+  }
+});
+
 const encoder = new VideoEncoder({
   error: console.error,
   output: (chunk) => {
@@ -21,7 +34,11 @@ const encoder = new VideoEncoder({
     // decoder.decode(chunk);
 
     // stretch
-    for (let i = 0; i < 4; i++) decoder.decode(chunk);
+    // for (let i = 0; i < 4; i++) decoder.decode(chunk);
+
+    // glide - codec issue? fucks things up
+    lastChunk = isGliding ? (lastChunk ?? chunk) : chunk;
+    decoder.decode(lastChunk);
   },
 });
 encoder.configure({
