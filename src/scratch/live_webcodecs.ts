@@ -17,7 +17,11 @@ const ctx = canvas.getContext("2d")!;
 const encoder = new VideoEncoder({
   error: console.error,
   output: (chunk) => {
-    decoder.decode(chunk);
+    // no-op
+    // decoder.decode(chunk);
+
+    // stretch
+    for (let i = 0; i < 4; i++) decoder.decode(chunk);
   },
 });
 encoder.configure({
