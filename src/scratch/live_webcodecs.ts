@@ -1,9 +1,17 @@
+const codec = "vp8";
+
 const video = document.createElement("video");
-document.body.append(video);
+// document.body.append(video);
 video.style.transform = "scaleX(-1)";
 video.muted = true;
 
-const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+const stream = await navigator.mediaDevices.getUserMedia({
+  video: {
+    facingMode: {
+      ideal: "environment",
+    },
+  },
+});
 video.srcObject = stream;
 await video.play();
 
@@ -12,19 +20,20 @@ document.body.append(canvas);
 canvas.width = video.videoWidth;
 canvas.height = video.videoHeight;
 canvas.style.transform = "scaleX(-1)";
+canvas.style.width = "100vw";
+canvas.style.height = "100vh";
+canvas.style.objectFit = "contain";
 const ctx = canvas.getContext("2d")!;
 
-let isGliding = false;
-let lastChunk: EncodedVideoChunk | null = null;
-addEventListener("keydown", (evt) => {
-  if (evt.key === "g") {
-    isGliding = true;
-  }
+document.body.style.margin = "0";
+document.body.style.overflow = "hidden";
+
+let isStretching = false;
+document.addEventListener("mousedown", () => {
+  isStretching = true;
 });
-addEventListener("keyup", (evt) => {
-  if (evt.key === "g") {
-    isGliding = false;
-  }
+document.addEventListener("mouseup", () => {
+  isStretching = false;
 });
 
 const encoder = new VideoEncoder({
@@ -34,15 +43,18 @@ const encoder = new VideoEncoder({
     // decoder.decode(chunk);
 
     // stretch
-    // for (let i = 0; i < 4; i++) decoder.decode(chunk);
+    // for (let i = 0; i < 2; i++) decoder.decode(chunk);
 
     // glide - codec issue? fucks things up
-    lastChunk = isGliding ? (lastChunk ?? chunk) : chunk;
-    decoder.decode(lastChunk);
+    // lastChunk = isGliding ? (lastChunk ?? chunk) : chunk;
+    // decoder.decode(lastChunk);
+
+    // stretch on press
+    for (let i = 0; i < (isStretching ? 4 : 1); i++) decoder.decode(chunk);
   },
 });
 encoder.configure({
-  codec: "vp8",
+  codec,
   width: video.videoWidth,
   height: video.videoHeight,
 });
@@ -53,7 +65,7 @@ const decoder = new VideoDecoder({
   },
 });
 decoder.configure({
-  codec: "vp8",
+  codec,
   codedWidth: video.videoWidth,
   codedHeight: video.videoHeight,
 });
