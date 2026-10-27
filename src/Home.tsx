@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 import { Icon } from "./components/Icon";
+import { otherWorks, press, selectedWorks } from "./worldwide";
 
 export const Home = () => (
   <main className="Home">
@@ -136,6 +137,36 @@ export const Home = () => (
         loop
         playsInline
       ></video>
+    </div>
+    <div style={{ padding: 16 }}>
+      <h1>Mentions</h1>
+      {press.map((p, i) => (
+        <p key={i}>
+          <a href={p.href}>{p.title}</a>
+        </p>
+      ))}
+      <h1>Made with Supermosh</h1>
+      {selectedWorks.map((work, i) => (
+        <p key={i}>
+          <a href={work.href}>{work.title}</a>
+        </p>
+      ))}
+      <p>
+        And also hundreds of works by{" "}
+        {otherWorks.map((work, i) => (
+          <span key={i}>
+            <a href={work.href}>{work.title}</a>,{" "}
+          </span>
+        ))}{" "}
+        and others. See more on{" "}
+        <a href="https://www.youtube.com/results?search_query=supermosh">
+          youtube
+        </a>
+        , <a href="https://www.tiktok.com/search?q=supermosh">tiktok</a>, and{" "}
+        <a href="https://www.instagram.com/explore/search/keyword/?q=supermosh">
+          instagram.
+        </a>
+      </p>
     </div>
   </main>
 );
