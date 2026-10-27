@@ -26,6 +26,7 @@ export const Rendering = ({
   const [downloadName, setDownloadName] = useState("");
   const [hardwareAcceleration, setHardwareAcceleration] =
     useState<HardwareAcceleration>("prefer-software");
+  const [error, setError] = useState("");
 
   return (
     <Section name="Rendering">
@@ -99,6 +100,7 @@ export const Rendering = ({
             onClick={async () => {
               setRendering(true);
               setSrc("");
+              setError("");
 
               const chunks = segments.flatMap((s) =>
                 Array(s.repeat)
@@ -112,24 +114,33 @@ export const Rendering = ({
               const mimeType = MediaRecorder.isTypeSupported("video/mp4")
                 ? "video/mp4"
                 : "video/webm";
-              const newSrc = await record(
-                chunks,
-                config,
-                mimeType,
-                settings,
-                hardwareAcceleration,
-                setProgress,
-              );
-              setSrc(newSrc);
-              setDownloadName(
-                `Supermosh_${new Date()
-                  .toISOString()
-                  .substring(0, 19)
-                  .replaceAll(":", "-")}.${
-                  mimeType === "video/mp4" ? "mp4" : "webm"
-                }`,
-              );
-              setRendering(false);
+              try {
+                const newSrc = await record(
+                  chunks,
+                  config,
+                  mimeType,
+                  settings,
+                  hardwareAcceleration,
+                  setProgress,
+                );
+                setSrc(newSrc);
+                setDownloadName(
+                  `Supermosh_${new Date()
+                    .toISOString()
+                    .substring(0, 19)
+                    .replaceAll(":", "-")}.${
+                    mimeType === "video/mp4" ? "mp4" : "webm"
+                  }`,
+                );
+              } catch (e) {
+                setError(
+                  `Rendering failed: ${
+                    e
+                  }. Please try with the latest Firefox or Chromium, use CPU as hardware acceleration, and if the error persists, report the issue on github.`,
+                );
+              } finally {
+                setRendering(false);
+              }
             }}
             disabled={rendering}
           >
@@ -138,6 +149,7 @@ export const Rendering = ({
           {rendering && <progress value={progress} />}
         </div>
       )}
+      {error && <p style={{ color: "red" }}>{error}</p>}
       {src && (
         <>
           <p>

@@ -84,14 +84,27 @@ export const record = async (
   hardwareAcceleration: HardwareAcceleration,
   onProgress: (progress: number) => unknown,
 ) =>
-  new Promise<string>((resolve) => {
+  new Promise<string>((resolve, reject) => {
     const canvas = document.createElement("canvas");
     canvas.width = settings.width;
     canvas.height = settings.height;
     const ctx = canvas.getContext("2d")!;
 
+    let interval: ReturnType<typeof setInterval> | undefined;
+    let settled = false;
+
+    const fail = (error: unknown) => {
+      if (settled) return;
+      settled = true;
+      console.error(error);
+      if (interval !== undefined) clearInterval(interval);
+      if (recorder.state !== "inactive") recorder.stop();
+      if (decoder.state !== "closed") decoder.close();
+      reject(error);
+    };
+
     const decoder = new VideoDecoder({
-      error: console.error,
+      error: fail,
       output: (frame) => {
         ctx.drawImage(frame, 0, 0);
         frame.close();
@@ -102,19 +115,29 @@ export const record = async (
     const stream = canvas.captureStream();
     const recorder = new MediaRecorder(stream, { mimeType });
     recorder.addEventListener("dataavailable", (evt) => {
+      if (settled) return;
+      settled = true;
       const src = URL.createObjectURL(evt.data);
       resolve(src);
     });
+    recorder.addEventListener("error", fail);
 
     recorder.start();
     let i = 0;
-    const interval = setInterval(() => {
-      onProgress(i / chunks.length);
-      decoder.decode(chunks[i]);
-      i++;
-      if (i === chunks.length - 1) {
-        recorder.stop();
-        clearInterval(interval);
+    interval = setInterval(async () => {
+      if (settled) return;
+      try {
+        onProgress(i / chunks.length);
+        decoder.decode(chunks[i]);
+        i++;
+        if (i === chunks.length) {
+          clearInterval(interval);
+          interval = undefined;
+          await decoder.flush();
+          recorder.stop();
+        }
+      } catch (error) {
+        fail(error);
       }
     }, 1000 / FPS);
   });
