@@ -24,6 +24,8 @@ export const Rendering = ({
   const [progress, setProgress] = useState(0);
   const [src, setSrc] = useState("");
   const [downloadName, setDownloadName] = useState("");
+  const [hardwareAcceleration, setHardwareAcceleration] =
+    useState<HardwareAcceleration>("prefer-software");
 
   return (
     <Section name="Rendering">
@@ -62,6 +64,19 @@ export const Rendering = ({
         >
           flip
         </button>
+      </p>
+      <p>
+        Harware acceleration{" "}
+        <select
+          value={hardwareAcceleration}
+          onChange={(evt) =>
+            setHardwareAcceleration(evt.target.value as HardwareAcceleration)
+          }
+        >
+          <option value="no-preference">Auto</option>
+          <option value="prefer-software">CPU</option>
+          <option value="prefer-hardware">GPU</option>
+        </select>
       </p>
 
       {segments.length === 0 || config === null ? (
@@ -102,6 +117,7 @@ export const Rendering = ({
                 config,
                 mimeType,
                 settings,
+                hardwareAcceleration,
                 setProgress,
               );
               setSrc(newSrc);
