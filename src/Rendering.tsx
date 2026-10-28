@@ -24,6 +24,9 @@ export const Rendering = ({
   const [progress, setProgress] = useState(0);
   const [src, setSrc] = useState("");
   const [downloadName, setDownloadName] = useState("");
+  const [hardwareAcceleration, setHardwareAcceleration] =
+    useState<HardwareAcceleration>("prefer-software");
+  const [error, setError] = useState("");
 
   return (
     <Section name="Rendering">
@@ -63,6 +66,19 @@ export const Rendering = ({
           flip
         </button>
       </p>
+      <p>
+        Hardware acceleration{" "}
+        <select
+          value={hardwareAcceleration}
+          onChange={(evt) =>
+            setHardwareAcceleration(evt.target.value as HardwareAcceleration)
+          }
+        >
+          <option value="no-preference">Auto</option>
+          <option value="prefer-software">CPU</option>
+          <option value="prefer-hardware">GPU</option>
+        </select>
+      </p>
 
       {segments.length === 0 || config === null ? (
         <p>Please add segments in the timeline</p>
@@ -84,6 +100,7 @@ export const Rendering = ({
             onClick={async () => {
               setRendering(true);
               setSrc("");
+              setError("");
 
               const chunks = segments.flatMap((s) =>
                 Array(s.repeat)
@@ -97,23 +114,33 @@ export const Rendering = ({
               const mimeType = MediaRecorder.isTypeSupported("video/mp4")
                 ? "video/mp4"
                 : "video/webm";
-              const newSrc = await record(
-                chunks,
-                config,
-                mimeType,
-                settings,
-                setProgress,
-              );
-              setSrc(newSrc);
-              setDownloadName(
-                `Supermosh_${new Date()
-                  .toISOString()
-                  .substring(0, 19)
-                  .replaceAll(":", "-")}.${
-                  mimeType === "video/mp4" ? "mp4" : "webm"
-                }`,
-              );
-              setRendering(false);
+              try {
+                const newSrc = await record(
+                  chunks,
+                  config,
+                  mimeType,
+                  settings,
+                  hardwareAcceleration,
+                  setProgress,
+                );
+                setSrc(newSrc);
+                setDownloadName(
+                  `Supermosh_${new Date()
+                    .toISOString()
+                    .substring(0, 19)
+                    .replaceAll(":", "-")}.${
+                    mimeType === "video/mp4" ? "mp4" : "webm"
+                  }`,
+                );
+              } catch (e) {
+                setError(
+                  `Rendering failed: ${
+                    e
+                  }. Please try with the latest Firefox or Chromium, use CPU as hardware acceleration, and if the error persists, report the issue on github.`,
+                );
+              } finally {
+                setRendering(false);
+              }
             }}
             disabled={rendering}
           >
@@ -122,6 +149,7 @@ export const Rendering = ({
           {rendering && <progress value={progress} />}
         </div>
       )}
+      {error && <p style={{ color: "red" }}>{error}</p>}
       {src && (
         <>
           <p>
