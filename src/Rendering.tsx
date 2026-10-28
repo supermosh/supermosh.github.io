@@ -67,7 +67,7 @@ export const Rendering = ({
         </button>
       </p>
       <p>
-        Harware acceleration{" "}
+        Hardware acceleration{" "}
         <select
           value={hardwareAcceleration}
           onChange={(evt) =>
